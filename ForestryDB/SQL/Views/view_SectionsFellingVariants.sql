@@ -26,7 +26,9 @@ SELECT [AG].[ForestryID] AS [ForestryID],
     [dbo].[fn_GetFellingStateArea]([AG].[SectionID]) AS [FellingStateArea],
     [dbo].[fn_GetFellingStateVolume]([AG].[SectionID]) AS [FellingStateVolume],
     [dbo].[fn_GetFellingCycleArea]([AG].[SectionID]) AS [FellingCycleArea],
-    [dbo].[fn_GetFellingCycleVolume]([AG].[SectionID]) AS [FellingCycleVolume]
+    [dbo].[fn_GetFellingCycleVolume]([AG].[SectionID]) AS [FellingCycleVolume],
+    [dbo].[fn_GetFellingOperationalArea]([AG].[SectionID]) AS [FellingOperationalArea],
+    [dbo].[fn_GetFellingOperationalVolume]([AG].[SectionID]) AS [FellingOperationalVolume]
 FROM [dbo].[view_SectionFellingAgeGroups] AS [AG]
 GROUP BY [AG].[ForestryID], [AG].[ForestryName], [AG].[SectionID], [AG].[SectionName]
 GO

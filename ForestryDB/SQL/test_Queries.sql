@@ -90,3 +90,8 @@ SELECT [dbo].[fn_GetMainFellingAgeClass]('98240a8e-edcf-4b5d-8008-023b6b1753d9')
 SELECT [dbo].[fn_GetMainFellingAgeClass]('7609ef11-869a-410f-9bed-fc22a187ff6f')
 
 SELECT [dbo].[fn_GetAvgOperationalVolumePerHectare]('92b2f1ff-a4f2-491f-9bfb-b745838b0aa2')
+
+SELECT [dbo].[fn_GetFellingOperationalArea]('1d6464ad-394f-4208-a756-7e94608b845a')
+SELECT [dbo].[fn_GetFellingOperationalArea]('92b2f1ff-a4f2-491f-9bfb-b745838b0aa2')
+SELECT [dbo].[fn_GetFellingOperationalArea]('98240a8e-edcf-4b5d-8008-023b6b1753d9')
+SELECT [dbo].[fn_GetFellingOperationalArea]('7609ef11-869a-410f-9bed-fc22a187ff6f')
