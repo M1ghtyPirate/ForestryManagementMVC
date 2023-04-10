@@ -1,16 +1,16 @@
 ﻿USE [forest]
 
 GO
-CREATE PROCEDURE [dbo].[sp_AddSection] (@SectionName NVARCHAR(256), @ForestryID UNIQUEIDENTIFIER, @TreeSpeciesID UNIQUEIDENTIFIER, @QualityClassID UNIQUEIDENTIFIER)
+CREATE PROCEDURE [dbo].[sp_AddSection] (@ForestryID UNIQUEIDENTIFIER, @SectionName NVARCHAR(256), @SectionID UNIQUEIDENTIFIER OUT)
 AS
 BEGIN
-	DECLARE @SectionID UNIQUEIDENTIFIER
+	DECLARE @SectionIDs TABLE ([ID] UNIQUEIDENTIFIER)
 
 	INSERT INTO [dbo].[Sections] ([Name])
-	OUTPUT inserted.[SectionID] INTO @SectionID
+	OUTPUT inserted.[SectionID] INTO @SectionIDs
 	VALUES (@SectionName)
 
-	UPDATE [dbo].[TreeQualityGroups]
-	SET [SectionID] = @SectionID
-	WHERE [ForestryID] = @ForestryID AND [TreeSpeciesID] = @TreeSpeciesID AND [QualityClassID] = @QualityClassID
+	SELECT @SectionID = [ID] FROM @SectionIDs
 END
+
+--DROP PROCEDURE [dbo].[sp_AddSection]
