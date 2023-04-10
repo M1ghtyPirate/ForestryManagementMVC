@@ -15,7 +15,7 @@ BEGIN
 		UPDATE [dbo].[TreeAgeGroups]
 		SET [Area] = @Area, [Volume] = @Volume
 		OUTPUT inserted.[TreeAgeGroupID] INTO @TreeAgeGroupIDs
-		WHERE [TreeQualityGroupID] = @TreeAgeGroupID AND [AgeClassID] = @AgeClassID
+		WHERE [TreeQualityGroupID] = @TreeQualityGroupID AND [AgeClassID] = @AgeClassID
 	ELSE
 		INSERT INTO [dbo].[TreeAgeGroups] ([TreeQualityGroupID], [AgeClassID], [Area], [Volume])
 		OUTPUT inserted.[TreeAgeGroupID] INTO @TreeAgeGroupIDs
