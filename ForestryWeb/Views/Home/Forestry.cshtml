@@ -1,0 +1,8 @@
+﻿@{
+    ViewData["Title"] = Model.Item1.Name;
+}
+@model Tuple<ForestryWeb.Models.Database.Tables.Forestry, ForestryWeb.Models.Database.Tables.User>
+
+<h2>@Model.Item1.Name</h2>
+
+<a asp-action="forestryareas" asp-route-id=@Model.Item1.ForestryID>Распределение общей площади по категориям земель</a>

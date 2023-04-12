@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Лесничества";
+}
+@model IEnumerable<Tuple<ForestryWeb.Models.Database.Tables.Forestry, ForestryWeb.Models.Database.Tables.User>>
+
+<h2>Список лесничеств</h2>
+<p><a asp-action="addforestry">Добавить лесничество</a></p>
+<table class="table">
+    <tr><th>Название</th><th>Автор</th><th>Дата создания</th><th>Дата изменения</th></tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td><a asp-action="forestry" asp-route-id=@item.Item1.ForestryID>@item.Item1.Name</a></td>
+            <td>@item.Item2.Login</td>
+            <td>@item.Item1.CreationDate</td>
+            <td>@item.Item1.EditDate</td>
+        </tr>
+    }
+</table>

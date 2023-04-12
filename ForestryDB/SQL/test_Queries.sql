@@ -101,3 +101,6 @@ SELECT [dbo].[fn_Get10YFellingPart]('7609ef11-869a-410f-9bed-fc22a187ff6f')
 DECLARE @ForestryID UNIQUEIDENTIFIER
 EXEC [dbo].[sp_AddForestry] N'TEST_FORESTRY', '6c96a53d-e3ae-4994-99cd-cd3bdb363c19', @ForestryID OUT
 SELECT @ForestryID
+
+UPDATE [dbo].[Forestries]
+SET [IsShared] = 0
