@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ForestryWeb.Models.Database.Tables
 {
     public class NonForestAreas
     {
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid? NonForestAreaID { get; set; }
         public Guid ForestryID { get; set; }

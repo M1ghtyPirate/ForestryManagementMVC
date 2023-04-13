@@ -1,0 +1,118 @@
+﻿@{
+    var forestryName = Model.Item1.FirstOrDefault().ForestryName;
+    var forestryID = Model.Item1.FirstOrDefault().ForestryID;
+    var subTitle = "Распределение лесной площади и запасов по бонитетам и классам возраста";
+    ViewData["Title"] = $"{forestryName} - {subTitle}";
+    var p = "N0";
+    var pp = "N1";
+}
+@model Tuple<List<TreeGroup>, List<TreeQualityGroupTotal>, List<TreeAgeGroupTotal>, List<TreeSpeciesGroupTotal>, List<TreeForestryAgeGroupTotal>, TreeForestryGroupTotal>
+
+<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
+<table class="table">
+    <tr>
+        <th rowspan="2">Преобладающая порода</th>
+        <th rowspan="2">Бонитет</th>
+        <th colspan="8">Покрытая лесом площадь, га / запас, м3 по классам возраста</th>
+        <th rowspan="2">Всего покрытой лесом</th>
+    </tr>
+    <tr>
+        <th>Ⅰ</th>
+        <th>Ⅱ</th>
+        <th>Ⅲ</th>
+        <th>Ⅳ</th>
+        <th>Ⅴ</th>
+        <th>Ⅵ</th>
+        <th>Ⅶ</th>
+        <th>Ⅷ выше</th>
+    </tr>
+        @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
+        {
+            var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
+            <tr>
+                <td rowspan="@(qualityGroups.Count() * 3 + 1)">@speciesGroup.TreeSpeciesName</td>
+                
+                @foreach (var qualityGroup in qualityGroups)
+                {
+                    <tr>
+                        <td rowspan="3">@qualityGroup.QualityClass</td>
+                    @{
+                        var ageGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClass == qualityGroup.QualityClass);
+                        <tr>
+                            @for (var i = 1; i <= 8; i++)
+                            {
+                                var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
+                                <td>@ageGroup?.Area</td>
+                            }
+                    <td>@Model.Item2.FirstOrDefault(g => g.TreeSpeciesID == qualityGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID).Area</td>
+                        </tr>
+
+                        <tr>
+                            @for (var i = 1; i <= 8; i++)
+                            {
+                                var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
+                                <td>@ageGroup?.Volume</td>
+                            }
+                    <td>@Model.Item2.FirstOrDefault(g => g.TreeSpeciesID == qualityGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID).Volume</td>
+                        </tr>
+
+                    }
+                    </tr>
+                }
+                
+            </tr>
+            <tr>
+                <td rowspan="3">Итого:</td>
+                @{
+                    var ageGroupsTotal = Model.Item3.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID);
+                <tr>
+                        <td></td>
+                        @for (var i = 1; i <= 8; i++)
+                        {
+                            var ageGroupTotal = ageGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
+                        <td>@ageGroupTotal?.Area</td>
+                        }
+                <td>@Model.Item4.FirstOrDefault(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).Area</td>
+                </tr>
+
+                <tr>
+                        <td></td>
+                        @for (var i = 1; i <= 8; i++)
+                        {
+                            var ageGroupTotal = ageGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
+                        <td>@ageGroupTotal?.Volume</td>
+                        }
+                <td>@Model.Item4.FirstOrDefault(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).Volume</td>
+                </tr>
+
+                }
+            </tr>
+            <tr>
+                <td rowspan="3">Всего:</td>
+                @{
+                    var forestryAgeGroupsTotal = Model.Item5;
+                <tr>
+                    <td></td>
+                        @for (var i = 1; i <= 8; i++)
+                        {
+                        var forestryAgeGroupTotal = forestryAgeGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
+                    <td>@forestryAgeGroupTotal?.Area</td>
+                        }
+                    <td>@Model.Item6.Area</td>
+                </tr>
+
+                <tr>
+                    <td></td>
+                        @for (var i = 1; i <= 8; i++)
+                        {
+                        var forestryAgeGroupTotal = forestryAgeGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
+                    <td>@forestryAgeGroupTotal?.Volume</td>
+                        }
+                <td>@Model.Item6.Volume</td>
+                </tr>
+
+                }
+            </tr>
+        }
+    
+</table>

@@ -1,18 +1,92 @@
 ﻿@{
-    ViewData["Title"] = $"{Model.Item1.ForestryName} - Распределение общей площади по категориям земель";
-    var precision = "N2";
-    var precisionPercent = "N1";
-    Func<double?, string> toFixed = x => x == null || x == 0 ? "" : x.Value.ToString(precision);
-    Func<double?, string> toFixedPercent = x => x == null || x == 0 ? "" : $"{x.Value.ToString(precisionPercent)} %";
+    var subTitle = "Распределение общей площади по категориям земель";
+    ViewData["Title"] = $"{Model.Item1.ForestryName} - {subTitle}";
+    var p = "N0";
+    var pp = "N1";
 }
-@model Tuple<ForestryWeb.Models.Database.Views.ForestryAreas, ForestryWeb.Models.Database.Views.ForestryAreasPercentage>
+@model Tuple<ForestryAreas, ForestryAreasPercentage>
 
-<h2>@Model.Item1.ForestryName - Распределение общей площади по категориям земель</h2>
+<h2><a asp-action="forestry" asp-route-id=@Model.Item1.ForestryID>@Model.Item1.ForestryName</a> - @subTitle</h2>
 <table class="table">
-    <tr><th rowspan="3">Общая площадь</th><th colspan="7">ЛЕСНАЯ ПЛОЩАДЬ в га</th><th colspan="7">НЕЛЕСНАЯ ПЛОЩАДЬ в га</th><th rowspan="3">Итого нелесной площади</th></tr>
-    <tr><th rowspan="2">покрытая лесом</th><th colspan="5">непокрытая лесом</th><th rowspan="2">Всего лесной площади</th><th rowspan="2">пашни</th><th rowspan="2">сенокосы и пастбища</th><th rowspan="2">воды</th><th colspan="2">площади особого назначения</th><th colspan="2">неиспользуемые площади</th></tr>
-    <tr><th>лесосеки</th><th>гари</th><th>пустыри прогалины</th><th>редины</th><th>итого</th><th>дороги, просеки, канавы</th><th>усадьбы и прочие земли</th><th>болота</th><th>прочее</th></tr>
-    <tr><td>@toFixed(Model.Item1.TotalArea)</td><td>@toFixed(Model.Item1.Forest)</td><td>@toFixed(Model.Item1.Felling)</td><td>@toFixed(Model.Item1.Burnt)</td><td>@toFixed(Model.Item1.Empty)</td><td>@toFixed(Model.Item1.Thin)</td><td>@toFixed(Model.Item1.NonForestForest)</td><td>@toFixed(Model.Item1.TotalForest)</td><td>@toFixed(Model.Item1.Field)</td><td>@toFixed(Model.Item1.Pasture)</td><td>@toFixed(Model.Item1.Water)</td><td>@toFixed(Model.Item1.Road)</td><td>@toFixed(Model.Item1.House)</td><td>@toFixed(Model.Item1.Swamp)</td><td>@toFixed(Model.Item1.Other)</td><td>@toFixed(Model.Item1.TotalNonForest)</td></tr>
-    <tr><td>@toFixedPercent(Model.Item2.TotalAreaTotal)</td><td>@toFixedPercent(Model.Item2.ForestTotal)</td><td>@toFixedPercent(Model.Item2.FellingTotal)</td><td>@toFixedPercent(Model.Item2.BurntTotal)</td><td>@toFixedPercent(Model.Item2.EmptyTotal)</td><td>@toFixedPercent(Model.Item2.ThinTotal)</td><td>@toFixedPercent(Model.Item2.NonForestForestTotal)</td><td>@toFixedPercent(Model.Item2.TotalForestTotal)</td><td>@toFixedPercent(Model.Item2.FieldTotal)</td><td>@toFixedPercent(Model.Item2.PastureTotal)</td><td>@toFixedPercent(Model.Item2.WaterTotal)</td><td>@toFixedPercent(Model.Item2.RoadTotal)</td><td>@toFixedPercent(Model.Item2.HouseTotal)</td><td>@toFixedPercent(Model.Item2.SwampTotal)</td><td>@toFixedPercent(Model.Item2.OtherTotal)</td><td>@toFixedPercent(Model.Item2.TotalNonForestTotal)</td></tr>
-    <tr><td>@toFixedPercent(Model.Item2.TotalAreaLocal)</td><td>@toFixedPercent(Model.Item2.ForestLocal)</td><td>@toFixedPercent(Model.Item2.FellingLocal)</td><td>@toFixedPercent(Model.Item2.BurntLocal)</td><td>@toFixedPercent(Model.Item2.EmptyLocal)</td><td>@toFixedPercent(Model.Item2.ThinLocal)</td><td>@toFixedPercent(Model.Item2.NonForestForestLocal)</td><td>@toFixedPercent(Model.Item2.TotalForestLocal)</td><td>@toFixedPercent(Model.Item2.FieldLocal)</td><td>@toFixedPercent(Model.Item2.PastureLocal)</td><td>@toFixedPercent(Model.Item2.WaterLocal)</td><td>@toFixedPercent(Model.Item2.RoadLocal)</td><td>@toFixedPercent(Model.Item2.HouseLocal)</td><td>@toFixedPercent(Model.Item2.SwampLocal)</td><td>@toFixedPercent(Model.Item2.OtherLocal)</td><td>@toFixedPercent(Model.Item2.TotalNonForestLocal)</td></tr>
+    <tr>
+        <th rowspan="3">Общая площадь</th>
+        <th colspan="7">ЛЕСНАЯ ПЛОЩАДЬ в га</th>
+        <th colspan="7">НЕЛЕСНАЯ ПЛОЩАДЬ в га</th>
+        <th rowspan="3">Итого нелесной площади</th>
+    </tr>
+    <tr>
+        <th rowspan="2">покрытая лесом</th>
+        <th colspan="5">непокрытая лесом</th>
+        <th rowspan="2">Всего лесной площади</th>
+        <th rowspan="2">пашни</th>
+        <th rowspan="2">сенокосы и пастбища</th>
+        <th rowspan="2">воды</th>
+        <th colspan="2">площади особого назначения</th>
+        <th colspan="2">неиспользуемые площади</th>
+    </tr>
+    <tr>
+        <th>лесосеки</th>
+        <th>гари</th>
+        <th>пустыри прогалины</th>
+        <th>редины</th>
+        <th>итого</th>
+        <th>дороги, просеки, канавы</th>
+        <th>усадьбы и прочие земли</th>
+        <th>болота</th>
+        <th>прочее</th>
+    </tr>
+    <tr>
+        <td>@Formatting.toFixed(Model.Item1.TotalArea, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.Forest, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.Felling, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.Burnt, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.Empty, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.Thin, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.NonForestForest, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.TotalForest, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.Field, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.Pasture, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.Water, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.Road, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.House, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.Swamp, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.Other, p)</td>
+        <td>@Formatting.toFixed(Model.Item1.TotalNonForest, p)</td>
+    </tr>
+    <tr>
+        <td>@Formatting.toFixedPercent(Model.Item2.TotalAreaTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.ForestTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.FellingTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.BurntTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.EmptyTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.ThinTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.NonForestForestTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.TotalForestTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.FieldTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.PastureTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.WaterTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.RoadTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.HouseTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.SwampTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.OtherTotal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.TotalNonForestTotal, pp)</td>
+    </tr>
+    <tr>
+        <td>@Formatting.toFixedPercent(Model.Item2.TotalAreaLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.ForestLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.FellingLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.BurntLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.EmptyLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.ThinLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.NonForestForestLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.TotalForestLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.FieldLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.PastureLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.WaterLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.RoadLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.HouseLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.SwampLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.OtherLocal, pp)</td>
+        <td>@Formatting.toFixedPercent(Model.Item2.TotalNonForestLocal, pp)</td>
+    </tr>
 </table>

@@ -6,3 +6,7 @@
 <h2>@Model.Item1.Name</h2>
 
 <a asp-action="forestryareas" asp-route-id=@Model.Item1.ForestryID>Распределение общей площади по категориям земель</a>
+<br/>
+<a asp-action="forestrytreegroups" asp-route-id=@Model.Item1.ForestryID>Распределение лесной площади и запасов по бонитетам и классам возраста</a>
+<br />
+<a asp-action="forestrytreespecies" asp-route-id=@Model.Item1.ForestryID>Основные показатели по лесному фонду</a>
