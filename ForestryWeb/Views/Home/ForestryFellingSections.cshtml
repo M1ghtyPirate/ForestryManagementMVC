@@ -1,0 +1,114 @@
+﻿@{
+    var forestryName = Model.Item1.FirstOrDefault().ForestryName;
+    var forestryID = Model.Item1.FirstOrDefault().ForestryID;
+    var subTitle = "Распределение площадей и запасов по классам возраста";
+    ViewData["Title"] = $"{forestryName} - {subTitle}";
+    var p0 = "N0";
+    var p1 = "N1";
+}
+@model Tuple<List<SectionsFellingVariant>, List<SectionFellingAgeGroup>>
+
+<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
+    @foreach (var forestrySection in Model.Item1.OrderBy(g => g.SectionName))
+    {
+        var sectionFellingAgeGroups = Model.Item2.Where(g => g.SectionID == forestrySection.SectionID);
+        <h5>@forestrySection.SectionName</h5>
+        <table class="table">
+            <tr>
+                <th rowspan="2">Показатели</th>
+                <th colspan="9">Классы возраста</th>
+                <th rowspan="2">Возраст главной рубки</th>
+                <th rowspan="2">Средний эксплуатационный запас на га</th>
+                <th rowspan="2">Площадь и запас участков с буквой Р</th>
+            </tr>
+            <tr>
+                <th>Ⅰ<br/>@sectionFellingAgeGroups.FirstOrDefault(g => g.AgeClass == 1)?.Age</th>
+                <th>Ⅱ<br/>@sectionFellingAgeGroups.FirstOrDefault(g => g.AgeClass == 2)?.Age</th>
+                <th>Ⅲ<br/>@sectionFellingAgeGroups.FirstOrDefault(g => g.AgeClass == 3)?.Age</th>
+                <th>Ⅳ<br/>@sectionFellingAgeGroups.FirstOrDefault(g => g.AgeClass == 4)?.Age</th>
+                <th>Ⅴ<br/>@sectionFellingAgeGroups.FirstOrDefault(g => g.AgeClass == 5)?.Age</th>
+                <th>Ⅵ<br/>@sectionFellingAgeGroups.FirstOrDefault(g => g.AgeClass == 6)?.Age</th>
+                <th>Ⅶ<br/>@sectionFellingAgeGroups.FirstOrDefault(g => g.AgeClass == 7)?.Age</th>
+                <th>Ⅷ и выше</th>
+                <th>Всего</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="9">Хозяйство @forestrySection.SectionName</td>
+                <td rowspan="4">@forestrySection.MainFellingAge<br/>@forestrySection.MainFellingAgeClass</td>
+                <td rowspan="4">@Formatting.toFixed(forestrySection.AvgOperationalVolumePerHectare, p0)</td>
+                <td rowspan="4">@Formatting.toFixed(forestrySection.OverdueVolume, p0)<br />@Formatting.toFixed(forestrySection.OverdueArea, p0)</td>
+            </tr>
+            <tr>
+                <td>Площадь, га</td>
+                @for(var i = 1; i <= 8; i++)
+                {
+                    var sectionFellingAgeGroup = sectionFellingAgeGroups.FirstOrDefault(g => g.AgeClass == i);
+                    <td>@Formatting.toFixed(sectionFellingAgeGroup?.Area, p0)</td>
+                }
+                <td>@Formatting.toFixed(forestrySection.Area, p0)</td>
+            </tr>
+            <tr>
+                <td>Запас, м3</td>
+                @for (var i = 1; i <= 8; i++)
+                {
+                    var sectionFellingAgeGroup = sectionFellingAgeGroups.FirstOrDefault(g => g.AgeClass == i);
+                    <td>@Formatting.toFixed(sectionFellingAgeGroup?.Volume, p0)</td>
+                }
+                <td>@Formatting.toFixed(forestrySection.Volume, p0)</td>
+            </tr>
+            <tr>
+                <td>Средний прирост, м3</td>
+                @for (var i = 1; i <= 8; i++)
+                {
+                    var sectionFellingAgeGroup = sectionFellingAgeGroups.FirstOrDefault(g => g.AgeClass == i);
+                    <td>@Formatting.toFixed(sectionFellingAgeGroup?.AvgGrowth, p0)</td>
+                }
+                <td>@Formatting.toFixed(forestrySection.AvgGrowth, p0)</td>
+            </tr>
+        </table>
+        <table class="table">
+            <tr>
+                <td rowspan="8">Расчет лесосек</td>
+                <td >Лесосеки</td>
+                <td >по площади, га</td>
+                <td >по массе, м3</td>
+            </tr>
+            <tr>
+                <td >По спелости</td>
+                <td >@Formatting.toFixed(forestrySection.FellingRipeArea, p1)</td>
+                <td >@Formatting.toFixed(forestrySection.FellingRipeVolume, p1)</td>
+            </tr>
+            <tr>
+                <td >По возрасту 1-я</td>
+                <td >@Formatting.toFixed(forestrySection.FellingAgeFirstArea, p1)</td>
+                <td >@Formatting.toFixed(forestrySection.FellingAgeFirstVolume, p1)</td>
+            </tr>
+            <tr>
+                <td >По возрасту 2-я</td>
+                <td >@Formatting.toFixed(forestrySection.FellingAgeSecondArea, p1)</td>
+                <td >@Formatting.toFixed(forestrySection.FellingAgeSecondVolume, p1)</td>
+            </tr>
+            <tr>
+                <td >По среднему приросту</td>
+                <td >@Formatting.toFixed(forestrySection.FellingAvgGrowthArea, p1)</td>
+                <td >@Formatting.toFixed(forestrySection.FellingAvgGrowthVolume, p1)</td>
+            </tr>
+            <tr>
+                <td >По состоянию</td>
+                <td >@Formatting.toFixed(forestrySection.FellingStateArea, p1)</td>
+                <td >@Formatting.toFixed(forestrySection.FellingStateVolume, p1)</td>
+            </tr>
+            <tr>
+                <td >По обороту рубки</td>
+                <td >@Formatting.toFixed(forestrySection.FellingCycleArea, p1)</td>
+                <td >@Formatting.toFixed(forestrySection.FellingCycleVolume, p1)</td>
+            </tr>
+            <tr>
+                <td >Расчетная</td>
+                <td >@Formatting.toFixed(forestrySection.FellingOperationalArea, p1)</td>
+                <td >@Formatting.toFixed(forestrySection.FellingOperationalVolume, p1)</td>
+            </tr>
+        </table>
+        <br/>
+    }

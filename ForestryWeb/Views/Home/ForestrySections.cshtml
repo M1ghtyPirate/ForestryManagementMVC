@@ -1,0 +1,44 @@
+﻿@{
+    var forestryName = Model.FirstOrDefault().ForestryName;
+    var forestryID = Model.FirstOrDefault().ForestryID;
+    var subTitle = "Схема организации лесного хозяйства";
+    ViewData["Title"] = $"{forestryName} - {subTitle}";
+    var p0 = "N0";
+    var p1 = "N1";
+}
+@model List<SectionTotal>
+
+<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
+<table class="table">
+    <tr>
+        <th rowspan="2">Хозсекция</th>
+        <th colspan="2">Формы хозяйства</th>
+        <th rowspan="2">Категории насаждений по бонитетам или типам леса</th>
+        <th rowspan="2">Лесопокрытая площадь, га</th>
+        <th rowspan="2">Средний возраст, лет</th>
+        <th rowspan="2">Средний бонитет</th>
+        <th colspan="3">Возраст</th>
+    </tr>
+    <tr>
+        <th>по способу рубки</th>
+        <th>по товарности</th>
+        <th>количественной спелости</th>
+        <th>технической спелости</th>
+        <th>главной рубки</th>
+    </tr>
+    @foreach (var forestrySection in Model.OrderBy(g => g.SectionName))
+    {
+        <tr>
+            <td>@forestrySection.SectionName</td>
+            <td>сплошная лесосечная</td>
+            <td>@((bool)forestrySection.IsHigh ? "крупнотоварная" : "низкотоварная")</td>
+            <td>@forestrySection.TreeQualityGroups</td>
+            <td>@Formatting.toFixed(forestrySection.Area, p0)</td>
+            <td>@Formatting.toFixed(forestrySection.AvgAge, p0)</td>
+            <td>@Formatting.toFixed(forestrySection.AvgQuality, p1)</td>
+            <td>@Formatting.toFixed(forestrySection.RipeAge, p0)</td>
+            <td>@Formatting.toFixed(forestrySection.TechnicalAge, p0)</td>
+            <td></td>
+        </tr>
+    }
+</table>

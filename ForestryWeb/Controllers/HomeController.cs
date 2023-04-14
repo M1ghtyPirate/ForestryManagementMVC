@@ -6,6 +6,7 @@ using ForestryWeb.Models.Database.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using System;
 using System.Diagnostics;
 
 namespace ForestryWeb.Controllers
@@ -81,6 +82,40 @@ namespace ForestryWeb.Controllers
             var forestryTreeSpecies = await db.view_ForestryTreeSpecies.Where(g => g.ForestryID == ID).ToListAsync();
             var forestryTreeSpeciesTotal = await db.view_ForestryTreeSpeciesTotal.FirstOrDefaultAsync(g => g.ForestryID == ID);
             return View(new Tuple<List<ForestryTreeSpecies>, ForestryTreeSpeciesTotal> (forestryTreeSpecies, forestryTreeSpeciesTotal));
+        }
+
+        public async Task<IActionResult> ForestrySectionGroups(Guid ID)
+        {
+            var sectionAgeGroups = await db.view_SectionAgeGroups.Where(g => g.ForestryID == ID).ToListAsync();
+            var sectionsTotal = await db.view_SectionsTotal.Where(g => g.ForestryID == ID).ToListAsync();
+            return View(new Tuple<List<SectionAgeGroup>, List<SectionTotal>>(sectionAgeGroups, sectionsTotal));
+        }
+
+        public async Task<IActionResult> ForestrySections(Guid ID)
+        {
+            var sectionsTotal = await db.view_SectionsTotal.Where(g => g.ForestryID == ID).ToListAsync();
+            return View(new List<SectionTotal>(sectionsTotal));
+        }
+
+        public async Task<IActionResult> AvgSectionGrowthCalc(Guid ID)
+        {
+            var sectionsTotal = await db.view_SectionsTotal.Where(g => g.ForestryID == ID && (bool)g.IsHigh).ToListAsync();
+            var avgSectionGrowthCalc = await db.view_AvgSectionGrowthCalc.ToListAsync();
+            return View(new Tuple<List<SectionTotal>, List<AvgSectionGrowthCalc>>(sectionsTotal, avgSectionGrowthCalc));
+        }
+
+        public async Task<IActionResult> ForestryFellingSections(Guid ID)
+        {
+            var sectionFellingAgeGroups = await db.view_SectionFellingAgeGroups.Where(g => g.ForestryID == ID).ToListAsync();
+            var sectionsFellingVariants = await db.view_SectionsFellingVariants.Where(g => g.ForestryID == ID).ToListAsync();
+            return View(new Tuple<List<SectionsFellingVariant>, List<SectionFellingAgeGroup>>(sectionsFellingVariants, sectionFellingAgeGroups));
+        }
+
+        public async Task<IActionResult> ForestryFellingPeriods(Guid ID)
+        {
+            var forestryFellingPeriod = await db.view_ForestryFellingPeriods.FirstOrDefaultAsync(g => g.ForestryID == ID);
+            var sectionFellingPeriods = await db.view_SectionsFellingPeriods.Where(g => g.ForestryID == ID).ToListAsync();
+            return View(new Tuple<ForestryFellingPeriod, List<SectionFellingPeriod>>(forestryFellingPeriod, sectionFellingPeriods));
         }
 
         ///////////////////////////////////////////////////////////////

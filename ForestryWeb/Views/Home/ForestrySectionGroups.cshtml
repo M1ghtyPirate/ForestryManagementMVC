@@ -1,0 +1,52 @@
+﻿@{
+    var forestryName = Model.Item1.FirstOrDefault().ForestryName;
+    var forestryID = Model.Item1.FirstOrDefault().ForestryID;
+    var subTitle = "Распределение площадей насаждений хозсекций по классам возраста";
+    ViewData["Title"] = $"{forestryName} - {subTitle}";
+    var p0 = "N0";
+    var p1 = "N1";
+}
+@model Tuple<List<SectionAgeGroup>, List<SectionTotal>>
+
+<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
+<table class="table">
+    <tr>
+        <th rowspan="2">Хозсекция</th>
+        <th colspan="8">Классы возраста</th>
+        <th rowspan="2">Итого</th>
+        <th rowspan="2">Возраст рубки, лет</th>
+    </tr>
+    <tr>
+        <th>Ⅰ</th>
+        <th>Ⅱ</th>
+        <th>Ⅲ</th>
+        <th>Ⅳ</th>
+        <th>Ⅴ</th>
+        <th>Ⅵ</th>
+        <th>Ⅶ</th>
+        <th>Ⅷ</th>
+    </tr>
+    @foreach (var forestrySection in Model.Item2.OrderBy(g => g.SectionName))
+    {
+        <tr>
+            <td rowspan="2">@forestrySection.SectionName<br/>@forestrySection.TreeQualityGroups</td>
+            @for (var i = 1; i <= 8; i++)
+            {
+                var ageGroup = Model.Item1.FirstOrDefault(g => g.SectionID == forestrySection.SectionID && g.AgeClass == i);
+                <td>@Formatting.toFixed(ageGroup?.Area, p0)</td>
+            }
+            <td>@Formatting.toFixed(forestrySection.Area, p0)</td>
+            <td></td>
+        </tr>
+        <tr>
+            @for (var i = 1; i <= 8; i++)
+            {
+                var ageGroup = Model.Item1.FirstOrDefault(g => g.SectionID == forestrySection.SectionID && g.AgeClass == i);
+                <td>@Formatting.toFixed(ageGroup?.Volume, p0)</td>
+            }
+            <td>@Formatting.toFixed(forestrySection.Volume, p0)</td>
+            <td></td>
+        </tr>
+
+    }
+</table>

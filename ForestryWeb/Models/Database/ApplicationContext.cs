@@ -25,10 +25,17 @@ namespace ForestryWeb.Models.Database
 
         #region Views
 
+        public DbSet<AvgSectionGrowthCalc> view_AvgSectionGrowthCalc { get; set; } = null!;
         public DbSet<ForestryAreas> view_ForestryAreas { get; set; } = null!;
         public DbSet<ForestryAreasPercentage> view_ForestryAreasPercentage { get; set; } = null!;
+        public DbSet<ForestryFellingPeriod> view_ForestryFellingPeriods { get; set; } = null!;
         public DbSet<ForestryTreeSpecies> view_ForestryTreeSpecies { get; set; } = null!;
         public DbSet<ForestryTreeSpeciesTotal> view_ForestryTreeSpeciesTotal { get; set; } = null!;
+        public DbSet<SectionAgeGroup> view_SectionAgeGroups { get; set; } = null!;
+        public DbSet<SectionFellingAgeGroup> view_SectionFellingAgeGroups { get; set; } = null!;
+        public DbSet<SectionFellingPeriod> view_SectionsFellingPeriods { get; set; } = null!;
+        public DbSet<SectionsFellingVariant> view_SectionsFellingVariants { get; set; } = null!;
+        public DbSet<SectionTotal> view_SectionsTotal { get; set; } = null!;
         public DbSet<TreeGroup> view_TreeGroups { get; set; } = null!;
         public DbSet<TreeAgeGroupTotal> view_TreeAgeGroupsTotal { get; set; } = null!;
         public DbSet<TreeForestryAgeGroupTotal> view_TreeForestryAgeGroupsTotal { get; set; } = null!;

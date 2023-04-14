@@ -1,0 +1,45 @@
+﻿@{
+    var forestryName = Model.Item1.ForestryName;
+    var forestryID = Model.Item1.ForestryID;
+    var subTitle = "Срок использования эксплуатационного фонда";
+    ViewData["Title"] = $"{forestryName} - {subTitle}";
+    var p0 = "N0";
+    var p1 = "N1";
+    var p2 = "N2";
+}
+@model Tuple<ForestryFellingPeriod, List<SectionFellingPeriod>>
+
+<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
+<table class="table">
+    <tr>
+        <th rowspan="2">Хозяйственные секции</th>
+        <th colspan="2">Эксплуатационный фонд</th>
+        <th colspan="2">Расчетная лесосека</th>
+        <th rowspan="2">Срок использования</th>
+    </tr>
+    <tr>
+        <th>площадь, га</th>
+        <th>запас, м3</th>
+        <th>площадь, га</th>
+        <th>запас, м3</th>
+    </tr>
+    @foreach (var forestrySection in Model.Item2.OrderBy(g => g.SectionName))
+    {
+        <tr>
+            <td>@forestrySection.SectionName</td>
+            <td>@Formatting.toFixed(forestrySection.OperationalArea, p1)</td>
+            <td>@Formatting.toFixed(forestrySection.OperationalVolume, p1)</td>
+            <td>@Formatting.toFixed(forestrySection.FellingOperationalArea, p1)</td>
+            <td>@Formatting.toFixed(forestrySection.FellingOperationalVolume, p1)</td>
+            <td>@Formatting.toFixed(forestrySection.FellingOperationalPeriod, p2)</td>
+        </tr>
+    }
+    <tr>
+        <td>Итого по лесхозу</td>
+        <td>@Formatting.toFixed(Model.Item1.OperationalArea, p1)</td>
+        <td>@Formatting.toFixed(Model.Item1.OperationalVolume, p1)</td>
+        <td>@Formatting.toFixed(Model.Item1.FellingOperationalArea, p1)</td>
+        <td>@Formatting.toFixed(Model.Item1.FellingOperationalVolume, p1)</td>
+        <td>@Formatting.toFixed(Model.Item1.FellingOperationalPeriod, p2)</td>
+    </tr>
+</table>

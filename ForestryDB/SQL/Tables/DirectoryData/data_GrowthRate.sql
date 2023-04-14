@@ -125,7 +125,7 @@ VALUES (@TreeSpeciesID, @QualityClassID, 20, 4.6, 5.3, 38, 1.9, 1.9),
     (@TreeSpeciesID, @QualityClassID, 110, 22.6, 24.4, 335, 3.0, 2.1),
     (@TreeSpeciesID, @QualityClassID, 120, 23.5, 25.3, 354, 3.0, 1.9),
     (@TreeSpeciesID, @QualityClassID, 130, 24.1, 25.8, 367, 2.9, 1.3),
-    (@TreeSpeciesID, @QualityClassID, 140, 24.4, 262.2, 376, 2.7, 0.9)
+    (@TreeSpeciesID, @QualityClassID, 140, 24.4, 26.2, 376, 2.7, 0.9)
 
 SELECT @QualityClassID = [QualityClassID] FROM [dbo].[QualityClasses] WHERE [Number] = 4
 
