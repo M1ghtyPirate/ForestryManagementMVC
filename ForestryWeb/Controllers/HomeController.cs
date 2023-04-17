@@ -118,6 +118,55 @@ namespace ForestryWeb.Controllers
             return View(new Tuple<ForestryFellingPeriod, List<SectionFellingPeriod>>(forestryFellingPeriod, sectionFellingPeriods));
         }
 
+        public async Task<IActionResult> ForestrySectionFellingTypes(Guid ID)
+        {
+            var forestryFellingType = await db.view_ForestryFellingTypes.FirstOrDefaultAsync(g => g.ForestryID == ID);
+            var sectionFellingTypes = await db.view_SectionFellingTypes.Where(g => g.ForestryID == ID).ToListAsync();
+            return View(new Tuple<ForestryFellingType, List<SectionFellingType>>(forestryFellingType, sectionFellingTypes));
+        }
+
+        public async Task<IActionResult> ForestrySectionFellingParts(Guid ID)
+        {
+            var forestryFellingPeriod = await db.view_ForestryFellingPeriods.FirstOrDefaultAsync(g => g.ForestryID == ID);
+            var SectionFellingParts = await db.view_SectionFellingParts.Where(g => g.ForestryID == ID).ToListAsync();
+            return View(new Tuple<ForestryFellingPeriod, List<SectionFellingPart>>(forestryFellingPeriod, SectionFellingParts));
+        }
+
+        public async Task<IActionResult> ForestrySection10YFelling(Guid ID)
+        {
+            var sectionFelling10YAGStartAreas = await db.view_SectionFelling10YAGStartAreas.Where(g => g.ForestryID == ID).ToListAsync();
+            var sectionFelling10YAGFellingAreas = await db.view_SectionFelling10YAGFellingAreas.Where(g => g.ForestryID == ID).ToListAsync();
+            var sectionFelling10YAGRemainingAreas = await db.view_SectionFelling10YAGRemainingAreas.Where(g => g.ForestryID == ID).ToListAsync();
+            var sectionFelling10YAGMovementAreas = await db.view_SectionFelling10YAGMovementAreas.Where(g => g.ForestryID == ID).ToListAsync();
+            var sectionFelling10YAGResultAreas = await db.view_SectionFelling10YAGResultAreas.Where(g => g.ForestryID == ID).ToListAsync();
+            var sectionFelling10YTotalAreas = await db.view_SectionFelling10YTotalAreas.Where(g => g.ForestryID == ID).ToListAsync();
+            return View(new Tuple<List<SectionFelling10YAGStartArea>, 
+                List<SectionFelling10YAGFellingArea>, 
+                List<SectionFelling10YAGRemainingArea>, 
+                List<SectionFelling10YAGMovementArea>, 
+                List<SectionFelling10YAGResultArea>, 
+                List<SectionFelling10YTotalArea>>
+                (sectionFelling10YAGStartAreas, 
+                sectionFelling10YAGFellingAreas, 
+                sectionFelling10YAGRemainingAreas, 
+                sectionFelling10YAGMovementAreas, 
+                sectionFelling10YAGResultAreas, 
+                sectionFelling10YTotalAreas));
+        }
+
+        public async Task<IActionResult> ForestrySection10YFellingResult(Guid ID)
+        {
+            var sectionFelling10YAGStartAreas = await db.view_SectionFelling10YAGStartAreas.Where(g => g.ForestryID == ID).ToListAsync();
+            var sectionFelling10YAGResultAreas = await db.view_SectionFelling10YAGResultAreas.Where(g => g.ForestryID == ID).ToListAsync();
+            var sectionFelling10YTotalAreas = await db.view_SectionFelling10YTotalAreas.Where(g => g.ForestryID == ID).ToListAsync();
+            return View(new Tuple<List<SectionFelling10YAGStartArea>,
+                List<SectionFelling10YAGResultArea>,
+                List<SectionFelling10YTotalArea>>
+                (sectionFelling10YAGStartAreas,
+                sectionFelling10YAGResultAreas,
+                sectionFelling10YTotalAreas));
+        }
+
         ///////////////////////////////////////////////////////////////
 
         public IActionResult Privacy()

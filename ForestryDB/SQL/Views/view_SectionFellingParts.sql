@@ -6,7 +6,7 @@ AS
 SELECT [SP].[ForestryID] AS [ForestryID],
     [SP].[ForestryName] AS [ForestryName],
     [SP].[SectionID] AS [SectionID],
-    [SP].[SectionName] AS [SecionName],
+    [SP].[SectionName] AS [SectionName],
     [SP].[FellingOperationalArea] AS [FellingOperationalArea],
     [SP].[FellingOperationalVolume] AS [FellingOperationalVolume],
     100 * [SP].[FellingOperationalArea] / [FP].[FellingOperationalArea] AS [AreaPercent],

@@ -6,7 +6,7 @@ AS
 SELECT [AG].[ForestryID] AS [ForestryID],
     [AG].[ForestryName] AS [ForestryName],
     [AG].[SectionID] AS [SectionID],
-    [AG].[SectionName] AS [SecionName],
+    [AG].[SectionName] AS [SectionName],
     [dbo].[fn_GetFellingOperationalVolume]([AG].[SectionID]) AS [FellingOperationalVolume],
     SUM([AG].[Area]) AS [Area],
     [dbo].[fn_GetFellingOperationalVolume]([AG].[SectionID]) / SUM([AG].[Area]) AS [OperationalVolumePerHectare],
