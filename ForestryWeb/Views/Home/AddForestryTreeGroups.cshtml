@@ -1,0 +1,71 @@
+﻿@{
+    var forestryName = Model.Item1.Name;
+    var forestryID = Model.Item1.ForestryID;
+    var subTitle = "Распределение лесной площади и запасов по бонитетам и классам возраста";
+    ViewData["Title"] = $"{forestryName} - {subTitle}";
+    var p0 = "N0";
+    var pp = "N1";
+    var groupCount = 0;
+    var step = "0.01";
+}
+@model Tuple<Forestry, List<TreeGroup>>
+
+<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
+<form asp-action="addforestrytreegroups" asp-controller="home">
+    <table class="table">
+        <tr>
+            <th rowspan="2">Преобладающая порода</th>
+            <th rowspan="2">Бонитет</th>
+            <th colspan="8">Покрытая лесом площадь, га / запас, м3 по классам возраста</th>
+        </tr>
+        <tr>
+            <th>Ⅰ</th>
+            <th>Ⅱ</th>
+            <th>Ⅲ</th>
+            <th>Ⅳ</th>
+            <th>Ⅴ</th>
+            <th>Ⅵ</th>
+            <th>Ⅶ</th>
+            <th>Ⅷ и выше</th>
+        </tr>
+        @foreach (var speciesGroup in Model.Item2.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
+        {
+            <tr>
+                <td rowspan="@(6 * 2 + 1)">@speciesGroup.TreeSpeciesName</td>
+            </tr>
+
+            @for (var j = 1; j <= 6; j++)
+            {
+                <tr>
+                    <td rowspan="2">@j</td>
+                    @{
+                        var ageGroups = Model.Item2.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClass == j);
+                    }
+
+                    @for (var i = 1; i <= 8; i++)
+                    {
+                        <input type="text" name="Item2[@(groupCount + i - 1)].ForestryID" value="@forestryID" hidden="True" />
+                        <input type="text" name="Item2[@(groupCount + i - 1)].TreeSpeciesID" value="@speciesGroup.TreeSpeciesID" hidden="True" />
+                        <input type="text" name="Item2[@(groupCount + i - 1)].QualityClass" value="@j" hidden="True" />
+                        <input type="text" name="Item2[@(groupCount + i - 1)].AgeClass" value="@i" hidden="True" />
+
+                        var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
+                        <td><input type="number" name="Item2[@(groupCount + i - 1)].Area" value="@Formatting.toDefaultCulture(ageGroup?.Area)" step="@step" min="0" /></td>
+                    }
+                </tr>
+
+                <tr>
+                    @for (var i = 1; i <= 8; i++)
+                    {
+                        var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
+                        <td><input type="number" name="Item2[@(groupCount + i - 1)].Volume" value="@Formatting.toDefaultCulture(ageGroup?.Volume)" step="@step" min="0" /></td>
+                    }
+                </tr>
+                groupCount += 8;
+            }
+        }
+    </table>
+    <p>
+        <input type="submit" value="@(Model.Item2 == null ? "Добавить" : "Изменить")" />
+    </p>
+</form>

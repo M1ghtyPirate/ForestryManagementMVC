@@ -6,7 +6,13 @@
 <h2>Список лесничеств</h2>
 <p><a asp-action="addforestry">Добавить лесничество</a></p>
 <table class="table">
-    <tr><th>Название</th><th>Автор</th><th>Дата создания</th><th>Дата изменения</th></tr>
+    <tr>
+        <th>Название</th>
+        <th>Автор</th>
+        <th>Дата создания</th>
+        <th>Дата изменения</th>
+        <th>Редактирование</th>
+    </tr>
     @foreach (var item in Model)
     {
         <tr>
@@ -14,6 +20,7 @@
             <td>@item.Item2.Login</td>
             <td>@item.Item1.CreationDate</td>
             <td>@item.Item1.EditDate</td>
+            <td><a asp-action="editforestry" asp-route-id=@item.Item1.ForestryID>Изменить</a><br /><a asp-action="removeforestry" asp-route-id=@item.Item1.ForestryID>Удалить</a></td>
         </tr>
     }
 </table>

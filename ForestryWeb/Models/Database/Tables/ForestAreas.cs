@@ -9,19 +9,19 @@ namespace ForestryWeb.Models.Database.Tables
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid? ForestAreaID { get; set; }
         public Guid ForestryID { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public double? Felling { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public double? Burnt { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public double? Empty { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public double? Thin { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public double? Forest { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public double? Total { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public double? TotalNonForest { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public double Felling { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public double Burnt { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public double Empty { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public double Thin { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        //public double? Forest { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        //public double? Total { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        //public double? TotalNonForest { get; set; }
     }
 }
