@@ -23,11 +23,19 @@ namespace ForestryWeb.Controllers
             db = context;
         }
 
+        /// <summary>
+        /// Отображение главной страницы
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             return View();
         }
 
+        /// <summary>
+        /// Отображение лесничеств.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Forestries()
         {
             var forestries = await db.Forestries.ToListAsync();
@@ -38,17 +46,32 @@ namespace ForestryWeb.Controllers
             return View(forestriesInfo);
         }
 
+
+        /// <summary>
+        /// Добавление лесничества
+        /// </summary>
+        /// <returns></returns>
         public IActionResult AddForestry()
         {
             return View();
         }
 
+        /// <summary>
+        /// Редактирование лесничества
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> EditForestry(Guid ID)
         {
             var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
             return View("AddForestry", forestry);
         }
 
+        /// <summary>
+        /// Добавление лесничества.
+        /// </summary>
+        /// <param name="forestry"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> AddForestry(Forestry forestry)
         {
@@ -64,8 +87,14 @@ namespace ForestryWeb.Controllers
             return RedirectToAction("Forestries");
         }
 
+        /// <summary>
+        /// Удаление лесничества.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> RemoveForestry(Guid ID)
         {
+            //Реализовать каскадное удаление?
             var forestryDB = db.Forestries.FirstOrDefault(f => f.ForestryID == ID);
             if (forestryDB != null)
             {
@@ -75,6 +104,11 @@ namespace ForestryWeb.Controllers
             return RedirectToAction("Forestries");
         }
 
+        /// <summary>
+        /// Отображение лесничества.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Forestry(Guid ID)
         {
             var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
@@ -83,18 +117,29 @@ namespace ForestryWeb.Controllers
             return View(new Tuple<Forestry, User, bool>(forestry, user, areSectionsSet));
         }
 
+        /// <summary>
+        /// Отображение территорий, перенаправление на добавление.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> ForestryAreas(Guid ID)
         {
             var forestryAreas = await db.view_ForestryAreas.FirstOrDefaultAsync(f => f.ForestryID == ID);
             if (forestryAreas == null)
             {
-                var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
-                return View("AddForestryAreas", new Tuple<Forestry, ForestryAreas>(forestry, null));
+                //var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
+                //return View("AddForestryAreas", new Tuple<Forestry, ForestryAreas>(forestry, null));
+                return RedirectToAction("EditForestryAreas", new { ID = ID });
             }
             var forestryAreasPercentage = await db.view_ForestryAreasPercentage.FirstOrDefaultAsync(f => f.ForestryID == ID);
             return View(new Tuple<ForestryAreas, ForestryAreasPercentage>(forestryAreas, forestryAreasPercentage));
         }
 
+        /// <summary>
+        /// Изменение территорий.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> EditForestryAreas(Guid ID)
         {
             var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
@@ -102,6 +147,11 @@ namespace ForestryWeb.Controllers
             return View("AddForestryAreas", new Tuple<Forestry, ForestryAreas>(forestry, forestryAreas));
         }
 
+        /// <summary>
+        /// Добавление, изменение территорий.
+        /// </summary>
+        /// <param name="forestryAreas"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> AddForestryAreas([Bind(Prefix = "Item2")]ForestryAreas forestryAreas)
         {
@@ -147,14 +197,20 @@ namespace ForestryWeb.Controllers
             return RedirectToAction("ForestryAreas", new { ID = forestryAreas.ForestryID });
         }
 
+        /// <summary>
+        /// Отображение групп деревьев по возрасту, перенаправление на добавление.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> ForestryTreeGroups(Guid ID)
         {
             var treeGroups = await db.view_TreeGroups.Where(g => g.ForestryID == ID).ToListAsync();
 
-            if (treeGroups == null)
+            if (treeGroups.Count() == 0)
             {
-                var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
-                return View("AddForestryTreeGroups", new Tuple<Forestry, List<TreeGroup>>(forestry, null));
+                //var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
+                //return View("AddForestryTreeGroups", new Tuple<Forestry, List<TreeGroup>>(forestry, null));
+                return RedirectToAction("EditForestryTreeGroups", new { ID = ID });
             }
 
             var treeAgeGroupsTotal = await db.view_TreeAgeGroupsTotal.Where(g => g.ForestryID == ID).ToListAsync();
@@ -166,24 +222,61 @@ namespace ForestryWeb.Controllers
                 (treeGroups, treeQualityGroupsTotal, treeAgeGroupsTotal, treeSpeciesGroupsTotal, treeForestryAgeGroupsTotal, treeForestryGroupsTotal));
         }
 
+        /// <summary>
+        /// Изменение групп деревьев по возрасту.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> EditForestryTreeGroups(Guid ID)
         {
             var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
             var treeGroups = await db.view_TreeGroups.Where(g => g.ForestryID == ID).ToListAsync();
-            return View("AddForestryTreeGroups", new Tuple<Forestry, List<TreeGroup>>(forestry, treeGroups));
+            //treeGroups = treeGroups.Count() == 0 ? null : treeGroups;
+            var treeSpecies = await db.TreeSpecies.ToListAsync();
+            return View("AddForestryTreeGroups", new Tuple<Forestry, List<TreeGroup>, List<TreeSpecies>>(forestry, treeGroups, treeSpecies));
         }
 
+
+        /// <summary>
+        /// Добавление, изменение или удаление групп деревьев по возрасту.
+        /// </summary>
+        /// <param name="treeGroups"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> AddForestryTreeGroups([Bind(Prefix = "Item2")] List<TreeGroup> treeGroups)
         {
-            //Сделать: очистка значений, добавление пород.
+            //Сделать: добавление пород.
+            Func<TreeAgeGroup, List<TreeQualityGroup>, List<QualityClass>, int?> getQualityClass = (a, l, n) => n.FirstOrDefault(v => l.FirstOrDefault(q => q.TreeQualityGroupID == a.TreeQualityGroupID)?.QualityClassID == v.QualityClassID)?.Number;
+            Func<TreeAgeGroup, List<AgeClass>, int?> getAgeClass = (a, n) => n.FirstOrDefault(v => v.AgeClassID == a.AgeClassID)?.Number;
+            Func<TreeAgeGroup, List<TreeQualityGroup>, Guid?> getTreeSpeciesID = (a, l) => l.FirstOrDefault(q => q.TreeQualityGroupID == a.TreeQualityGroupID)?.TreeSpeciesID;
+
             var forestryID = treeGroups.FirstOrDefault().ForestryID;
-            treeGroups.RemoveAll(g => (g.Area == 0 || g.Area == null) && (g.Volume == 0 ||  g.Volume == null));
+            var treeSpeciesID = Guid.Empty;
+            foreach (var treeGroup in treeGroups)
+            {
+                if (treeGroup.QualityClass == 1 && treeGroup.AgeClass == 1)
+                {
+                    treeSpeciesID = treeGroup.TreeSpeciesID;
+                }
+                else
+                {
+                    treeGroup.TreeSpeciesID = treeSpeciesID;
+                }
+            }
+
+            treeGroups.RemoveAll(g => g.TreeSpeciesID == Guid.Empty || (g.Area == 0 || g.Area == null) && (g.Volume == 0 ||  g.Volume == null));
             var qualityClassesDB = await db.QualityClasses.ToListAsync();
             var ageClassesDB = await db.AgeClasses.ToListAsync();
             var treeQualityGroupsDB = await db.TreeQualityGroups.Where(g => g.ForestryID == forestryID).ToListAsync();
             var treeQualityGroupsIDs = treeQualityGroupsDB?.Select(g => g.TreeQualityGroupID).ToList() ?? new List<Guid?>();
             var treeAgeGroupsDB = await db.TreeAgeGroups.Where(g => treeQualityGroupsIDs.Contains(g.TreeQualityGroupID)).ToListAsync();
+            var treeAgeGroupsForDeletion = treeAgeGroupsDB
+                .Where(a => !treeGroups
+                .Any(g => g.TreeSpeciesID == getTreeSpeciesID(a, treeQualityGroupsDB) 
+                && g.QualityClass == getQualityClass(a, treeQualityGroupsDB, qualityClassesDB) 
+                && g.AgeClass == getAgeClass(a, ageClassesDB)))
+                .ToList();
+
             foreach(var treeGroup in treeGroups)
             {
                 var qualityClassID = qualityClassesDB.FirstOrDefault(c => c.Number == treeGroup.QualityClass).QualityClassID;
@@ -217,6 +310,10 @@ namespace ForestryWeb.Controllers
                 }
 
                 var treeAgeGroupDB = treeAgeGroupsDB?.FirstOrDefault(g => g.TreeQualityGroupID == treeAgeGroup.TreeQualityGroupID && g.AgeClassID == ageClassID);
+                if (treeAgeGroupDB != null && treeAgeGroupDB.Area == treeAgeGroup.Area && treeAgeGroupDB.Volume == treeAgeGroup.Volume)
+                {
+                    continue;
+                }
 
                 if (treeAgeGroupDB != null)
                 {
@@ -227,11 +324,26 @@ namespace ForestryWeb.Controllers
                 {
                     db.TreeAgeGroups.Add(treeAgeGroup);
                 }
-                await db.SaveChangesAsync();
             }
+            foreach (var treeAgeGroup in treeAgeGroupsForDeletion)
+            {
+                db.TreeAgeGroups.Remove(treeAgeGroup);
+                treeAgeGroupsDB.Remove(treeAgeGroup);
+                var treeQualityGroup = treeQualityGroupsDB.FirstOrDefault(g => g.TreeQualityGroupID == treeAgeGroup.TreeQualityGroupID && !treeAgeGroupsDB.Any(a => a.TreeQualityGroupID == g.TreeQualityGroupID));
+                if (treeQualityGroup != null)
+                {
+                    db.TreeQualityGroups.Remove(treeQualityGroup);
+                }
+            }
+            await db.SaveChangesAsync();
             return RedirectToAction("ForestryTreeGroups", new { ID = forestryID });
         }
 
+        /// <summary>
+        /// Основные показатели по лесному фонду
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> ForestryTreeSpecies(Guid ID)
         {
             var forestryTreeSpecies = await db.view_ForestryTreeSpecies.Where(g => g.ForestryID == ID).ToListAsync();
@@ -239,6 +351,11 @@ namespace ForestryWeb.Controllers
             return View(new Tuple<List<ForestryTreeSpecies>, ForestryTreeSpeciesTotal> (forestryTreeSpecies, forestryTreeSpeciesTotal));
         }
 
+        /// <summary>
+        /// Распределение насаждений хозсекций по классам возраста.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> ForestrySectionGroups(Guid ID)
         {
             var sectionAgeGroups = await db.view_SectionAgeGroups.Where(g => g.ForestryID == ID).ToListAsync();
@@ -246,12 +363,22 @@ namespace ForestryWeb.Controllers
             return View(new Tuple<List<SectionAgeGroup>, List<SectionTotal>>(sectionAgeGroups, sectionsTotal));
         }
 
+        /// <summary>
+        /// Схема организации лесного хозяйства
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> ForestrySections(Guid ID)
         {
             var sectionsTotal = await db.view_SectionsTotal.Where(g => g.ForestryID == ID).ToListAsync();
             return View(new List<SectionTotal>(sectionsTotal));
         }
 
+        /// <summary>
+        /// Расчет среднего прироста сортиментов для определения технической спелости.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> AvgSectionGrowthCalc(Guid ID)
         {
             var sectionsTotal = await db.view_SectionsTotal.Where(g => g.ForestryID == ID && (bool)g.IsHigh).ToListAsync();
@@ -259,6 +386,11 @@ namespace ForestryWeb.Controllers
             return View(new Tuple<List<SectionTotal>, List<AvgSectionGrowthCalc>>(sectionsTotal, avgSectionGrowthCalc));
         }
 
+        /// <summary>
+        /// Распределение площадей и запасов по классам возраста
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> ForestryFellingSections(Guid ID)
         {
             var sectionFellingAgeGroups = await db.view_SectionFellingAgeGroups.Where(g => g.ForestryID == ID).ToListAsync();
@@ -266,6 +398,11 @@ namespace ForestryWeb.Controllers
             return View(new Tuple<List<SectionsFellingVariant>, List<SectionFellingAgeGroup>>(sectionsFellingVariants, sectionFellingAgeGroups));
         }
 
+        /// <summary>
+        /// Срок использования эксплуатационного фонда
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> ForestryFellingPeriods(Guid ID)
         {
             var forestryFellingPeriod = await db.view_ForestryFellingPeriods.FirstOrDefaultAsync(g => g.ForestryID == ID);
@@ -273,6 +410,11 @@ namespace ForestryWeb.Controllers
             return View(new Tuple<ForestryFellingPeriod, List<SectionFellingPeriod>>(forestryFellingPeriod, sectionFellingPeriods));
         }
 
+        /// <summary>
+        /// Сравнение размера главного пользования лесом с его средним приростом на 1 га
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> ForestrySectionFellingTypes(Guid ID)
         {
             var forestryFellingType = await db.view_ForestryFellingTypes.FirstOrDefaultAsync(g => g.ForestryID == ID);
@@ -280,6 +422,11 @@ namespace ForestryWeb.Controllers
             return View(new Tuple<ForestryFellingType, List<SectionFellingType>>(forestryFellingType, sectionFellingTypes));
         }
 
+        /// <summary>
+        /// Удельный вес хозсекций в общем размере главного пользования
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> ForestrySectionFellingParts(Guid ID)
         {
             var forestryFellingPeriod = await db.view_ForestryFellingPeriods.FirstOrDefaultAsync(g => g.ForestryID == ID);
@@ -287,6 +434,11 @@ namespace ForestryWeb.Controllers
             return View(new Tuple<ForestryFellingPeriod, List<SectionFellingPart>>(forestryFellingPeriod, SectionFellingParts));
         }
 
+        /// <summary>
+        /// Площади древостоев по классам возраста на начало и конец ревизионного периода
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> ForestrySection10YFelling(Guid ID)
         {
             var sectionFelling10YAGStartAreas = await db.view_SectionFelling10YAGStartAreas.Where(g => g.ForestryID == ID).ToListAsync();
@@ -309,6 +461,11 @@ namespace ForestryWeb.Controllers
                 sectionFelling10YTotalAreas));
         }
 
+        /// <summary>
+        /// Распределение площадей насаждений в пределах хозсекций по классам возраста на начало и конец ревизионного периода
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         public async Task<IActionResult> ForestrySection10YFellingResult(Guid ID)
         {
             var sectionFelling10YAGStartAreas = await db.view_SectionFelling10YAGStartAreas.Where(g => g.ForestryID == ID).ToListAsync();
