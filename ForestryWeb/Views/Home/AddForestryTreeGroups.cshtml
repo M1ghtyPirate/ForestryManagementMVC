@@ -7,11 +7,57 @@
     var pp = "N1";
     var groupCount = 0;
     var step = "0.01";
+    var groupInc = 8;
+
+    async Task generateSpeciesRows(Guid treeSpeciesID)
+    {
+        <tr>
+            <td rowspan="@(6 * 2 + 1)">
+                <select name="Item2[@(groupCount)].TreeSpeciesID">
+                    <option value="@Guid.Empty">--Выберете породу--</option>
+                    @foreach (var treeSpecies in Model.Item3.OrderBy(s => s.Name))
+                    {
+                        <option value="@treeSpecies.TreeSpeciesID" selected="@(treeSpecies.TreeSpeciesID == treeSpeciesID)">@treeSpecies.Name</option>
+                    }
+                </select>
+            </td>
+        </tr>
+
+        @for (var j = 1; j <= 6; j++)
+        {
+            <tr>
+                <td rowspan="2">@j</td>
+                @{
+                    var ageGroups = Model.Item2.Where(g => g.TreeSpeciesID == treeSpeciesID && g.QualityClass == j);
+                }
+
+                @for (var i = 1; i <= 8; i++)
+                {
+                    var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
+                    <td>
+                        <input type="text" name="Item2[@(groupCount + i - 1)].ForestryID" value="@forestryID" hidden="True" />
+                        <input type="text" name="Item2[@(groupCount + i - 1)].QualityClass" value="@j" hidden="True" />
+                        <input type="text" name="Item2[@(groupCount + i - 1)].AgeClass" value="@i" hidden="True" />
+                        <input type="number" name="Item2[@(groupCount + i - 1)].Area" value="@Formatting.toDefaultCulture(ageGroup?.Area)" step="@step" min="0" />
+                    </td>
+                }
+            </tr>
+
+            <tr>
+                @for (var i = 1; i <= 8; i++)
+                {
+                    var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
+                    <td><input type="number" name="Item2[@(groupCount + i - 1)].Volume" value="@Formatting.toDefaultCulture(ageGroup?.Volume)" step="@step" min="0" /></td>
+                }
+            </tr>
+            groupCount += groupInc;
+        }
+    }
 }
 @model Tuple<Forestry, List<TreeGroup>, List<TreeSpecies>>
 
 <h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
-<form asp-action="addforestrytreegroups" asp-controller="home">
+<form onsubmit="return isFormValid()" asp-action="addforestrytreegroups" asp-controller="home">
     <table class="table">
         <tr>
             <th rowspan="2">Преобладающая порода</th>
@@ -30,52 +76,70 @@
         </tr>
         @foreach (var speciesGroup in Model.Item2.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
         {
-            <tr>
-                <td rowspan="@(6 * 2 + 1)">
-                    @speciesGroup.TreeSpeciesName
-                    <br/>
-                    <select name="Item2[@(groupCount)].TreeSpeciesID">
-                        <option value="@Guid.Empty">--Выберете породу--</option>
-                        @foreach (var treeSpecies in Model.Item3.OrderBy(s => s.Name))
-                        {
-                            <option value="@treeSpecies.TreeSpeciesID" selected="@(treeSpecies.TreeSpeciesID == speciesGroup.TreeSpeciesID)">@treeSpecies.Name</option>
-                        }
-                    </select>
-                </td>
-            </tr>
-
-            @for (var j = 1; j <= 6; j++)
-            {
-                <tr>
-                    <td rowspan="2">@j</td>
-                    @{
-                        var ageGroups = Model.Item2.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClass == j);
-                    }
-
-                    @for (var i = 1; i <= 8; i++)
-                    {
-                        <input type="text" name="Item2[@(groupCount + i - 1)].ForestryID" value="@forestryID" hidden="True" />
-                        @*<input type="text" name="Item2[@(groupCount + i - 1)].TreeSpeciesID" value="@speciesGroup.TreeSpeciesID" hidden="True" />*@
-                        <input type="text" name="Item2[@(groupCount + i - 1)].QualityClass" value="@j" hidden="True" />
-                        <input type="text" name="Item2[@(groupCount + i - 1)].AgeClass" value="@i" hidden="True" />
-
-                        var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
-                        <td><input type="number" name="Item2[@(groupCount + i - 1)].Area" value="@Formatting.toDefaultCulture(ageGroup?.Area)" step="@step" min="0" /></td>
-                    }
-                </tr>
-
-                <tr>
-                    @for (var i = 1; i <= 8; i++)
-                    {
-                        var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
-                        <td><input type="number" name="Item2[@(groupCount + i - 1)].Volume" value="@Formatting.toDefaultCulture(ageGroup?.Volume)" step="@step" min="0" /></td>
-                    }
-                </tr>
-                groupCount += 8;
-            }
+            generateSpeciesRows(speciesGroup.TreeSpeciesID);
         }
+        <tbody id="newSpeciesBlock" hidden="true">@{generateSpeciesRows(Guid.Empty);}</tbody>
+        <tr><td colspan="10"><input type="button" onclick="addSpecies_Click()" value="Добавить породу" /></td></tr>
     </table>
     <p>
         <input type="submit" value="@(Model.Item2.Count() == 0 ? "Добавить" : "Изменить")" />
     </p>
 </form>
+
+<script>
+    //Проверка уникальности выбора пород.
+    function isFormValid() 
+    {
+        let treeInputRegex = new RegExp("Item2\[[0-9]*\]\.TreeSpeciesID");
+        let selectTags = document.getElementsByTagName("select");
+        let treeSpeciesDuplicates = [];
+        let treeSpeciesCount = new Object();
+        let currentSpeciesID;
+        for (let i = 0; i < selectTags.length; i++)
+        {
+            if (treeInputRegex.test(selectTags[i].name) && selectTags[i].value != "00000000-0000-0000-0000-000000000000")
+            {
+                currentSpeciesID = selectTags[i].value;
+                treeSpeciesCount[currentSpeciesID] = treeSpeciesCount[currentSpeciesID] == null ? 1 : treeSpeciesCount[currentSpeciesID] + 1;
+                if (treeSpeciesCount[currentSpeciesID] > 1) 
+                {
+                    treeSpeciesDuplicates.push(selectTags[i]);
+                }
+            }
+        }
+        if (treeSpeciesDuplicates.length > 0) 
+        {
+            alert("Выбраны повторяющиеся породы!");
+            return false;
+        }
+        return true;
+    }
+
+    //Добавление породы в таблицу.
+    function addSpecies_Click() 
+    {
+        let newSpeciesBlock = document.getElementById("newSpeciesBlock");
+        let newSpeciesBlockClone = newSpeciesBlock.cloneNode(true);
+        incrementTagName(newSpeciesBlockClone, @(groupInc * 6));
+        newSpeciesBlock.after(newSpeciesBlockClone);
+        newSpeciesBlock.id = null;
+        newSpeciesBlock.hidden = false;
+        //alert("test");
+    }
+
+    function incrementTagName(tag, inc) 
+    {
+        let tagNameRegex = new RegExp("\\[[0-9]*\\]");
+        let matches = tag.name?.match(tagNameRegex);
+        if (matches) {
+            matches.forEach( match =>
+                {
+                    let number = Number(match.substring(1, match.length - 1));
+                    number += inc;
+                    tag.name = tag.name.replace(match, `[${number}]`);
+                }
+            )
+        }
+        tag.childNodes?.forEach(n => incrementTagName(n, inc));
+    }
+</script>

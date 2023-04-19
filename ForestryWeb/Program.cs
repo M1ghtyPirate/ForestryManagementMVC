@@ -1,6 +1,8 @@
 using ForestryWeb.Models.Database;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
+//var builder = WebApplication.CreateBuilder(args);
 var builder = WebApplication.CreateBuilder(args);
 
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -8,6 +10,13 @@ builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServe
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+//Max post size
+//builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 134217728 );
+//builder.WebHost.ConfigureKestrel(options => { 
+//    options.Limits.MaxRequestBodySize = 134217728;
+//    options.Limits.Http2.MaxFrameSize = 16777215;
+//});
 
 var app = builder.Build();
 

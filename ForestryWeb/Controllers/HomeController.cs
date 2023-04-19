@@ -236,16 +236,14 @@ namespace ForestryWeb.Controllers
             return View("AddForestryTreeGroups", new Tuple<Forestry, List<TreeGroup>, List<TreeSpecies>>(forestry, treeGroups, treeSpecies));
         }
 
-
         /// <summary>
         /// Добавление, изменение или удаление групп деревьев по возрасту.
         /// </summary>
         /// <param name="treeGroups"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost, DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = Int32.MaxValue, ValueLengthLimit = Int32.MaxValue, ValueCountLimit = Int32.MaxValue)]
         public async Task<IActionResult> AddForestryTreeGroups([Bind(Prefix = "Item2")] List<TreeGroup> treeGroups)
         {
-            //Сделать: добавление пород.
             Func<TreeAgeGroup, List<TreeQualityGroup>, List<QualityClass>, int?> getQualityClass = (a, l, n) => n.FirstOrDefault(v => l.FirstOrDefault(q => q.TreeQualityGroupID == a.TreeQualityGroupID)?.QualityClassID == v.QualityClassID)?.Number;
             Func<TreeAgeGroup, List<AgeClass>, int?> getAgeClass = (a, n) => n.FirstOrDefault(v => v.AgeClassID == a.AgeClassID)?.Number;
             Func<TreeAgeGroup, List<TreeQualityGroup>, Guid?> getTreeSpeciesID = (a, l) => l.FirstOrDefault(q => q.TreeQualityGroupID == a.TreeQualityGroupID)?.TreeSpeciesID;
@@ -268,6 +266,7 @@ namespace ForestryWeb.Controllers
             var qualityClassesDB = await db.QualityClasses.ToListAsync();
             var ageClassesDB = await db.AgeClasses.ToListAsync();
             var treeQualityGroupsDB = await db.TreeQualityGroups.Where(g => g.ForestryID == forestryID).ToListAsync();
+            var treeQualityGroupsForDeletion = new List<TreeQualityGroup>();
             var treeQualityGroupsIDs = treeQualityGroupsDB?.Select(g => g.TreeQualityGroupID).ToList() ?? new List<Guid?>();
             var treeAgeGroupsDB = await db.TreeAgeGroups.Where(g => treeQualityGroupsIDs.Contains(g.TreeQualityGroupID)).ToListAsync();
             var treeAgeGroupsForDeletion = treeAgeGroupsDB
@@ -323,6 +322,7 @@ namespace ForestryWeb.Controllers
                 else
                 {
                     db.TreeAgeGroups.Add(treeAgeGroup);
+                    treeAgeGroupsDB.Add(treeAgeGroup);
                 }
             }
             foreach (var treeAgeGroup in treeAgeGroupsForDeletion)
@@ -332,8 +332,15 @@ namespace ForestryWeb.Controllers
                 var treeQualityGroup = treeQualityGroupsDB.FirstOrDefault(g => g.TreeQualityGroupID == treeAgeGroup.TreeQualityGroupID && !treeAgeGroupsDB.Any(a => a.TreeQualityGroupID == g.TreeQualityGroupID));
                 if (treeQualityGroup != null)
                 {
-                    db.TreeQualityGroups.Remove(treeQualityGroup);
+                    //db.TreeQualityGroups.Remove(treeQualityGroup);
+                    treeQualityGroupsForDeletion.Add(treeQualityGroup);
+                    treeQualityGroupsDB.Remove(treeQualityGroup);
                 }
+            }
+            await db.SaveChangesAsync();
+            foreach (var treeQualityGroup in treeQualityGroupsForDeletion)
+            {
+                db.TreeQualityGroups.Remove(treeQualityGroup);
             }
             await db.SaveChangesAsync();
             return RedirectToAction("ForestryTreeGroups", new { ID = forestryID });
