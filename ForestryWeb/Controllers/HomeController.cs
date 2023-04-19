@@ -113,8 +113,9 @@ namespace ForestryWeb.Controllers
         {
             var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
             var user = await db.Users.FirstOrDefaultAsync(u => u.UserID == forestry.AuthorID);
+            var areTreeGroupsSet = await db.view_TreeGroups.FirstOrDefaultAsync(g => g.ForestryID == ID) != null;
             var areSectionsSet = await db.view_SectionsTotal.FirstOrDefaultAsync(g => g.ForestryID == ID) != null;
-            return View(new Tuple<Forestry, User, bool>(forestry, user, areSectionsSet));
+            return View(new Tuple<Forestry, User, bool, bool>(forestry, user, areTreeGroupsSet, areSectionsSet));
         }
 
         /// <summary>
@@ -325,6 +326,7 @@ namespace ForestryWeb.Controllers
                     treeAgeGroupsDB.Add(treeAgeGroup);
                 }
             }
+
             foreach (var treeAgeGroup in treeAgeGroupsForDeletion)
             {
                 db.TreeAgeGroups.Remove(treeAgeGroup);
@@ -338,12 +340,114 @@ namespace ForestryWeb.Controllers
                 }
             }
             await db.SaveChangesAsync();
+
+            var sectionIDsForDeletion = new List<Guid>();
             foreach (var treeQualityGroup in treeQualityGroupsForDeletion)
             {
                 db.TreeQualityGroups.Remove(treeQualityGroup);
+                if (treeQualityGroup.SectionID != null && treeQualityGroup.SectionID != Guid.Empty && !sectionIDsForDeletion.Any(s => s == treeQualityGroup.SectionID))
+                {
+                    sectionIDsForDeletion.Add((Guid)treeQualityGroup.SectionID);
+                }
             }
             await db.SaveChangesAsync();
+
+            var sectionsForDeletion = await db.Sections.Where(s => sectionIDsForDeletion.Any(i => i == (Guid)s.SectionID)).ToListAsync();
+            foreach (var sectionForDeletion in sectionsForDeletion)
+            {
+                if (!treeQualityGroupsDB.Any(g => g.SectionID == sectionForDeletion.SectionID))
+                {
+                    db.Sections.Remove(sectionForDeletion);
+                }
+            }
+            await db.SaveChangesAsync();
+
             return RedirectToAction("ForestryTreeGroups", new { ID = forestryID });
+        }
+
+        /// <summary>
+        /// Отображение распределения групп бонитета по секциям.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> ForestryTreeGroupsAllocation(Guid ID)
+        {
+            var treeGroups = await db.view_TreeGroups.Where(g => g.ForestryID == ID).ToListAsync();
+            var treeForestryGroupsTotal = await db.view_TreeForestryGroupsTotal.FirstOrDefaultAsync(g => g.ForestryID == ID);
+            var sectionsDB = await db.Sections.ToListAsync();
+            var forestrySections = sectionsDB.Where(s => treeGroups.Any(g => g.SectionID == s.SectionID)).ToList();
+            return View(new Tuple<List<TreeGroup>, TreeForestryGroupTotal, List<Section>> (treeGroups, treeForestryGroupsTotal, forestrySections));
+        }
+
+        /// <summary>
+        /// Изменение распределения групп бонитета по секциям.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> EditForestryTreeGroupsAllocation(Guid ID)
+        {
+            var treeGroups = await db.view_TreeGroups.Where(g => g.ForestryID == ID).ToListAsync();
+            var treeForestryGroupsTotal = await db.view_TreeForestryGroupsTotal.FirstOrDefaultAsync(g => g.ForestryID == ID);
+            var sectionsDB = await db.Sections.ToListAsync();
+            var forestrySections = sectionsDB.Where(s => treeGroups.Any(g => g.SectionID == s.SectionID)).ToList();
+            return View(new Tuple<List<TreeGroup>, TreeForestryGroupTotal, List<Section>>(treeGroups, treeForestryGroupsTotal, forestrySections));
+        }
+
+
+        /// <summary>
+        /// Назначение секци группам бонитета.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        [HttpPost, DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = Int32.MaxValue, ValueLengthLimit = Int32.MaxValue, ValueCountLimit = Int32.MaxValue)]
+        public async Task<IActionResult> AddForestryTreeGroupsAllocation([Bind(Prefix = "SectionAllocations")] List<SectionAllocation> sectionAllocations)
+        {
+            var qualityClasses = await db.QualityClasses.ToDictionaryAsync(q => q.Number, q => q.QualityClassID);
+            var forestryID = sectionAllocations.FirstOrDefault().ForestryID;
+            var forestryTreeQualityGroupsDB = await db.TreeQualityGroups.Where(g => g.ForestryID == forestryID).ToListAsync();
+            var sectionsDB = await db.Sections.ToListAsync();
+            var forestrySectionsDB = sectionsDB.Where(s => forestryTreeQualityGroupsDB.Any(g => g.SectionID == s.SectionID)).ToList();
+
+            foreach(var sectionAllocation in sectionAllocations)
+            {
+                sectionAllocation.SectionName = sectionAllocation.SectionName?.Trim();
+                var sectionID = forestrySectionsDB.FirstOrDefault(s => s.Name == sectionAllocation.SectionName)?.SectionID;
+
+                if (sectionID == null && !string.IsNullOrEmpty(sectionAllocation.SectionName))
+                {
+                    var newSection = new Section()
+                    {
+                        Name = sectionAllocation.SectionName
+                    };
+                    newSection.SectionID = db.Sections.Add(newSection).Entity.SectionID;
+                    forestrySectionsDB.Add(newSection);
+                    sectionID = newSection.SectionID;
+                }
+
+                var treeQulaityGroupDB = forestryTreeQualityGroupsDB.FirstOrDefault(g => g.TreeSpeciesID == sectionAllocation.TreeSpeciesID && g.QualityClassID == (Guid)qualityClasses[sectionAllocation.QualityClass]);
+                var treeQualityGroup = new TreeQualityGroup()
+                {
+                    TreeQualityGroupID = treeQulaityGroupDB.TreeQualityGroupID,
+                    ForestryID = forestryID,
+                    TreeSpeciesID = sectionAllocation.TreeSpeciesID,
+                    QualityClassID = (Guid)qualityClasses[sectionAllocation.QualityClass],
+                    SectionID = sectionID
+                };
+                db.Entry(treeQulaityGroupDB).CurrentValues.SetValues(treeQualityGroup);
+                treeQulaityGroupDB.SectionID = treeQualityGroup.SectionID;
+            }
+            await db.SaveChangesAsync();
+
+            foreach (var sectionForDeletion in forestrySectionsDB)
+            {
+                if (!forestryTreeQualityGroupsDB.Any(g => g.SectionID == sectionForDeletion.SectionID))
+                {
+                    db.Remove(sectionForDeletion);
+                }
+            }
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("ForestryTreeGroupsAllocation", new { ID = forestryID });
         }
 
         /// <summary>

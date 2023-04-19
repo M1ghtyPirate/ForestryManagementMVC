@@ -1,0 +1,73 @@
+﻿@{
+    var forestryName = Model.Item2.ForestryName;
+    var forestryID = Model.Item2.ForestryID;
+    var subTitle = "Распределение групп бонитета по секциям";
+    ViewData["Title"] = $"{forestryName} - {subTitle}";
+    var p0 = "N0";
+    var p2 = "N2";
+    var pp = "N1";
+    var groupCount = 0;
+}
+@model Tuple<List<TreeGroup>, TreeForestryGroupTotal, List<Section>>
+
+<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
+<form onsubmit="return isFormValid()" asp-action="addforestrytreegroupsallocation" asp-controller="home">
+    <table class="table">
+        <tr>
+            <th>Преобладающая порода</th>
+            <th>Бонитет</th>
+            <th>Всего покрытой лесом площади, га</th>
+            <th>Название секции</th>
+        </tr>
+        @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
+        {
+            var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
+            <tr>
+                <td rowspan="@(qualityGroups.Count() + 1)">@speciesGroup.TreeSpeciesName</td>
+            </tr>
+                
+            @foreach (var qualityGroup in qualityGroups)
+            {
+                var ageGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID);
+                    var sectionName = @Model.Item3?.FirstOrDefault(s => s.SectionID == ageGroups.FirstOrDefault()?.SectionID)?.Name;
+                    <tr>
+                    <td>@qualityGroup.QualityClass</td>
+
+                    <td>@Formatting.toFixed(ageGroups.Sum(g => g.Area), p0)</td>
+                    <td>
+                        <input type="text" name="SectionAllocations[@(groupCount)].ForestryID" value="@forestryID" hidden="True"/>
+                        <input type="text" name="SectionAllocations[@(groupCount)].TreeSpeciesID" value="@speciesGroup.TreeSpeciesID" hidden="True" />
+                        <input type="text" name="SectionAllocations[@(groupCount)].QualityClass" value="@qualityGroup.QualityClass" hidden="True" />
+                        <input type="text" name="SectionAllocations[@(groupCount++)].SectionName" value="@sectionName"/>
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+    <p>
+        <input type="submit" value="Назначить секции" />
+    </p>
+</form>
+
+<br/>
+<h5>Лесопокрытая площадь лесничества: @Formatting.toFixed(Model.Item2.Area, p0)</h5>
+@{
+    var minSectionArea = Model.Item2.Area * 0.1;
+}
+<h5>Минимальная рекомендуемая площадь хозсекции: @Formatting.toFixed(Model.Item2.Area, p0) * 0,1 = @Formatting.toFixed(minSectionArea, p2)</h5>
+<table class="table">
+    <tr>
+        <th>Название секции</th>
+        <th>Площадь</th>
+    </tr>
+    @foreach(var forestrySection in Model.Item3.OrderBy(s => s.Name))
+    {
+        var ageGroups = Model.Item1.Where(g => g.SectionID == forestrySection.SectionID);
+        var forestrySectionArea = ageGroups.Sum(g => g.Area);
+        <tr style="background-color: @(forestrySectionArea > minSectionArea ? "green" : "red")">
+            <td>@forestrySection.Name</td>
+            <td>@Formatting.toFixed(forestrySectionArea, p2)</td>
+        </tr>
+    }
+</table>
+<a asp-action="editforestrytreegroups" asp-route-id=@forestryID>Изменить</a>

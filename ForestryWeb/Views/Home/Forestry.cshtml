@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = Model.Item1.Name;
 }
-@model Tuple<ForestryWeb.Models.Database.Tables.Forestry, ForestryWeb.Models.Database.Tables.User, bool>
+@model Tuple<ForestryWeb.Models.Database.Tables.Forestry, ForestryWeb.Models.Database.Tables.User, bool, bool>
 
 <h2>@Model.Item1.Name</h2>
 
@@ -9,9 +9,14 @@
 <br/>
 <a asp-action="forestrytreegroups" asp-route-id=@Model.Item1.ForestryID>Распределение лесной площади и запасов по бонитетам и классам возраста</a>
 <br/>
-<a asp-action="forestrytreespecies" asp-route-id=@Model.Item1.ForestryID>Основные показатели по лесному фонду</a>
-<br/>
 @if (Model.Item3)
+{
+    <a asp-action="forestrytreespecies" asp-route-id=@Model.Item1.ForestryID>Основные показатели по лесному фонду</a>
+    <br/>
+    <a asp-action="forestrytreegroupsallocation" asp-route-id=@Model.Item1.ForestryID>Распределение групп бонитета по секциям</a>
+    <br />
+}
+@if (Model.Item4)
 {
     <a asp-action="forestrysectiongroups" asp-route-id=@Model.Item1.ForestryID>Распределение площадей насаждений хозсекций по классам возраста</a>
     <br/>
