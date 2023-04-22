@@ -116,43 +116,6 @@ namespace ForestryWeb.Controllers
             var forestryDB = db.Forestries.FirstOrDefault(f => f.ForestryID == ID);
             if (forestryDB != null)
             {
-
-                var forestAreasDB = await db.ForestAreas.FirstOrDefaultAsync(g => g.ForestryID == ID);
-                var nonForestAreasDB = await db.NonForestAreas.FirstOrDefaultAsync(g => g.ForestryID == ID);
-                var treeQualityGroupsDB = await db.TreeQualityGroups.Where(g => g.ForestryID == ID).ToListAsync();
-                var treeQualityGroupsIDs = treeQualityGroupsDB?.Select(g => g.TreeQualityGroupID).ToList() ?? new List<Guid?>();
-                var sectionIDs = treeQualityGroupsDB?.Select(g => g.SectionID).ToList() ?? new List<Guid?>();
-                var treeAgeGroupsDB = await db.TreeAgeGroups.Where(g => treeQualityGroupsIDs.Contains(g.TreeQualityGroupID)).ToListAsync();
-                var sectionsDB = await db.Sections.Where(s => sectionIDs.Contains(s.SectionID)).ToListAsync();
-
-                if(forestAreasDB != null)
-                {
-                    db.Remove(forestAreasDB);
-                }
-
-                if (nonForestAreasDB != null)
-                {
-                    db.Remove(nonForestAreasDB);
-                }
-
-                foreach (var treeAgeGroup in treeAgeGroupsDB)
-                {
-                    db.Remove(treeAgeGroup);
-                }
-                await db.SaveChangesAsync();
-
-                foreach (var treeQualityGroup in treeQualityGroupsDB)
-                {
-                    db.Remove(treeQualityGroup);
-                }
-                await db.SaveChangesAsync();
-
-                foreach (var section in sectionsDB)
-                {
-                    db.Remove(section);
-                }
-                await db.SaveChangesAsync();
-
                 db.Forestries.Remove(forestryDB);
                 await db.SaveChangesAsync();
             }
@@ -170,8 +133,7 @@ namespace ForestryWeb.Controllers
             var user = await db.Users.FirstOrDefaultAsync(u => u.UserID == forestry.AuthorID);
             var areTreeGroupsSet = await db.view_TreeGroups.FirstOrDefaultAsync(g => g.ForestryID == ID) != null;
             var areSectionsSet = await db.view_SectionsTotal.FirstOrDefaultAsync(g => g.ForestryID == ID) != null;
-            var anyFellingAreas = await db.view_SectionsMainFellingAgeCalc.FirstOrDefaultAsync(g => g.ForestryID == ID && g.MainFellingAge != null) != null;
-            return View(new Tuple<Forestry, User, bool, bool, bool>(forestry, user, areTreeGroupsSet, areSectionsSet, anyFellingAreas));
+            return View(new Tuple<Forestry, User, bool, bool>(forestry, user, areTreeGroupsSet, areSectionsSet));
         }
 
         /// <summary>
@@ -495,7 +457,7 @@ namespace ForestryWeb.Controllers
                     SectionID = sectionID
                 };
                 db.Entry(treeQulaityGroupDB).CurrentValues.SetValues(treeQualityGroup);
-                treeQulaityGroupDB.SectionID = sectionID;
+                treeQulaityGroupDB.SectionID = treeQualityGroup.SectionID;
             }
             await db.SaveChangesAsync();
 
@@ -558,18 +520,6 @@ namespace ForestryWeb.Controllers
             var sectionsTotal = await db.view_SectionsTotal.Where(g => g.ForestryID == ID && (bool)g.IsHigh).ToListAsync();
             var avgSectionGrowthCalc = await db.view_AvgSectionGrowthCalc.ToListAsync();
             return View(new Tuple<List<SectionTotal>, List<AvgSectionGrowthCalc>>(sectionsTotal, avgSectionGrowthCalc));
-        }
-
-        /// <summary>
-        /// Расчет возраста главной рубки.
-        /// </summary>
-        /// <param name="ID"></param>
-        /// <returns></returns>
-        public async Task<IActionResult> ForestrySectionsMainFelling(Guid ID)
-        {
-            var sectionsMainFelingAgeCalc = await db.view_SectionsMainFellingAgeCalc.Where(g => g.ForestryID == ID).ToListAsync();
-            var sectionAgeGroups = await db.view_SectionAgeGroups.Where(g => g.ForestryID == ID).ToListAsync();
-            return View(new Tuple<List<SectionMainFellingAgeCalc>, List<SectionAgeGroup>>(sectionsMainFelingAgeCalc, sectionAgeGroups));
         }
 
         /// <summary>

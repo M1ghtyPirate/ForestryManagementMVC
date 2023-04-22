@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = Model.Item1.Name;
 }
-@model Tuple<ForestryWeb.Models.Database.Tables.Forestry, ForestryWeb.Models.Database.Tables.User, bool, bool, bool>
+@model Tuple<ForestryWeb.Models.Database.Tables.Forestry, ForestryWeb.Models.Database.Tables.User, bool, bool>
 
 <h2>@Model.Item1.Name</h2>
 
@@ -9,7 +9,6 @@
 <br/>
 <a asp-action="forestrytreegroups" asp-route-id=@Model.Item1.ForestryID>Распределение лесной площади и запасов по бонитетам и классам возраста</a>
 <br/>
-@*//Внесна информация о насаждениях*@
 @if (Model.Item3)
 {
     <a asp-action="forestrytreespecies" asp-route-id=@Model.Item1.ForestryID>Основные показатели по лесному фонду</a>
@@ -17,7 +16,6 @@
     <a asp-action="forestrytreegroupsallocation" asp-route-id=@Model.Item1.ForestryID>Распределение групп бонитета по секциям</a>
     <br />
 }
-@*//Выделены секции*@
 @if (Model.Item4)
 {
     <a asp-action="forestrysectiongroups" asp-route-id=@Model.Item1.ForestryID>Распределение площадей насаждений хозсекций по классам возраста</a>
@@ -26,21 +24,15 @@
     <br/>
     <a asp-action="avgsectiongrowthcalc" asp-route-id=@Model.Item1.ForestryID>Расчет среднего прироста сортиментов для определения технической спелости</a>
     <br/>
-    <a asp-action="forestrysectionsmainfelling" asp-route-id=@Model.Item1.ForestryID>Расчет возраста главной рубки</a>
+    <a asp-action="forestryfellingsections" asp-route-id=@Model.Item1.ForestryID>Распределение площадей и запасов по классам возраста</a>
+    <br/>
+    <a asp-action="forestryfellingperiods" asp-route-id=@Model.Item1.ForestryID>Срок использования эксплуатационного фонда</a>
+    <br/>
+    <a asp-action="forestrysectionfellingtypes" asp-route-id=@Model.Item1.ForestryID>Сравнение размера главного пользования лесом с его средним приростом на 1 га</a>
     <br />
-    @*//Есть насаждения, подходящие для рубок*@
-    if (Model.Item5)
-    {
-        <a asp-action="forestryfellingsections" asp-route-id=@Model.Item1.ForestryID>Распределение площадей и запасов по классам возраста</a>
-        <br/>
-        <a asp-action="forestryfellingperiods" asp-route-id=@Model.Item1.ForestryID>Срок использования эксплуатационного фонда</a>
-        <br/>
-        <a asp-action="forestrysectionfellingtypes" asp-route-id=@Model.Item1.ForestryID>Сравнение размера главного пользования лесом с его средним приростом на 1 га</a>
-        <br />
-        <a asp-action="forestrysectionfellingparts" asp-route-id=@Model.Item1.ForestryID>Удельный вес хозсекций в общем размере главного пользования</a>
-        <br />
-        <a asp-action="forestrysection10yfelling" asp-route-id=@Model.Item1.ForestryID>Площади древостоев по классам возраста на начало и конец ревизионного периода</a>
-        <br />
-        <a asp-action="forestrysection10yfellingresult" asp-route-id=@Model.Item1.ForestryID>Распределение площадей насаждений в пределах хозсекций по классам возраста на начало и конец ревизионного периода</a>
-    }
+    <a asp-action="forestrysectionfellingparts" asp-route-id=@Model.Item1.ForestryID>Удельный вес хозсекций в общем размере главного пользования</a>
+    <br />
+    <a asp-action="forestrysection10yfelling" asp-route-id=@Model.Item1.ForestryID>Площади древостоев по классам возраста на начало и конец ревизионного периода</a>
+    <br />
+    <a asp-action="forestrysection10yfellingresult" asp-route-id=@Model.Item1.ForestryID>Распределение площадей насаждений в пределах хозсекций по классам возраста на начало и конец ревизионного периода</a>
 }

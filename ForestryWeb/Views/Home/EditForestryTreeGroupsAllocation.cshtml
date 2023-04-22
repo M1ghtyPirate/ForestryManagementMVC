@@ -1,5 +1,4 @@
-﻿@using System.Web;
-@{
+﻿@{
     var forestryName = Model.Item2.ForestryName;
     var forestryID = Model.Item2.ForestryID;
     var subTitle = "Распределение групп бонитета по секциям";
@@ -8,9 +7,6 @@
     var p2 = "N2";
     var pp = "N1";
     var groupCount = 0;
-    var groupInc = 1;
-
-    Func<TreeGroup, string> getDefaultSectionName = g => String.Format("{0}. {1}.", g.TreeSpeciesName, g.QualityClass < 4 ? "Высокобонитетная" : "Низкобинитетная");
 }
 @model Tuple<List<TreeGroup>, TreeForestryGroupTotal, List<Section>>
 
@@ -29,27 +25,20 @@
             <tr>
                 <td rowspan="@(qualityGroups.Count() + 1)">@speciesGroup.TreeSpeciesName</td>
             </tr>
-
+                
             @foreach (var qualityGroup in qualityGroups)
             {
                 var ageGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID);
-                var sectionName = @Model.Item3?.FirstOrDefault(s => s.SectionID == ageGroups.FirstOrDefault()?.SectionID)?.Name;
-                var sectionArea = ageGroups.Sum(g => g.Area);
-                <tr>
+                    var sectionName = @Model.Item3?.FirstOrDefault(s => s.SectionID == ageGroups.FirstOrDefault()?.SectionID)?.Name;
+                    <tr>
                     <td>@qualityGroup.QualityClass</td>
 
-                    <td>@Formatting.toFixed(sectionArea, p0)</td>
+                    <td>@Formatting.toFixed(ageGroups.Sum(g => g.Area), p0)</td>
                     <td>
-                        <input type="text" name="SectionAllocations[@(groupCount)].ForestryID" value="@forestryID" hidden="True" />
+                        <input type="text" name="SectionAllocations[@(groupCount)].ForestryID" value="@forestryID" hidden="True"/>
                         <input type="text" name="SectionAllocations[@(groupCount)].TreeSpeciesID" value="@speciesGroup.TreeSpeciesID" hidden="True" />
                         <input type="text" name="SectionAllocations[@(groupCount)].QualityClass" value="@qualityGroup.QualityClass" hidden="True" />
-                        <input type="text" name="SectionAllocations[@(groupCount++)].SectionName" value="@sectionName" 
-                            data-area="@sectionArea"
-                            data-treespeciestype="@(qualityGroup.IsDeciduous ? "Мягколиственная" : "Хвойная")"
-                            data-qualityclass="@(qualityGroup.QualityClass)"
-                            onblur="formSectionsTotal()" 
-                            list="sectionsDataList" 
-                            placeholder="@getDefaultSectionName(qualityGroup)" />
+                        <input type="text" name="SectionAllocations[@(groupCount++)].SectionName" value="@sectionName"/>
                     </td>
                 </tr>
             }
@@ -60,8 +49,8 @@
     </p>
 </form>
 
-<br />
-<h5 id="forestArea" data-area="@Model.Item2.Area">Лесопокрытая площадь лесничества: @Formatting.toFixed(Model.Item2.Area, p0)</h5>
+<br/>
+<h5>Лесопокрытая площадь лесничества: @Formatting.toFixed(Model.Item2.Area, p0)</h5>
 @{
     var minSectionArea = Model.Item2.Area * 0.1;
 }
@@ -69,151 +58,16 @@
 <table class="table">
     <tr>
         <th>Название секции</th>
-        <th>Тип по породам</th>
-        <th>Тип по бонитетам</th>
         <th>Площадь</th>
     </tr>
-    <tbody id="sectionsBlock">
-    </tbody>
-    <tr id="newSectionRow" hidden="true">
-        <td id="sectionName"></td>
-        <td id="treeSpeciesType"></td>
-        <td id="qualityTier"></td>
-        <td id="sectionArea"></td>
-    </tr>
+    @foreach(var forestrySection in Model.Item3.OrderBy(s => s.Name))
+    {
+        var ageGroups = Model.Item1.Where(g => g.SectionID == forestrySection.SectionID);
+        var forestrySectionArea = ageGroups.Sum(g => g.Area);
+        <tr style="background-color: @(forestrySectionArea > minSectionArea ? "green" : "red")">
+            <td>@forestrySection.Name</td>
+            <td>@Formatting.toFixed(forestrySectionArea, p2)</td>
+        </tr>
+    }
 </table>
-
-<datalist id="sectionsDataList">
-    <div id="sectionNames">
-    </div>
-    <div id="defaultSectionNames">
-        @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
-        {
-            var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
-
-            var highQualityGroup = qualityGroups.FirstOrDefault(g => g.QualityClass < 4);
-            var lowQualityGroup = qualityGroups.FirstOrDefault(g => g.QualityClass > 3);
-
-            if (highQualityGroup != null)
-            {
-                <option>@(getDefaultSectionName(highQualityGroup))</option>
-            }
-            if (lowQualityGroup != null)
-            {
-                <option>@(getDefaultSectionName(lowQualityGroup))</option>
-            }
-        }
-    </div>
-</datalist>
-
-<script>
-    const forestArea = Number(document.getElementById("forestArea").dataset.area);
-    const minSectionArea = forestArea * 0.1;
-    const invalidType = "Смешанная";
-
-    formSectionsTotal();
-
-    //Получение списка секций из контролов.
-    function getSectionList() {
-        let sections = [];
-        let sectionInputRegex = new RegExp("SectionAllocations\[[0-9]*\]\.SectionName");
-        let inputTags = document.getElementsByTagName("input");
-        for (let i = 0; i < inputTags.length; i++) {
-            if (sectionInputRegex.test(inputTags[i].name) && inputTags[i].value) {
-                let currentSection = new Object();
-                currentSection["Name"] = inputTags[i].value.trim();
-                currentSection["Area"] = Number(inputTags[i].dataset.area);
-                currentSection["TreeSpeciesType"] = inputTags[i].dataset.treespeciestype;
-                currentSection["QualityClasses"] = [];
-                let currentQualityClass = Number(inputTags[i].dataset.qualityclass);
-                currentSection["QualityClasses"].push(currentQualityClass);
-                let storedSections = sections.filter(s => s["Name"].toLowerCase() == currentSection["Name"].toLowerCase());
-                if (storedSections.length == 0) {
-                    sections.push(currentSection);
-                }
-                else
-                {
-                    storedSections[0]["Area"] += currentSection["Area"];
-                    if (storedSections[0]["TreeSpeciesType"] != currentSection["TreeSpeciesType"])
-                    {
-                        storedSections[0]["TreeSpeciesType"] = invalidType;
-                    }
-                    if (storedSections[0]["QualityClasses"].filter(c => c == currentQualityClass).length == 0)
-                    {
-                        storedSections[0]["QualityClasses"].push(currentQualityClass);
-                    }
-                }
-            }
-        }
-        sections.forEach(section => 
-        {
-            section["QualityClasses"].sort()
-            let qualityTier = invalidType;
-            if (section["QualityClasses"].filter(c => c < 4).length > 0 && section["QualityClasses"].filter(c => c > 3).length == 0) {
-                qualityTier = "Высокобонитетная";
-            }
-            else if (section["QualityClasses"].filter(c => c > 2).length > 0 && section["QualityClasses"].filter(c => c < 3).length == 0) {
-                qualityTier = "Низкобонитетная";
-            }
-            section["QualityTier"] = qualityTier;
-        });
-        return sections.sort((s1, s2) => s1["Name"].localeCompare(s2["Name"]));
-    }
-
-    //Формирование сводной таблицы по секциям.
-    function formSectionsTotal() {
-        let sections = getSectionList();
-        let newSectionRow = document.getElementById("newSectionRow");
-        let sectionsBlock = document.getElementById("sectionsBlock");
-        let sectionNames = document.getElementById("sectionNames");
-        sectionsBlock.innerHTML = null;
-        sectionNames.innerHTML = null;
-        sections.forEach(section =>
-        {
-            let sectionRow = newSectionRow.cloneNode(true);
-            sectionRow.id = null;
-            let rowChildNodes = Array.from(sectionRow.childNodes, n => n);
-            rowChildNodes.filter(n => n.id == "sectionName").pop().innerText = section["Name"];
-            let treeSpeciesTypeCell = rowChildNodes.filter(n => n.id == "treeSpeciesType").pop();
-            treeSpeciesTypeCell.innerText = section["TreeSpeciesType"];
-            if (section["TreeSpeciesType"] == invalidType) {
-                treeSpeciesTypeCell.style = "background-color: red";
-            }
-            let qualityTierCell = rowChildNodes.filter(n => n.id == "qualityTier").pop();
-            qualityTierCell.innerHTML = section["QualityTier"] + "<br/>" + section["QualityClasses"].join(' ');
-            if (section["QualityTier"] == invalidType) {
-                qualityTierCell.style = "background-color: red";
-            }
-            let sectinAreaCell = rowChildNodes.filter(n => n.id == "sectionArea").pop();
-            sectinAreaCell.innerText = section["Area"];
-            if (section["Area"] < minSectionArea) {
-                sectinAreaCell.style = "background-color: yellow";
-            }
-            //sectionRow.style = `background-color: ${section["Area"] > minSectionArea ? "green" : "red"}`;
-            sectionsBlock.appendChild(sectionRow);
-            sectionRow.hidden = false;
-
-            let sectionOption = new Option();
-            sectionOption.innerText = section["Name"];
-            sectionNames.appendChild(sectionOption);
-        });
-    }
-
-    //Проверка уникальности выбора пород.
-    function isFormValid() {
-        let sections = getSectionList();
-        let message = "";
-        if (sections.filter(s => s["TreeSpeciesType"] == invalidType).length > 0) {
-            message += "Секции некоррекно распределены по типам пород.\n";
-        }
-        if (sections.filter(s => s["QualityTier"] == invalidType).length > 0) {
-            message += "Секции некоррекно распределены по бонитетам.\n";
-        }
-        if (message.length > 0) 
-        {
-            alert(message);
-            return false;
-        }
-        return true;
-    }
-</script>
+<a asp-action="editforestrytreegroups" asp-route-id=@forestryID>Изменить</a>

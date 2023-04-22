@@ -8,12 +8,12 @@ BEGIN
     DECLARE @TechnicalAge INT
     DECLARE @RipeAge INT
     DECLARE @OptimalFellingAge INT
-    --DECLARE @TargetAge INT
+    DECLARE @TargetAge INT
     DECLARE @TargetAgeClass INT
     DECLARE @MainFellingAgeClass INT
     DECLARE @IsDeciduous BIT
     DECLARE @TreeSpeciesID UNIQUEIDENTIFIER
-    --DECLARE @MinAgeDif INT
+    DECLARE @MinAgeDif INT
     DECLARE @MinAreaDif FLOAT
 
     SELECT @TechnicalAge = [TechnicalAge], @RipeAge = [RipeAge], @IsDeciduous = [IsDeciduous], @TreeSpeciesID = [TreeSpeciesID] 
@@ -24,16 +24,14 @@ BEGIN
     FROM [dbo].[TreeSpecies] 
     WHERE [TreeSpeciesID] = @TreeSpeciesID
 
-    --SET @TargetAge = ISNULL(@TechnicalAge, @OptimalFellingAge)
+    SET @TargetAge = ISNULL(@TechnicalAge, @OptimalFellingAge)
 
-    --SELECT @MinAgeDif = MIN(ABS(@TargetAge - ([ConiferousMidAge] * ~@IsDeciduous + [DeciduousMidAge] * @IsDeciduous))) 
-    --FROM [dbo].[AgeClasses]
+    SELECT @MinAgeDif = MIN(ABS(@TargetAge - ([ConiferousMidAge] * ~@IsDeciduous + [DeciduousMidAge] * @IsDeciduous))) 
+    FROM [dbo].[AgeClasses]
 
-    --SELECT @TargetAgeClass = MIN([Number]) 
-    --FROM [dbo].[AgeClasses] 
-    --WHERE ABS(@TargetAge - ([ConiferousMidAge] * ~@IsDeciduous + [DeciduousMidAge] * @IsDeciduous)) = @MinAgeDif
-
-    SET @TargetAgeClass = [dbo].[fn_GetAgeClassByAge](ISNULL(@TechnicalAge, @OptimalFellingAge), @IsDeciduous)
+    SELECT @TargetAgeClass = MIN([Number]) 
+    FROM [dbo].[AgeClasses] 
+    WHERE ABS(@TargetAge - ([ConiferousMidAge] * ~@IsDeciduous + [DeciduousMidAge] * @IsDeciduous)) = @MinAgeDif
     
     DECLARE @AreaDifByClass TABLE
     (
