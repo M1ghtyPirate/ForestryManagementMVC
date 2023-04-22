@@ -44,6 +44,7 @@ namespace ForestryWeb.Models.Database
         public DbSet<SectionFellingType> view_SectionFellingTypes { get; set; } = null!;
         public DbSet<SectionFellingPeriod> view_SectionsFellingPeriods { get; set; } = null!;
         public DbSet<SectionsFellingVariant> view_SectionsFellingVariants { get; set; } = null!;
+        public DbSet<SectionMainFellingAgeCalc> view_SectionsMainFellingAgeCalc { get; set; } = null!;
         public DbSet<SectionTotal> view_SectionsTotal { get; set; } = null!;
         public DbSet<TreeGroup> view_TreeGroups { get; set; } = null!;
         public DbSet<TreeAgeGroupTotal> view_TreeAgeGroupsTotal { get; set; } = null!;

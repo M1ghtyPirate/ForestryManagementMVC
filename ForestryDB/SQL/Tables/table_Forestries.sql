@@ -9,6 +9,6 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Forestries')
         [CreationDate] DATETIME
             DEFAULT (GETDATE()),
         [EditDate] DATETIME,
-        [IsShared] BIT
+        [IsShared] BIT NOT NULL
             DEFAULT 0
     )

@@ -104,3 +104,18 @@ SELECT @ForestryID
 
 UPDATE [dbo].[Forestries]
 SET [IsShared] = 0
+
+ALTER TABLE [dbo].[Forestries]
+DROP CONSTRAINT [DF__Forestrie__IsSha__119F9925]
+
+ALTER TABLE [dbo].[Forestries]
+DROP COLUMN [IsShared]
+
+ALTER TABLE [dbo].[Forestries]
+ADD [IsShared] BIT NOT NULL DEFAULT 0
+
+ALTER TABLE [dbo].[ForestAreas]
+DROP CONSTRAINT [DF__ForestAre__IsSha__5090EFD7]
+
+ALTER TABLE [dbo].[ForestAreas]
+DROP COLUMN [IsShared]

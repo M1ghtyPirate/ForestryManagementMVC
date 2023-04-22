@@ -11,7 +11,6 @@ namespace ForestryWeb.Models.Database.Tables
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime? CreationDate { get; set; }
         public DateTime? EditDate { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public bool? IsShared { get; set; }
+        public bool IsShared { get; set; }
     }
 }
