@@ -14,6 +14,9 @@
 @foreach (var forestrySection in Model.Item1.OrderBy(g => g.SectionName))
 {
     var qualityClass = Math.Round((double)forestrySection.AvgQuality);
+    var calcClasses = Model.Item2.Where(g => g.TreeSpeciesID == forestrySection.TreeSpeciesID).DistinctBy(g => g.QualityClass).Select(g => g.QualityClass);
+    var minDiff = calcClasses.Min(c => (int)Math.Abs(c - qualityClass));
+    var closestClass = calcClasses.FirstOrDefault(c => (int)Math.Abs(c - qualityClass) == minDiff);
     <h5>@forestrySection.SectionName</h5>
     <h6>Порода: @forestrySection.TreeSpeciesName средний бонитет: @Formatting.toFixed(forestrySection.AvgQuality, p1)</h6>
     <table class="table">
@@ -38,7 +41,7 @@
             <th>масса, м3</th>
             <th>средний прирост, м3</th>
         </tr>
-        @foreach (var avgGrowthCalc in Model.Item2.Where(g => g.TreeSpeciesID == forestrySection.TreeSpeciesID && g.QualityClass == qualityClass).OrderBy(g => g.Age))
+        @foreach (var avgGrowthCalc in Model.Item2.Where(g => g.TreeSpeciesID == forestrySection.TreeSpeciesID && g.QualityClass == closestClass).OrderBy(g => g.Age))
         {
             <tr>
                 <td>@Formatting.toFixed(avgGrowthCalc.Age, p0)</td>

@@ -51,9 +51,9 @@
     {
         var ageGroups = Model.Item1.Where(g => g.SectionID == forestrySection.SectionID);
         var forestrySectionArea = ageGroups.Sum(g => g.Area);
-        <tr style="background-color: @(forestrySectionArea > minSectionArea ? "green" : "red")">
+        <tr>
             <td>@forestrySection.Name</td>
-            <td>@Formatting.toFixed(forestrySectionArea, p2)</td>
+            <td style="background-color: @(forestrySectionArea > minSectionArea ? "" : "yellow")">@Formatting.toFixed(forestrySectionArea, p2)</td>
         </tr>
     }
 </table>
