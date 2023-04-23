@@ -9,11 +9,13 @@ namespace ForestryWeb.Models.Database
         #region Tables
 
         public DbSet<AgeClass> AgeClasses { get; set; } = null!;
+        public DbSet<EmailCreditentials> EmailCreditentials { get; set; } = null!;
         public DbSet<ForestAreas> ForestAreas { get; set; } = null!;
         public DbSet<Forestry> Forestries { get; set; } = null!;
         public DbSet<GrowthRate> GrowthRate { get; set; } = null!;
         public DbSet<NonForestAreas> NonForestAreas { get; set; } = null!;
         public DbSet<ProductOutput> ProductOutput { get; set; } = null!;
+        public DbSet<ResetPassword> ResetPasswords { get; set; } = null!;
         public DbSet<QualityClass> QualityClasses { get; set; } = null!;
         public DbSet<Section> Sections { get; set; } = null!;
         public DbSet<TreeAgeGroup> TreeAgeGroups { get; set; } = null!;

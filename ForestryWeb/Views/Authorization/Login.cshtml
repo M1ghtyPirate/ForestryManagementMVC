@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Войти";
+}
+@model User
+
+<h2>Введите данные для аутентификации</h2>
+<form asp-action="login" asp-controller="authorization">
+    <p>
+        <label asp-for="Login">Логин</label>
+        <input id="Login" type="text" asp-for="Login" required value="@Model?.Login" onblur="trimLogin()"/>
+        <br/>
+        <div hidden="@(!(Model != null && Model.Login == null))">Пользователь не найден.</div>
+        <br/>
+        <label asp-for="Password">Пароль</label>
+        <input type="password" asp-for="Password" required value="@Model?.Password" />
+        <br />
+        <div hidden="@(!(Model != null &&  Model.Login != null && Model.Password == null))">Неверный пароль.</div>
+    </p>
+    <p>
+        <input type="submit" value="Войти" />
+    </p>
+</form>
+<a asp-controller="Authorization" asp-action="Register">Регистрация</a>
+<br/>
+<a asp-controller="Authorization" asp-action="ForgotPassword">Забыли пароль?</a>
+<script>
+    function trimLogin() 
+    {
+        var login = document.getElementById("Login");
+        login.value = login.value.trim();
+    }
+</script>

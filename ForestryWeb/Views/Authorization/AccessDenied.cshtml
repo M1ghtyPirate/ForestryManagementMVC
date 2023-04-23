@@ -1,0 +1,6 @@
+﻿@{
+    ViewData["Title"] = "Не хватает прав для доступа";
+}
+@model string
+
+<h2>Не хватает прав для доступа@(string.IsNullOrEmpty(Model) ? "" : $" к \"{Model}\"").</h2>

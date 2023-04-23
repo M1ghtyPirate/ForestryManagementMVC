@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Security.Claims;
+@{
     ViewData["Title"] = "Добавить лесничество";
 }
 @model ForestryWeb.Models.Database.Tables.Forestry
@@ -11,7 +12,7 @@
         <br/>
         <input type="text" asp-for="Name" value="@Model?.Name" />
         <br/>
-        <input type="checkbox" asp-for="IsShared" value="true" checked="@(Model?.IsShared)" /><label asp-for="IsShared">Общедоступно</label>
+        <input type="checkbox" asp-for="IsShared" value="true" checked="@(Model?.IsShared)" disabled="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin" && Context.User.FindFirstValue(ClaimTypes.NameIdentifier) != Model?.AuthorID + "")" /><label asp-for="IsShared">Общедоступно</label>
     </p>
     <p>
         <input type="submit" value="@(Model == null ? "Добавить" : "Изменить")" />

@@ -119,3 +119,31 @@ DROP CONSTRAINT [DF__ForestAre__IsSha__5090EFD7]
 
 ALTER TABLE [dbo].[ForestAreas]
 DROP COLUMN [IsShared]
+
+ALTER TABLE [dbo].[Users]
+ADD [IsAdmin] BIT NOT NULL DEFAULT 0
+
+ALTER TABLE [dbo].[ForestAreas]
+DROP CONSTRAINT [DF__ForestAre__IsAdm__5DEAEAF5] 
+
+ALTER TABLE [dbo].[ForestAreas]
+DROP COLUMN [IsAdmin] 
+
+UPDATE [dbo].[Users] 
+SET [IsAdmin] = 1
+WHERE [Login] = N'admin'
+
+ALTER TABLE [dbo].[Users]
+ADD [PasswordHashed] BINARY(32) NOT NULL DEFAULT 0
+
+ALTER TABLE [dbo].[Users]
+DROP COLUMN [PasswordHashed]
+
+ALTER TABLE [dbo].[Users]
+DROP CONSTRAINT [DF__Users__PasswordH__5FD33367]
+
+ALTER TABLE [dbo].[Users]
+DROP COLUMN [Password]
+
+ALTER TABLE [dbo].[Users]
+DROP CONSTRAINT [DF__Users__PasswordH__5FD33367]

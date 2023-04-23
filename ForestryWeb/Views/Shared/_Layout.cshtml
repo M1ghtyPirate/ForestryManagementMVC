@@ -28,6 +28,15 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Информация</a>
                         </li>
+                        <li class="nav-item" hidden="@(Context.User.Identity?.IsAuthenticated == true)">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Authorization" asp-action="Login">Войти</a>
+                        </li>
+                        <li class="nav-item" hidden="@(Context.User.Identity?.IsAuthenticated != true)">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="EditUser">@(Context.User.Identity?.Name)</a>
+                        </li>
+                        <li class="nav-item" hidden="@(Context.User.Identity?.IsAuthenticated != true)">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Authorization" asp-action="Logout">Выйти</a>
+                        </li>
                     </ul>
                 </div>
             </div>
