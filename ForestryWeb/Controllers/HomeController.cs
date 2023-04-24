@@ -871,6 +871,95 @@ namespace ForestryWeb.Controllers
             return View();
         }
 
+        #region DirectoryViews
+
+        /// <summary>
+        /// Список справочников.
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Directories()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Породы деревьев.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> TreeSpeciesDirectory()
+        {
+            var treeSpecies = await db.TreeSpecies.ToListAsync();
+            return View(treeSpecies);
+        }
+
+        /// <summary>
+        /// Товарная таблица.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> ProductOutputDirectory()
+        {
+            var productOutput = await db.ProductOutput.ToListAsync();
+            var treeSpecies = await db.TreeSpecies.ToListAsync();
+            return View(new Tuple<List<ProductOutput>, List<TreeSpecies>>(productOutput, treeSpecies));
+        }
+
+        /// <summary>
+        /// Таблица хода роста.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GrowthRateDirectory()
+        {
+            var growthRate = await db.GrowthRate.ToListAsync();
+            var treeSpecies = await db.TreeSpecies.ToListAsync();
+            var qualityClasses = await db.QualityClasses.ToListAsync();
+            return View(new Tuple<List<GrowthRate>, List<TreeSpecies>, List<QualityClass>>(growthRate, treeSpecies, qualityClasses));
+        }
+
+        #endregion
+
+        #region AdminViews
+
+        public async Task<IActionResult> Users()
+        {
+            if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin")
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+            var usersDB = await db.Users.ToListAsync();
+            return View(usersDB);
+        }
+
+        [HttpPost, DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = Int32.MaxValue, ValueLengthLimit = Int32.MaxValue, ValueCountLimit = Int32.MaxValue)]
+        public async Task<IActionResult> Users([Bind(Prefix = "Users")] List<User> users)
+        {
+            if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin")
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+
+            var usersDB = await db.Users.ToListAsync();
+
+            foreach(var user in users)
+            {
+                var userDB = usersDB.FirstOrDefault(u => u.UserID == user.UserID);
+                if(userDB == null || userDB.Login == "admin" && HttpContext.User.Identity.Name != "admin")
+                {
+                    continue;
+                }
+
+                if (userDB.Login != "admin" && userDB.Login != HttpContext.User.Identity?.Name)
+                {
+                    userDB.IsAdmin = user.IsAdmin;
+                }
+            }
+
+            db.SaveChanges();
+
+            return RedirectToAction("Users");
+        }
+
+        #endregion
+
         ///////////////////////////////////////////////////////////////
 
         public IActionResult Privacy()

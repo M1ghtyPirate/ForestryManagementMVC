@@ -21,11 +21,11 @@ namespace ForestryWeb.Controllers
 {
     public class AuthorizationController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<AuthorizationController> _logger;
         private ApplicationContext db;
 
 
-        public AuthorizationController(ILogger<HomeController> logger, ApplicationContext context)
+        public AuthorizationController(ILogger<AuthorizationController> logger, ApplicationContext context)
         {
             _logger = logger;
             db = context;

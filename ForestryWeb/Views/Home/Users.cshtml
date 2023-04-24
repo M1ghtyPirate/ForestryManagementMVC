@@ -1,0 +1,35 @@
+﻿@{
+    var userCount = 0;
+    var Title = "Список пользователей";
+    ViewData["Title"] = Title;
+    var p0 = "N0";
+    var p1 = "N1";
+}
+@model List<User>
+
+<h2>@Title</h2>
+<form asp-action="Users" asp-controller="Home">
+    <table class="table">
+        <tr>
+            <th >Логин</th>
+            <th >Email</th>
+            <th >Дата регистрации</th>
+            <th >Последний вход</th>
+            <th >Является администратором</th>
+        </tr>
+        @foreach (var user in Model.OrderBy(u => u.Login))
+        {
+            <tr style="@(user.UserID + "" == Context.User.FindFirstValue(ClaimTypes.NameIdentifier) ? "background-color: lightgray" : "")">
+                <td>
+                    <input type="text" name="Users[@(userCount)].UserID" value="@user.UserID" hidden="True" />
+                    @user.Login
+                </td>
+                <td>@user.Email</td>
+                <td>@user.RegDate</td>
+                <td>@user.LoginDate</td>
+                <td><input type="checkbox" name="Users[@(userCount++)].IsAdmin" value="true" checked="@user.IsAdmin" disabled="@(user.Login == "admin" || user.UserID + "" == Context.User.FindFirstValue(ClaimTypes.NameIdentifier))" /></td>
+            </tr>
+        }
+    </table>
+    <input type="submit" value="Внести изменения" />
+</form>
