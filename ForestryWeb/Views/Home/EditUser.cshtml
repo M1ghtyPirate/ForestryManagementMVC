@@ -4,31 +4,26 @@
 }
 @model UserInfoUpdate
 
-<h2>@title</h2>
-<form asp-action="edituser" asp-controller="home" onsubmit="return comparePasswords()">
-    <p>
-        <br />
-        <label asp-for="CurrentPassword">Текущий пароль</label>
-        <input id="CurrentPassword" type="password" asp-for="CurrentPassword" required/>
-        <br />
-        <div hidden="@(!(Model != null && Model.CurrentPassword == null))">Неверный пароль.</div>
-        <br/>
-        <label asp-for="NewPassword">Новый пароль</label>
-        <input id="NewPassword" type="password" asp-for="NewPassword" minlength="6" />
-        <br />
-        <br />
-        <label for="PasswordConfirmation">Повторите пароль</label>
-        <input id="PasswordConfirmation" type="password" minlength="6"/>
-        <br />
-        <div id="PasswordWarning" hidden="true">Пароли не совпадают.</div>
-        <br />
-        <label asp-for="Email">Email</label>
-        <input id="Email" type="email" asp-for="Email" value="@(Model?.Email ?? Context.User.FindFirstValue(ClaimTypes.Email))" onblur="trimEmail()" />
-    </p>
-    <p>
-        <input type="submit" value="Обновить данные" />
-    </p>
-</form>
+<div class="page-content-center page-content-auth">
+    <h2>@title</h2>
+    <form asp-action="edituser" asp-controller="home" onsubmit="return comparePasswords()">
+        <div>
+            <label asp-for="CurrentPassword">Текущий пароль</label>
+            <input id="CurrentPassword" type="password" asp-for="CurrentPassword" required/>
+            <div hidden="@(!(Model != null && Model.CurrentPassword == null))">Неверный пароль.</div>
+            <label asp-for="NewPassword">Новый пароль</label>
+            <input id="NewPassword" type="password" asp-for="NewPassword" minlength="6" />
+            <label for="PasswordConfirmation">Повторите пароль</label>
+            <input id="PasswordConfirmation" type="password" minlength="6"/>
+            <div id="PasswordWarning" hidden="true">Пароли не совпадают.</div>
+            <label asp-for="Email">Email</label>
+            <input id="Email" type="email" asp-for="Email" value="@(Model?.Email ?? Context.User.FindFirstValue(ClaimTypes.Email))" onblur="trimEmail()" />
+        </div>
+        <div>
+            <input type="submit" value="Обновить данные" />
+        </div>
+    </form>
+</div>
 <script>
     function trimEmail() 
     {

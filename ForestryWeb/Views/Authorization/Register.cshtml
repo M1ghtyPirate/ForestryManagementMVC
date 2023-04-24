@@ -3,30 +3,26 @@
 }
 @model User
 
-<h2>Введите данные для регистрации</h2>
-<form asp-action="register" asp-controller="authorization" onsubmit="return comparePasswords()">
-    <p>
-        <label asp-for="Login">Логин</label>
-        <input id="Login" type="text" asp-for="Login" required value="@Model?.Login" onblur="trimLogin()"/>
-        <br/>
-        <div hidden="@(!(Model != null && Model.Login == null))">Логин занят.</div>
-        <br/>
-        <label asp-for="Password">Пароль</label>
-        <input id="Password" type="password" asp-for="Password" required minlength="6" value="@Model?.Password" />
-        <br />
-        <br />
-        <label for="PasswordConfirmation">Повторите пароль</label>
-        <input id="PasswordConfirmation" type="password" required minlength="6" value="@Model?.Password" />
-        <br />
-        <div id="PasswordWarning" hidden="true">Пароли не совпадают.</div>
-        <br />
-        <label asp-for="Email">Email</label>
-        <input type="email" asp-for="Email" value="@Model?.Email" />
-    </p>
-    <p>
-        <input type="submit" value="Зарегистрироваться" />
-    </p>
-</form>
+<div class="page-content-center page-content-auth">
+    <h2>Введите данные для регистрации</h2>
+    <form asp-action="register" asp-controller="authorization" onsubmit="return comparePasswords()">
+        <div>
+            <label asp-for="Login">Логин</label>
+            <input id="Login" type="text" asp-for="Login" required value="@Model?.Login" onblur="trimLogin()"/>
+            <div hidden="@(!(Model != null && Model.Login == null))">Логин занят.</div>
+            <label asp-for="Password">Пароль</label>
+            <input id="Password" type="password" asp-for="Password" required minlength="6" value="@Model?.Password" />
+            <label for="PasswordConfirmation">Повторите пароль</label>
+            <input id="PasswordConfirmation" type="password" required minlength="6" value="@Model?.Password" />
+            <div id="PasswordWarning" hidden="true">Пароли не совпадают.</div>
+            <label asp-for="Email">Email</label>
+            <input type="email" asp-for="Email" value="@Model?.Email" />
+        </div>
+        <div>
+            <input type="submit" value="Зарегистрироваться" />
+        </div>
+    </form>
+</div>
 <script>
     function trimLogin() 
     {

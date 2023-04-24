@@ -1,26 +1,104 @@
-html {
-  font-size: 14px;
-}
+    html {
+        font-size: 14px;
+    }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
+    @media (min-width: 768px) {
+        html {
+            font-size: 16px;
+        }
+    }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
+    .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+        box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    }
 
-html {
-  position: relative;
-  min-height: 100%;
-}
+    html {
+        position: relative;
+        min-height: 100%;
+    }
 
-body {
-  margin-bottom: 60px;
-}
+    body {
+        margin-bottom: 60px;
 
-.table * {
-    border-width: 1px;
-}
+        background-image: url(../img/bg.svg);
+        background-color: antiquewhite;
+        background-repeat: repeat;
+        background-size: 200px;
+    }
+
+    .table * {
+        border-width: 1px;
+    }
+
+    .navbar-brand {
+        background-color: rgb(0, 102, 51);
+        color: white !important;
+        font-weight: bold;
+        padding: 15px;
+    }
+
+    #navbar-layout {
+        /*background-color: rgb(149, 193, 31) !important;*/
+    }
+
+    .navbar, .container-fluid {
+        padding: 0;
+    }
+
+    .navbar-toggler {
+        /*display: inline-block !important;*/
+    }
+
+    * {
+        font-family: Calibri;
+        font-size: large;
+    }
+
+    main {
+        display: flex;
+        flex-direction: column;
+        align-items: center
+    }
+
+    div .page-content-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+        background-color: white
+        /*background-color:red !important;*/
+    }
+
+    /*Аутентификация*/
+    .page-content-auth {
+        border-radius: 10px;
+        border: 1px lightgray solid;
+        box-shadow: 0px 0px 20px lightgray;
+    }
+
+    .page-content-auth form, .page-content-auth form input {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .page-content-auth input/*[type=submit]*/ {
+        min-width: 250px;
+        width: 100%;
+    }
+
+
+    .page-content-auth input[type=submit] {
+        /*width: 50% !important;*/
+        min-width: 100px;
+        margin: 15px 0px 15px 0px;
+    }
+
+    .page-content-auth label {
+        vertical-align: top;
+    }
+
+    /*Предупреждения*/
+    .page-content-auth form > div > div {
+        color: red;
+    }
