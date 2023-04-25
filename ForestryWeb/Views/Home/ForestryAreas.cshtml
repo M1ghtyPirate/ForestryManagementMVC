@@ -6,88 +6,92 @@
 }
 @model Tuple<ForestryAreas, ForestryAreasPercentage>
 
-<h2><a asp-action="forestry" asp-route-id=@Model.Item1.ForestryID>@Model.Item1.ForestryName</a> - @subTitle</h2>
-<table class="table">
-    <tr>
-        <th rowspan="3">Общая площадь</th>
-        <th colspan="7">ЛЕСНАЯ ПЛОЩАДЬ в га</th>
-        <th colspan="7">НЕЛЕСНАЯ ПЛОЩАДЬ в га</th>
-        <th rowspan="3">Итого нелесной площади</th>
-    </tr>
-    <tr>
-        <th rowspan="2">покрытая лесом</th>
-        <th colspan="5">непокрытая лесом</th>
-        <th rowspan="2">Всего лесной площади</th>
-        <th rowspan="2">пашни</th>
-        <th rowspan="2">сенокосы и пастбища</th>
-        <th rowspan="2">воды</th>
-        <th colspan="2">площади особого назначения</th>
-        <th colspan="2">неиспользуемые площади</th>
-    </tr>
-    <tr>
-        <th>лесосеки</th>
-        <th>гари</th>
-        <th>пустыри прогалины</th>
-        <th>редины</th>
-        <th>итого</th>
-        <th>дороги, просеки, канавы</th>
-        <th>усадьбы и прочие земли</th>
-        <th>болота</th>
-        <th>прочее</th>
-    </tr>
-    <tr>
-        <td>@Formatting.toFixed(Model.Item1.TotalArea, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.Forest, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.Felling, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.Burnt, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.Empty, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.Thin, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.NonForestForest, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.TotalForest, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.Field, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.Pasture, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.Water, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.Road, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.House, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.Swamp, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.Other, p)</td>
-        <td>@Formatting.toFixed(Model.Item1.TotalNonForest, p)</td>
-    </tr>
-    <tr>
-        <td>@Formatting.toFixedPercent(Model.Item2.TotalAreaTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.ForestTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.FellingTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.BurntTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.EmptyTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.ThinTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.NonForestForestTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.TotalForestTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.FieldTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.PastureTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.WaterTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.RoadTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.HouseTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.SwampTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.OtherTotal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.TotalNonForestTotal, pp)</td>
-    </tr>
-    <tr>
-        <td>@Formatting.toFixedPercent(Model.Item2.TotalAreaLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.ForestLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.FellingLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.BurntLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.EmptyLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.ThinLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.NonForestForestLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.TotalForestLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.FieldLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.PastureLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.WaterLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.RoadLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.HouseLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.SwampLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.OtherLocal, pp)</td>
-        <td>@Formatting.toFixedPercent(Model.Item2.TotalNonForestLocal, pp)</td>
-    </tr>
-</table>
-<a asp-action="editforestryareas" asp-route-id=@Model.Item1.ForestryID><input type="button" value="Изменить" /></a>
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="forestry" asp-route-id=@Model.Item1.ForestryID>@Model.Item1.ForestryName</a> - @subTitle</h1>
+    <table class="table">
+        <tr>
+            <th rowspan="3">Общая площадь</th>
+            <th colspan="7">ЛЕСНАЯ ПЛОЩАДЬ в га</th>
+            <th colspan="7">НЕЛЕСНАЯ ПЛОЩАДЬ в га</th>
+            <th rowspan="3">Итого нелесной площади</th>
+        </tr>
+        <tr>
+            <th rowspan="2">покрытая лесом</th>
+            <th colspan="5">непокрытая лесом</th>
+            <th rowspan="2">Всего лесной площади</th>
+            <th rowspan="2">пашни</th>
+            <th rowspan="2">сенокосы и пастбища</th>
+            <th rowspan="2">воды</th>
+            <th colspan="2">площади особого назначения</th>
+            <th colspan="2">неиспользуемые площади</th>
+        </tr>
+        <tr>
+            <th>лесосеки</th>
+            <th>гари</th>
+            <th>пустыри прогалины</th>
+            <th>редины</th>
+            <th>итого</th>
+            <th>дороги, просеки, канавы</th>
+            <th>усадьбы и прочие земли</th>
+            <th>болота</th>
+            <th>прочее</th>
+        </tr>
+        <tr>
+            <td>@Formatting.toFixed(Model.Item1.TotalArea, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.Forest, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.Felling, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.Burnt, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.Empty, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.Thin, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.NonForestForest, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.TotalForest, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.Field, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.Pasture, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.Water, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.Road, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.House, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.Swamp, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.Other, p)</td>
+            <td>@Formatting.toFixed(Model.Item1.TotalNonForest, p)</td>
+        </tr>
+        <tr>
+            <td>@Formatting.toFixedPercent(Model.Item2.TotalAreaTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.ForestTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.FellingTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.BurntTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.EmptyTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.ThinTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.NonForestForestTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.TotalForestTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.FieldTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.PastureTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.WaterTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.RoadTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.HouseTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.SwampTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.OtherTotal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.TotalNonForestTotal, pp)</td>
+        </tr>
+        <tr>
+            <td>@Formatting.toFixedPercent(Model.Item2.TotalAreaLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.ForestLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.FellingLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.BurntLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.EmptyLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.ThinLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.NonForestForestLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.TotalForestLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.FieldLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.PastureLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.WaterLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.RoadLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.HouseLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.SwampLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.OtherLocal, pp)</td>
+            <td>@Formatting.toFixedPercent(Model.Item2.TotalNonForestLocal, pp)</td>
+        </tr>
+    </table>
+    <div>
+        <a asp-action="editforestryareas" asp-route-id=@Model.Item1.ForestryID><input type="button" value="Изменить" /></a>
+    </div>
+</div>

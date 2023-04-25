@@ -8,103 +8,107 @@
 }
 @model Tuple<List<TreeGroup>, List<TreeQualityGroupTotal>, List<TreeAgeGroupTotal>, List<TreeSpeciesGroupTotal>, List<TreeForestryAgeGroupTotal>, TreeForestryGroupTotal>
 
-<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
-<table class="table">
-    <tr>
-        <th rowspan="2">Преобладающая порода</th>
-        <th rowspan="2">Бонитет</th>
-        <th colspan="8">Покрытая лесом площадь, га / запас, м3 по классам возраста</th>
-        <th rowspan="2">Всего покрытой лесом</th>
-    </tr>
-    <tr>
-        <th>Ⅰ</th>
-        <th>Ⅱ</th>
-        <th>Ⅲ</th>
-        <th>Ⅳ</th>
-        <th>Ⅴ</th>
-        <th>Ⅵ</th>
-        <th>Ⅶ</th>
-        <th>Ⅷ и выше</th>
-    </tr>
-    @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
-    {
-        var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h1>
+    <table class="table">
         <tr>
-            <td rowspan="@(qualityGroups.Count() * 2 + 1)">@speciesGroup.TreeSpeciesName</td>
+            <th rowspan="2">Преобладающая порода</th>
+            <th rowspan="2">Бонитет</th>
+            <th colspan="8">Покрытая лесом площадь, га / запас, м3 по классам возраста</th>
+            <th rowspan="2">Всего покрытой лесом</th>
         </tr>
-                
-        @foreach (var qualityGroup in qualityGroups)
+        <tr>
+            <th>Ⅰ</th>
+            <th>Ⅱ</th>
+            <th>Ⅲ</th>
+            <th>Ⅳ</th>
+            <th>Ⅴ</th>
+            <th>Ⅵ</th>
+            <th>Ⅶ</th>
+            <th>Ⅷ и выше</th>
+        </tr>
+        @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
         {
+            var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
             <tr>
-                <td rowspan="2">@qualityGroup.QualityClass</td>
-                @{
-                    var ageGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClass == qualityGroup.QualityClass);
-                }
+                <td rowspan="@(qualityGroups.Count() * 2 + 1)">@speciesGroup.TreeSpeciesName</td>
+            </tr>
+                
+            @foreach (var qualityGroup in qualityGroups)
+            {
+                <tr>
+                    <td rowspan="2">@qualityGroup.QualityClass</td>
+                    @{
+                        var ageGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClass == qualityGroup.QualityClass);
+                    }
                         
+                    @for (var i = 1; i <= 8; i++)
+                    {
+                        var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
+                        <td>@Formatting.toFixed(ageGroup?.Area, p0)</td>
+                    }
+                    <td>@Formatting.toFixed(Model.Item2.FirstOrDefault(g => g.TreeSpeciesID == qualityGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID).Area, p0)</td>
+                </tr>
+
+                <tr>
+                    @for (var i = 1; i <= 8; i++)
+                    {
+                        var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
+                        <td>@Formatting.toFixed(ageGroup?.Volume, p0)</td>
+                    }
+                    <td>@Formatting.toFixed(Model.Item2.FirstOrDefault(g => g.TreeSpeciesID == qualityGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID).Volume, p0)</td>
+                </tr>
+            }
+
+            <tr class="table-item-highlighted">
+                <td rowspan="2" class="table-item-highlighted">Итого:</td>
+                <td rowspan="2"></td>
+                @{
+                    var ageGroupsTotal = Model.Item3.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID);
+                }
+                
                 @for (var i = 1; i <= 8; i++)
                 {
-                    var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
-                    <td>@Formatting.toFixed(ageGroup?.Area, p0)</td>
+                    var ageGroupTotal = ageGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
+                    <td>@Formatting.toFixed(ageGroupTotal?.Area, p0)</td>
                 }
-                <td>@Formatting.toFixed(Model.Item2.FirstOrDefault(g => g.TreeSpeciesID == qualityGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID).Area, p0)</td>
+                <td>@Formatting.toFixed(Model.Item4.FirstOrDefault(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).Area, p0)</td>
             </tr>
 
-            <tr>
+            <tr class="table-item-highlighted">
                 @for (var i = 1; i <= 8; i++)
                 {
-                    var ageGroup = ageGroups.FirstOrDefault(g => g.AgeClass == i);
-                    <td>@Formatting.toFixed(ageGroup?.Volume, p0)</td>
+                    var ageGroupTotal = ageGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
+                    <td>@Formatting.toFixed(ageGroupTotal?.Volume, p0)</td>
                 }
-                <td>@Formatting.toFixed(Model.Item2.FirstOrDefault(g => g.TreeSpeciesID == qualityGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID).Volume, p0)</td>
+                <td>@Formatting.toFixed(Model.Item4.FirstOrDefault(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).Volume, p0)</td>
             </tr>
         }
-
-        <tr>
-            <td rowspan="2">Итого:</td>
+        <tr class="table-item-highlighted">
+            <td rowspan="2">Всего:</td>
             <td rowspan="2"></td>
             @{
-                var ageGroupsTotal = Model.Item3.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID);
+                var forestryAgeGroupsTotal = Model.Item5;
             }
-                
             @for (var i = 1; i <= 8; i++)
             {
-                var ageGroupTotal = ageGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
-                <td>@Formatting.toFixed(ageGroupTotal?.Area, p0)</td>
+                var forestryAgeGroupTotal = forestryAgeGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
+                <td>@Formatting.toFixed(forestryAgeGroupTotal?.Area, p0)</td>
             }
-            <td>@Formatting.toFixed(Model.Item4.FirstOrDefault(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).Area, p0)</td>
+            <td>@Formatting.toFixed(Model.Item6.Area, p0)</td>
         </tr>
 
-        <tr>
+        <tr class="table-item-highlighted">
             @for (var i = 1; i <= 8; i++)
             {
-                var ageGroupTotal = ageGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
-                <td>@Formatting.toFixed(ageGroupTotal?.Volume, p0)</td>
+                var forestryAgeGroupTotal = forestryAgeGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
+                <td>@Formatting.toFixed(forestryAgeGroupTotal?.Volume, p0)</td>
             }
-            <td>@Formatting.toFixed(Model.Item4.FirstOrDefault(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).Volume, p0)</td>
+            <td>@Formatting.toFixed(Model.Item6.Volume, p0)</td>
         </tr>
-    }
-    <tr>
-        <td rowspan="2">Всего:</td>
-        <td rowspan="2"></td>
-        @{
-            var forestryAgeGroupsTotal = Model.Item5;
-        }
-        @for (var i = 1; i <= 8; i++)
-        {
-            var forestryAgeGroupTotal = forestryAgeGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
-            <td>@Formatting.toFixed(forestryAgeGroupTotal?.Area, p0)</td>
-        }
-        <td>@Formatting.toFixed(Model.Item6.Area, p0)</td>
-    </tr>
-
-    <tr>
-        @for (var i = 1; i <= 8; i++)
-        {
-            var forestryAgeGroupTotal = forestryAgeGroupsTotal.FirstOrDefault(g => g.AgeClass == i);
-            <td>@Formatting.toFixed(forestryAgeGroupTotal?.Volume, p0)</td>
-        }
-        <td>@Formatting.toFixed(Model.Item6.Volume, p0)</td>
-    </tr>
     
-</table>
-<a asp-action="editforestrytreegroups" asp-route-id=@forestryID><input type="button" value="Изменить" /></a>
+    </table>
+    <div>
+        <a asp-action="editforestrytreegroups" asp-route-id=@forestryID><input type="button" value="Изменить" /></a>
+    </div>
+</div>

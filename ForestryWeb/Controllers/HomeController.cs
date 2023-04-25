@@ -864,8 +864,12 @@ namespace ForestryWeb.Controllers
                 var claimsIdentity = HttpContext.User.Identity as ClaimsIdentity;
                 claimsIdentity.RemoveClaim(claimsIdentity.FindFirst(ClaimTypes.Email));
                 claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, userInfoUpdate.Email));
+                var authProperties = HttpContext.Features.Get<IAuthenticateResultFeature>().AuthenticateResult.Properties;
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme, 
+                    new ClaimsPrincipal(claimsIdentity),
+                    new AuthenticationProperties() { IsPersistent = authProperties.IsPersistent, ExpiresUtc = authProperties.ExpiresUtc });
             }
             db.SaveChanges();
             return View();
@@ -919,6 +923,10 @@ namespace ForestryWeb.Controllers
 
         #region AdminViews
 
+        /// <summary>
+        /// Список пользователей.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Users()
         {
             if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin")
@@ -929,6 +937,11 @@ namespace ForestryWeb.Controllers
             return View(usersDB);
         }
 
+        /// <summary>
+        /// Выдача админских прав.
+        /// </summary>
+        /// <param name="users"></param>
+        /// <returns></returns>
         [HttpPost, DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = Int32.MaxValue, ValueLengthLimit = Int32.MaxValue, ValueCountLimit = Int32.MaxValue)]
         public async Task<IActionResult> Users([Bind(Prefix = "Users")] List<User> users)
         {
@@ -964,7 +977,7 @@ namespace ForestryWeb.Controllers
 
         public IActionResult Privacy()
         {
-            return View();
+            return RedirectToAction("Privacy", "Authorization");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

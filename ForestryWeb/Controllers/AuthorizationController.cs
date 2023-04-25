@@ -129,6 +129,7 @@ namespace ForestryWeb.Controllers
             }
             db.SaveChanges();
 
+            var rememberMe = user.IsAdmin;
             var claims = new List<Claim> {
                 new Claim(ClaimTypes.NameIdentifier, ((Guid)userDB.UserID) + ""),
                 new Claim(ClaimTypes.Name, userDB.Login),
@@ -136,7 +137,11 @@ namespace ForestryWeb.Controllers
                 new Claim(ClaimTypes.Email, userDB.Email ?? "")
             };
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme, 
+                new ClaimsPrincipal(claimsIdentity), 
+                new AuthenticationProperties() { IsPersistent = rememberMe, ExpiresUtc = DateTime.Now.AddYears(1) });
             //return Results.Redirect(returnUrl ?? "/");
 
             return RedirectToAction("Index", "Home");
@@ -178,6 +183,17 @@ namespace ForestryWeb.Controllers
             user.RegDate = DateTime.Now;
 
             user.PasswordHashed = new byte[32];
+
+            if(user.Login.ToLower() == "admin")
+            {
+                user.Login = user.Login.ToLower();
+                user.IsAdmin = true;
+            }
+            else
+            {
+                user.IsAdmin = false;
+            }
+
             var addedUserDB = db.Users.Add(user);
             addedUserDB.Entity.PasswordHashed = UserInfo.EncodePassword(user.Password, addedUserDB.Entity.UserID);
 
@@ -258,35 +274,35 @@ namespace ForestryWeb.Controllers
         /// <summary>
         /// Восстановление пароля.
         /// </summary>
-        /// <param name="resetPaswordData"></param>
+        /// <param name="resetPasswordData"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> ResetPassword(ResetPasswordData resetPaswordData)
+        public async Task<IActionResult> ResetPassword(ResetPasswordData resetPasswordData)
         {
             if (HttpContext.User.Identity?.IsAuthenticated == true)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            var resetPasswordDB = await db.ResetPasswords.FirstOrDefaultAsync(p => p.UserID == resetPaswordData.UserID);
-            var userDB = await db.Users.FirstOrDefaultAsync(u => u.UserID == resetPaswordData.UserID);
+            var resetPasswordDB = await db.ResetPasswords.FirstOrDefaultAsync(p => p.UserID == resetPasswordData.UserID);
+            var userDB = await db.Users.FirstOrDefaultAsync(u => u.UserID == resetPasswordData.UserID);
 
             if (resetPasswordDB == null || userDB == null)
             {
                 return RedirectToAction("AccessDenied", new { resourceName = "Восстановление пароля пользователя." });
             }
 
-            if (!Enumerable.SequenceEqual(resetPasswordDB.ResetPasswordHashed, UserInfo.EncodePassword(resetPaswordData.ResetPassword, resetPaswordData.UserID)))
+            if (!Enumerable.SequenceEqual(resetPasswordDB.ResetPasswordHashed, UserInfo.EncodePassword(resetPasswordData.ResetPassword, resetPasswordData.UserID)))
             {
-                return View(resetPaswordData);
+                return View(resetPasswordData);
             }
 
-            if (string.IsNullOrEmpty(resetPaswordData.NewPassword))
+            if (string.IsNullOrEmpty(resetPasswordData.NewPassword))
             {
-                return View(resetPaswordData);
+                return View(resetPasswordData);
             }
 
-            var newPasswordArr = UserInfo.EncodePassword(resetPaswordData.NewPassword, resetPaswordData.UserID);
+            var newPasswordArr = UserInfo.EncodePassword(resetPasswordData.NewPassword, resetPasswordData.UserID);
             userDB.PasswordHashed = newPasswordArr;
             db.ResetPasswords.Remove(resetPasswordDB);
             
@@ -306,6 +322,11 @@ namespace ForestryWeb.Controllers
         }
 
         ///////////////////////////////////////////////////////////////
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

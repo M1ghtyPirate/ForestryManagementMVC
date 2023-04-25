@@ -7,51 +7,53 @@
 }
 @model Tuple<Forestry, ForestryAreas>
 
-<h2><a asp-action="forestry" asp-route-id=@Model.Item1.ForestryID>@Model.Item1.Name</a> - @subTitle</h2>
-<form asp-action="addforestryareas" asp-controller="home">
-    <input type="text" asp-for="Item2.ForestryID" value="@Model.Item1.ForestryID" hidden ="True"/>
-    <table class="table">
-        <tr>
-            <th colspan="6">ЛЕСНАЯ ПЛОЩАДЬ в га</th>
-            <th colspan="7">НЕЛЕСНАЯ ПЛОЩАДЬ в га</th>
-        </tr>
-        <tr>
-            <th rowspan="2">покрытая лесом</th>
-            <th colspan="5">непокрытая лесом</th>
-            <th rowspan="2">пашни</th>
-            <th rowspan="2">сенокосы и пастбища</th>
-            <th rowspan="2">воды</th>
-            <th colspan="2">площади особого назначения</th>
-            <th colspan="2">неиспользуемые площади</th>
-        </tr>
-        <tr>
-            <th>лесосеки</th>
-            <th>гари</th>
-            <th>пустыри прогалины</th>
-            <th>редины</th>
-            <th>итого</th>
-            <th>дороги, просеки, канавы</th>
-            <th>усадьбы и прочие земли</th>
-            <th>болота</th>
-            <th>прочее</th>
-        </tr>
-        <tr>
-            <td>@Formatting.toFixed(Model.Item2?.Forest, p)</td>
-            <td><input type="number" asp-for="Item2.Felling" value="@Formatting.toDefaultCulture(Model.Item2?.Felling)" step="@step" min="0"/></td>
-            <td><input type="number" asp-for="Item2.Burnt" value="@Formatting.toDefaultCulture(Model.Item2?.Burnt)" step="@step" min="0" /></td>
-            <td><input type="number" asp-for="Item2.Empty" value="@Formatting.toDefaultCulture(Model.Item2?.Empty)" step="@step" min="0" /></td>
-            <td><input type="number" asp-for="Item2.Thin" value="@Formatting.toDefaultCulture(Model.Item2?.Thin)" step="@step" min="0" /></td>
-            <td><input type="number" asp-for="Item2.NonForestForest" value="@Formatting.toDefaultCulture(Model.Item2?.NonForestForest)" step="@step" min="0" /></td>
-            <td><input type="number" asp-for="Item2.Field" value="@Formatting.toDefaultCulture(Model.Item2?.Field)" step="@step" min="0" /></td>
-            <td><input type="number" asp-for="Item2.Pasture" value="@Formatting.toDefaultCulture(Model.Item2?.Pasture)" step="@step" min="0" /></td>
-            <td><input type="number" asp-for="Item2.Water" value="@Formatting.toDefaultCulture(Model.Item2?.Water)" step="@step" min="0" /></td>
-            <td><input type="number" asp-for="Item2.Road" value="@Formatting.toDefaultCulture(Model.Item2?.Road)" step="@step" min="0" /></td>
-            <td><input type="number" asp-for="Item2.House" value="@Formatting.toDefaultCulture(Model.Item2?.House)" step="@step" min="0" /></td>
-            <td><input type="number" asp-for="Item2.Swamp" value="@Formatting.toDefaultCulture(Model.Item2?.Swamp)" step="@step" min="0" /></td>
-            <td><input type="number" asp-for="Item2.Other" value="@Formatting.toDefaultCulture(Model.Item2?.Other)" step="@step" min="0" /></td>
-        </tr>
-    </table>
-    <p>
-        <input type="submit" value="@(Model.Item2 == null ? "Добавить" : "Внести изменения")" />
-    </p>
-</form>
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="forestry" asp-route-id=@Model.Item1.ForestryID>@Model.Item1.Name</a> - @subTitle</h1>
+    <form asp-action="addforestryareas" asp-controller="home">
+        <input type="text" asp-for="Item2.ForestryID" value="@Model.Item1.ForestryID" hidden ="True"/>
+        <table class="table">
+            <tr>
+                <th colspan="6">ЛЕСНАЯ ПЛОЩАДЬ в га</th>
+                <th colspan="7">НЕЛЕСНАЯ ПЛОЩАДЬ в га</th>
+            </tr>
+            <tr>
+                <th rowspan="2">покрытая лесом</th>
+                <th colspan="5">непокрытая лесом</th>
+                <th rowspan="2">пашни</th>
+                <th rowspan="2">сенокосы и пастбища</th>
+                <th rowspan="2">воды</th>
+                <th colspan="2">площади особого назначения</th>
+                <th colspan="2">неиспользуемые площади</th>
+            </tr>
+            <tr>
+                <th>лесосеки</th>
+                <th>гари</th>
+                <th>пустыри прогалины</th>
+                <th>редины</th>
+                <th>итого</th>
+                <th>дороги, просеки, канавы</th>
+                <th>усадьбы и прочие земли</th>
+                <th>болота</th>
+                <th>прочее</th>
+            </tr>
+            <tr>
+                <td>@Formatting.toFixed(Model.Item2?.Forest, p)</td>
+                <td><input type="number" asp-for="Item2.Felling" value="@Formatting.toDefaultCulture(Model.Item2?.Felling)" step="@step" min="0"/></td>
+                <td><input type="number" asp-for="Item2.Burnt" value="@Formatting.toDefaultCulture(Model.Item2?.Burnt)" step="@step" min="0" /></td>
+                <td><input type="number" asp-for="Item2.Empty" value="@Formatting.toDefaultCulture(Model.Item2?.Empty)" step="@step" min="0" /></td>
+                <td><input type="number" asp-for="Item2.Thin" value="@Formatting.toDefaultCulture(Model.Item2?.Thin)" step="@step" min="0" /></td>
+                <td><input type="number" asp-for="Item2.NonForestForest" value="@Formatting.toDefaultCulture(Model.Item2?.NonForestForest)" step="@step" min="0" /></td>
+                <td><input type="number" asp-for="Item2.Field" value="@Formatting.toDefaultCulture(Model.Item2?.Field)" step="@step" min="0" /></td>
+                <td><input type="number" asp-for="Item2.Pasture" value="@Formatting.toDefaultCulture(Model.Item2?.Pasture)" step="@step" min="0" /></td>
+                <td><input type="number" asp-for="Item2.Water" value="@Formatting.toDefaultCulture(Model.Item2?.Water)" step="@step" min="0" /></td>
+                <td><input type="number" asp-for="Item2.Road" value="@Formatting.toDefaultCulture(Model.Item2?.Road)" step="@step" min="0" /></td>
+                <td><input type="number" asp-for="Item2.House" value="@Formatting.toDefaultCulture(Model.Item2?.House)" step="@step" min="0" /></td>
+                <td><input type="number" asp-for="Item2.Swamp" value="@Formatting.toDefaultCulture(Model.Item2?.Swamp)" step="@step" min="0" /></td>
+                <td><input type="number" asp-for="Item2.Other" value="@Formatting.toDefaultCulture(Model.Item2?.Other)" step="@step" min="0" /></td>
+            </tr>
+        </table>
+        <div>
+            <input type="submit" value="@(Model.Item2 == null ? "Добавить" : "Внести изменения")" />
+        </div>
+    </form>
+</div>

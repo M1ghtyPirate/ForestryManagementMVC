@@ -13,97 +13,100 @@
 }
 @model Tuple<List<TreeGroup>, TreeForestryGroupTotal, List<Section>>
 
-<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
-<form onsubmit="return isFormValid()" asp-action="addforestrytreegroupsallocation" asp-controller="home">
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h1>
+    <form onsubmit="return isFormValid()" asp-action="addforestrytreegroupsallocation" asp-controller="home">
+        <table class="table">
+            <tr>
+                <th>Преобладающая порода</th>
+                <th>Бонитет</th>
+                <th>Всего покрытой лесом площади, га</th>
+                <th>Название секции</th>
+            </tr>
+            @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
+            {
+                var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
+                <tr>
+                    <td rowspan="@(qualityGroups.Count() + 1)">@speciesGroup.TreeSpeciesName</td>
+                </tr>
+
+                @foreach (var qualityGroup in qualityGroups)
+                {
+                    var ageGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID);
+                    var sectionName = @Model.Item3?.FirstOrDefault(s => s.SectionID == ageGroups.FirstOrDefault()?.SectionID)?.Name;
+                    var sectionArea = ageGroups.Sum(g => g.Area);
+                    <tr>
+                        <td>@qualityGroup.QualityClass</td>
+
+                        <td>@Formatting.toFixed(sectionArea, p0)</td>
+                        <td>
+                            <input type="text" name="SectionAllocations[@(groupCount)].ForestryID" value="@forestryID" hidden="True" />
+                            <input type="text" name="SectionAllocations[@(groupCount)].TreeSpeciesID" value="@speciesGroup.TreeSpeciesID" hidden="True" />
+                            <input type="text" name="SectionAllocations[@(groupCount)].QualityClass" value="@qualityGroup.QualityClass" hidden="True" />
+                            <input type="text"
+                                name="SectionAllocations[@(groupCount++)].SectionName" 
+                                value="@sectionName" 
+                                data-area="@sectionArea"
+                                data-treespeciestype="@(qualityGroup.IsDeciduous ? "Мягколиственная" : "Хвойная")"
+                                data-qualityclass="@(qualityGroup.QualityClass)"
+                                onblur="formSectionsTotal()" 
+                                list="sectionsDataList" 
+                                placeholder="@getDefaultSectionName(qualityGroup)" />
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+        <div>
+            <input type="submit" value="Назначить секции" />
+        </div>
+    </form>
+
+    <h5 id="forestArea" data-area="@Model.Item2.Area">Лесопокрытая площадь лесничества: @Formatting.toFixed(Model.Item2.Area, p0)</h5>
+    @{
+        var minSectionArea = Model.Item2.Area * 0.1;
+    }
+    <h5>Минимальная рекомендуемая площадь хозсекции: @Formatting.toFixed(Model.Item2.Area, p0) * 0,1 = @Formatting.toFixed(minSectionArea, p2)</h5>
     <table class="table">
         <tr>
-            <th>Преобладающая порода</th>
-            <th>Бонитет</th>
-            <th>Всего покрытой лесом площади, га</th>
             <th>Название секции</th>
+            <th>Тип по породам</th>
+            <th>Тип по бонитетам</th>
+            <th>Площадь</th>
         </tr>
-        @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
-        {
-            var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
-            <tr>
-                <td rowspan="@(qualityGroups.Count() + 1)">@speciesGroup.TreeSpeciesName</td>
-            </tr>
-
-            @foreach (var qualityGroup in qualityGroups)
-            {
-                var ageGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID);
-                var sectionName = @Model.Item3?.FirstOrDefault(s => s.SectionID == ageGroups.FirstOrDefault()?.SectionID)?.Name;
-                var sectionArea = ageGroups.Sum(g => g.Area);
-                <tr>
-                    <td>@qualityGroup.QualityClass</td>
-
-                    <td>@Formatting.toFixed(sectionArea, p0)</td>
-                    <td>
-                        <input type="text" name="SectionAllocations[@(groupCount)].ForestryID" value="@forestryID" hidden="True" />
-                        <input type="text" name="SectionAllocations[@(groupCount)].TreeSpeciesID" value="@speciesGroup.TreeSpeciesID" hidden="True" />
-                        <input type="text" name="SectionAllocations[@(groupCount)].QualityClass" value="@qualityGroup.QualityClass" hidden="True" />
-                        <input type="text" name="SectionAllocations[@(groupCount++)].SectionName" value="@sectionName" 
-                            data-area="@sectionArea"
-                            data-treespeciestype="@(qualityGroup.IsDeciduous ? "Мягколиственная" : "Хвойная")"
-                            data-qualityclass="@(qualityGroup.QualityClass)"
-                            onblur="formSectionsTotal()" 
-                            list="sectionsDataList" 
-                            placeholder="@getDefaultSectionName(qualityGroup)" />
-                    </td>
-                </tr>
-            }
-        }
+        <tbody id="sectionsBlock">
+        </tbody>
+        <tr id="newSectionRow" hidden="true">
+            <td id="sectionName"></td>
+            <td id="treeSpeciesType"></td>
+            <td id="qualityTier"></td>
+            <td id="sectionArea"></td>
+        </tr>
     </table>
-    <p>
-        <input type="submit" value="Назначить секции" />
-    </p>
-</form>
 
-<br />
-<h5 id="forestArea" data-area="@Model.Item2.Area">Лесопокрытая площадь лесничества: @Formatting.toFixed(Model.Item2.Area, p0)</h5>
-@{
-    var minSectionArea = Model.Item2.Area * 0.1;
-}
-<h5>Минимальная рекомендуемая площадь хозсекции: @Formatting.toFixed(Model.Item2.Area, p0) * 0,1 = @Formatting.toFixed(minSectionArea, p2)</h5>
-<table class="table">
-    <tr>
-        <th>Название секции</th>
-        <th>Тип по породам</th>
-        <th>Тип по бонитетам</th>
-        <th>Площадь</th>
-    </tr>
-    <tbody id="sectionsBlock">
-    </tbody>
-    <tr id="newSectionRow" hidden="true">
-        <td id="sectionName"></td>
-        <td id="treeSpeciesType"></td>
-        <td id="qualityTier"></td>
-        <td id="sectionArea"></td>
-    </tr>
-</table>
-
-<datalist id="sectionsDataList">
-    <div id="sectionNames">
-    </div>
-    <div id="defaultSectionNames">
-        @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
-        {
-            var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
-
-            var highQualityGroup = qualityGroups.FirstOrDefault(g => g.QualityClass < 4);
-            var lowQualityGroup = qualityGroups.FirstOrDefault(g => g.QualityClass > 3);
-
-            if (highQualityGroup != null)
+    <datalist id="sectionsDataList" hidden="True">
+        <div id="sectionNames">
+        </div>
+        <div id="defaultSectionNames">
+            @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
             {
-                <option>@(getDefaultSectionName(highQualityGroup))</option>
+                var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
+
+                var highQualityGroup = qualityGroups.FirstOrDefault(g => g.QualityClass < 4);
+                var lowQualityGroup = qualityGroups.FirstOrDefault(g => g.QualityClass > 3);
+
+                if (highQualityGroup != null)
+                {
+                    <option>@(getDefaultSectionName(highQualityGroup))</option>
+                }
+                if (lowQualityGroup != null)
+                {
+                    <option>@(getDefaultSectionName(lowQualityGroup))</option>
+                }
             }
-            if (lowQualityGroup != null)
-            {
-                <option>@(getDefaultSectionName(lowQualityGroup))</option>
-            }
-        }
-    </div>
-</datalist>
+        </div>
+    </datalist>
+</div>
 
 <script>
     const forestArea = Number(document.getElementById("forestArea").dataset.area);
@@ -176,19 +179,18 @@
             let treeSpeciesTypeCell = rowChildNodes.filter(n => n.id == "treeSpeciesType").pop();
             treeSpeciesTypeCell.innerText = section["TreeSpeciesType"];
             if (section["TreeSpeciesType"] == invalidType) {
-                treeSpeciesTypeCell.style = "background-color: red";
+                treeSpeciesTypeCell.className = "table-item-error";
             }
             let qualityTierCell = rowChildNodes.filter(n => n.id == "qualityTier").pop();
             qualityTierCell.innerHTML = section["QualityTier"] + "<br/>" + section["QualityClasses"].join(' ');
             if (section["QualityTier"] == invalidType) {
-                qualityTierCell.style = "background-color: red";
+                qualityTierCell.className = "table-item-error";
             }
             let sectinAreaCell = rowChildNodes.filter(n => n.id == "sectionArea").pop();
             sectinAreaCell.innerText = section["Area"];
             if (section["Area"] < minSectionArea) {
-                sectinAreaCell.style = "background-color: yellow";
+                sectinAreaCell.className = "table-item-warning";
             }
-            //sectionRow.style = `background-color: ${section["Area"] > minSectionArea ? "green" : "red"}`;
             sectionsBlock.appendChild(sectionRow);
             sectionRow.hidden = false;
 

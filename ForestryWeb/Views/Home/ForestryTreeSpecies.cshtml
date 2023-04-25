@@ -8,57 +8,59 @@
 }
 @model Tuple<List<ForestryTreeSpecies>, ForestryTreeSpeciesTotal>
 
-<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
-<table class="table">
-    <tr>
-        <th rowspan="2">Преобладающая порода</th>
-        <th rowspan="2">Лесопокрытая площадь</th>
-        <th colspan="3">Средние</th>
-        <th colspan="2">Запас, куб. м</th>
-        <th colspan="2">Средний прирост</th>
-        <th colspan="3">Эксплуатационный фонд</th>
-    </tr>
-    <tr>
-        <th>класс бонитета</th>
-        <th>возраст (лет)</th>
-        <th>полнота</th>
-        <th>общий</th>
-        <th>средний на 1 га</th>
-        <th>общий, м3</th>
-        <th>средний на 1 га с точн до 0,1 м3</th>
-        <th>площадь, га</th>
-        <th>запас, м3</th>
-        <th>средний запас на га, м3</th>
-    </tr>
-    @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
-    {
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h1>
+    <table class="table">
         <tr>
-            <td>@speciesGroup.TreeSpeciesName</td>
-            <td>@Formatting.toFixed(speciesGroup.Area, p)</td>
-            <td>@Formatting.toFixed(speciesGroup.AvgQuality, p)</td>
-            <td>@Formatting.toFixed(speciesGroup.AvgAge, p)</td>
-            <td></td>
-            <td>@Formatting.toFixed(speciesGroup.Volume, p)</td>
-            <td>@Formatting.toFixed(speciesGroup.AvgVolume, p)</td>
-            <td>@Formatting.toFixed(speciesGroup.AvgGrowth, p)</td>
-            <td>@Formatting.toFixed(speciesGroup.AvgGrowthPerHectare, p)</td>
-            <td>@Formatting.toFixed(speciesGroup.OperationalArea, p)</td>
-            <td>@Formatting.toFixed(speciesGroup.OperationalVolume, p)</td>
-            <td>@Formatting.toFixed(speciesGroup.AvgOperationalVolume, p)</td>
+            <th rowspan="2">Преобладающая порода</th>
+            <th rowspan="2">Лесопокрытая площадь</th>
+            <th colspan="3">Средние</th>
+            <th colspan="2">Запас, куб. м</th>
+            <th colspan="2">Средний прирост</th>
+            <th colspan="3">Эксплуатационный фонд</th>
         </tr>
-    }
-    <tr>
-        <td>Итого по лесхозу</td>
-        <td>@Formatting.toFixed(Model.Item2.Area, p)</td>
-        <td>@Formatting.toFixed(Model.Item2.AvgQuality, p)</td>
-        <td></td>
-        <td></td>
-        <td>@Formatting.toFixed(Model.Item2.Volume, p)</td>
-        <td>@Formatting.toFixed(Model.Item2.AvgVolume, p)</td>
-        <td>@Formatting.toFixed(Model.Item2.AvgGrowth, p)</td>
-        <td>@Formatting.toFixed(Model.Item2.AvgGrowthPerHectare, p)</td>
-        <td>@Formatting.toFixed(Model.Item2.OperationalArea, p)</td>
-        <td>@Formatting.toFixed(Model.Item2.OperationalVolume, p)</td>
-        <td>@Formatting.toFixed(Model.Item2.AvgOperationalVolume, p)</td>
-    </tr>
-</table>
+        <tr>
+            <th>класс бонитета</th>
+            <th>возраст (лет)</th>
+            <th>полнота</th>
+            <th>общий</th>
+            <th>средний на 1 га</th>
+            <th>общий, м3</th>
+            <th>средний на 1 га с точн до 0,1 м3</th>
+            <th>площадь, га</th>
+            <th>запас, м3</th>
+            <th>средний запас на га, м3</th>
+        </tr>
+        @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
+        {
+            <tr>
+                <td>@speciesGroup.TreeSpeciesName</td>
+                <td>@Formatting.toFixed(speciesGroup.Area, p)</td>
+                <td>@Formatting.toFixed(speciesGroup.AvgQuality, p)</td>
+                <td>@Formatting.toFixed(speciesGroup.AvgAge, p)</td>
+                <td></td>
+                <td>@Formatting.toFixed(speciesGroup.Volume, p)</td>
+                <td>@Formatting.toFixed(speciesGroup.AvgVolume, p)</td>
+                <td>@Formatting.toFixed(speciesGroup.AvgGrowth, p)</td>
+                <td>@Formatting.toFixed(speciesGroup.AvgGrowthPerHectare, p)</td>
+                <td>@Formatting.toFixed(speciesGroup.OperationalArea, p)</td>
+                <td>@Formatting.toFixed(speciesGroup.OperationalVolume, p)</td>
+                <td>@Formatting.toFixed(speciesGroup.AvgOperationalVolume, p)</td>
+            </tr>
+        }
+        <tr class="table-item-highlighted">
+            <td>Итого по лесхозу</td>
+            <td>@Formatting.toFixed(Model.Item2.Area, p)</td>
+            <td>@Formatting.toFixed(Model.Item2.AvgQuality, p)</td>
+            <td></td>
+            <td></td>
+            <td>@Formatting.toFixed(Model.Item2.Volume, p)</td>
+            <td>@Formatting.toFixed(Model.Item2.AvgVolume, p)</td>
+            <td>@Formatting.toFixed(Model.Item2.AvgGrowth, p)</td>
+            <td>@Formatting.toFixed(Model.Item2.AvgGrowthPerHectare, p)</td>
+            <td>@Formatting.toFixed(Model.Item2.OperationalArea, p)</td>
+            <td>@Formatting.toFixed(Model.Item2.OperationalVolume, p)</td>
+            <td>@Formatting.toFixed(Model.Item2.AvgOperationalVolume, p)</td>
+        </tr>
+    </table>
+</div>

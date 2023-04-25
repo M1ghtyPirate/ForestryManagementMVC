@@ -26,8 +26,47 @@
         background-size: 200px;
     }
 
-    .table * {
+
+    main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .container {
+        max-width: 95%;
+    }
+
+    * {
+        font-family: Calibri;
+        font-size: large;
+        overflow-wrap: break-word;
+        max-width: 100%;
+    }
+
+    /* Отключение стрелок Chromium*/
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    .table th, .table td, .table tr {
+        border-color: rgb(0, 102, 51);
         border-width: 1px;
+        text-align: center;
+        vertical-align: middle;
+        overflow-wrap: break-word;
+        min-width: 4em;
+        max-width: 500px;
+    }
+
+    th {
+        background-color: rgb(220, 255, 220) !important;
     }
 
     .navbar-brand {
@@ -35,6 +74,7 @@
         color: white !important;
         font-weight: bold;
         padding: 15px;
+        margin: 0;
     }
 
     #navbar-layout {
@@ -43,24 +83,63 @@
 
     .navbar, .container-fluid {
         padding: 0;
+        align-items: stretch !important;
+    }
+
+    .navbar-collapse {
+    
+        align-items: stretch;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        border-top: 5px rgba(0, 0, 0, 0) solid;
+        border-bottom: 5px rgba(0, 0, 0, 0) solid;
+    }
+
+    .nav-item-current-view {
+        border-top: 5px rgba(0, 0, 0, 0) solid;
+        border-bottom: 5px rgb(0, 102, 51) solid;
     }
 
     .navbar-toggler {
         /*display: inline-block !important;*/
     }
 
-    * {
-        font-family: Calibri;
-        font-size: large;
+    .navbar-settings {
+        background-color: rgb(149, 193, 31);
     }
 
-    main {
-        display: flex;
-        flex-direction: column;
-        align-items: center
+    .navbar-settings * {
+        background-color: rgb(149, 193, 31);
+        color: white !important;
     }
 
-    div .page-content-center {
+    /*Ссылки*/
+    a, a:hover, a:visited {
+        color: rgb(149, 193, 31);
+        text-decoration-line: none;
+        font-size: inherit;
+    }
+
+    input[type=submit], input[type=button] {
+        color: white;
+        background-color: rgb(0, 102, 51);
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px lightgray;
+        margin: 1px;
+    }
+
+    input[type=submit]:hover, input[type=button]:hover {
+        background-color: rgb(0, 128, 64);
+    }
+
+    input[type=submit]:active, input[type=button]:active {
+        background-color: rgb(0, 77, 38);
+    }
+
+    .page-content-center {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -94,11 +173,72 @@
         margin: 15px 0px 15px 0px;
     }
 
-    .page-content-auth label {
-        vertical-align: top;
-    }
+/*    .page-content-auth label {
+        vertical-align: bottom;
+    }*/
+
 
     /*Предупреждения*/
-    .page-content-auth form > div > div {
+    .warning {
         color: red;
+    }
+
+
+    .checkbox-div {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .checkbox-div input {
+        min-width: min-content;
+        margin: 5px;
+        width: min-content;
+    }
+
+    footer {
+        background-color: white;
+    }
+
+    .page-content-display {
+        border-radius: 10px;
+        border: 1px lightgray solid;
+        box-shadow: 0px 0px 20px lightgray;
+        align-items:stretch;
+
+        min-width: 50%;
+    }
+
+    td input {
+        width: 100%;
+
+        min-width: 3.5em !important;
+    }
+
+    .forestry-items {
+        display: flex;
+        flex-direction:column;
+        width: 100%;
+    }
+
+    .forestry-items a {
+        color: black;
+        background-color: rgb(241, 255, 241);
+        padding: 10px;
+        border: 1px rgb(0, 102, 51) solid;
+    }
+
+    .forestry-items a:hover {
+        background-color: rgb(220, 255, 220);
+    }
+
+    .table-item-highlighted {
+        background-color: rgb(240, 255, 240) !important;
+    }
+
+    .table-item-warning {
+        background-color: rgb(255, 255, 155) !important;
+    }
+
+    .table-item-error {
+        background-color: rgb(255, 155, 155) !important;
     }

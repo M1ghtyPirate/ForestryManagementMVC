@@ -1,19 +1,21 @@
 ﻿@{
-    ViewData["Title"] = "Добавить лесничество";
+    ViewData["Title"] = Model == null ? "Добавление лесничества" : "Изменение лесничества";
 }
 @model ForestryWeb.Models.Database.Tables.Forestry
-
-<h2>@(Model == null ? "Добавление лесничества" : "Изменение лесничества")</h2>
-<form asp-action="addforestry" asp-controller="home">
-    <p>
-        <input type="text" asp-for="ForestryID" value="@Model?.ForestryID" hidden ="True"/>
-        <label asp-for="Name">Имя</label>
-        <br/>
-        <input type="text" asp-for="Name" value="@Model?.Name" />
-        <br/>
-        <input type="checkbox" asp-for="IsShared" value="true" checked="@(Model?.IsShared)" disabled="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin" && Context.User.FindFirstValue(ClaimTypes.NameIdentifier) != Model?.AuthorID + "")" /><label asp-for="IsShared">Общедоступно</label>
-    </p>
-    <p>
-        <input type="submit" value="@(Model == null ? "Добавить" : "Внести изменения")" />
-    </p>
-</form>
+<div class="page-content-center page-content-auth">
+    <h1>@ViewData["Title"]</h1>
+    <form asp-action="addforestry" asp-controller="home">
+        <div>
+            <input type="text" asp-for="ForestryID" value="@Model?.ForestryID" hidden ="True"/>
+            <label asp-for="Name">Имя</label>
+            <input type="text" asp-for="Name" value="@Model?.Name" />
+            <div class="checkbox-div">
+                <input type="checkbox" asp-for="IsShared" value="true" checked="@(Model?.IsShared)" disabled="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin" && Context.User.FindFirstValue(ClaimTypes.NameIdentifier) != Model?.AuthorID + "")" />
+                <label asp-for="IsShared">Общедоступно</label>
+            </div>
+        </div>
+        <div>
+            <input type="submit" value="@(Model == null ? "Добавить" : "Внести изменения")" />
+        </div>
+    </form>
+</div>

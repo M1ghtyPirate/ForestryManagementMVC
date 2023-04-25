@@ -9,52 +9,55 @@
 }
 @model Tuple<List<TreeGroup>, TreeForestryGroupTotal, List<Section>>
 
-<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
-<table class="table">
-    <tr>
-        <th>Преобладающая порода</th>
-        <th>Бонитет</th>
-        <th>Всего покрытой лесом площади, га</th>
-        <th>Название секции</th>
-    </tr>
-    @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
-    {
-        var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h1>
+    <table class="table">
         <tr>
-            <td rowspan="@(qualityGroups.Count() + 1)">@speciesGroup.TreeSpeciesName</td>
+            <th>Преобладающая порода</th>
+            <th>Бонитет</th>
+            <th>Всего покрытой лесом площади, га</th>
+            <th>Название секции</th>
         </tr>
-                
-        @foreach (var qualityGroup in qualityGroups)
+        @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
         {
-            var ageGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID);
+            var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
             <tr>
-                <td>@qualityGroup.QualityClass</td>
+                <td rowspan="@(qualityGroups.Count() + 1)">@speciesGroup.TreeSpeciesName</td>
+            </tr>
+                
+            @foreach (var qualityGroup in qualityGroups)
+            {
+                var ageGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID);
+                <tr>
+                    <td>@qualityGroup.QualityClass</td>
 
-                <td>@Formatting.toFixed(ageGroups.Sum(g => g.Area), p0)</td>
-                <td>@Model.Item3?.FirstOrDefault(s => s.SectionID == ageGroups.FirstOrDefault()?.SectionID)?.Name</td>
+                    <td>@Formatting.toFixed(ageGroups.Sum(g => g.Area), p0)</td>
+                    <td>@Model.Item3?.FirstOrDefault(s => s.SectionID == ageGroups.FirstOrDefault()?.SectionID)?.Name</td>
+                </tr>
+            }
+        }
+    </table>
+    <h5>Лесопокрытая площадь лесничества: @Formatting.toFixed(Model.Item2.Area, p0)</h5>
+    @{
+        var minSectionArea = Model.Item2.Area * 0.1;
+    }
+    <h5>Минимальная рекомендуемая площадь хозсекции: @Formatting.toFixed(Model.Item2.Area, p0) * 0,1 = @Formatting.toFixed(minSectionArea, p2)</h5>
+    <table class="table">
+        <tr>
+            <th>Название секции</th>
+            <th>Площадь</th>
+        </tr>
+        @foreach(var forestrySection in Model.Item3.OrderBy(s => s.Name))
+        {
+            var ageGroups = Model.Item1.Where(g => g.SectionID == forestrySection.SectionID);
+            var forestrySectionArea = ageGroups.Sum(g => g.Area);
+            <tr>
+                <td>@forestrySection.Name</td>
+                <td class="@(forestrySectionArea > minSectionArea ? "" : "table-item-warning")">@Formatting.toFixed(forestrySectionArea, p2)</td>
             </tr>
         }
-    }
-</table>
-<br/>
-<h5>Лесопокрытая площадь лесничества: @Formatting.toFixed(Model.Item2.Area, p0)</h5>
-@{
-    var minSectionArea = Model.Item2.Area * 0.1;
-}
-<h5>Минимальная рекомендуемая площадь хозсекции: @Formatting.toFixed(Model.Item2.Area, p0) * 0,1 = @Formatting.toFixed(minSectionArea, p2)</h5>
-<table class="table">
-    <tr>
-        <th>Название секции</th>
-        <th>Площадь</th>
-    </tr>
-    @foreach(var forestrySection in Model.Item3.OrderBy(s => s.Name))
-    {
-        var ageGroups = Model.Item1.Where(g => g.SectionID == forestrySection.SectionID);
-        var forestrySectionArea = ageGroups.Sum(g => g.Area);
-        <tr>
-            <td>@forestrySection.Name</td>
-            <td style="background-color: @(forestrySectionArea > minSectionArea ? "" : "yellow")">@Formatting.toFixed(forestrySectionArea, p2)</td>
-        </tr>
-    }
-</table>
-<a asp-action="editforestrytreegroupsallocation" asp-route-id=@forestryID><input type="button" value="Изменить" /></a>
+    </table>
+    <div>
+        <a asp-action="editforestrytreegroupsallocation" asp-route-id=@forestryID><input type="button" value="Изменить" /></a>
+    </div>
+</div>

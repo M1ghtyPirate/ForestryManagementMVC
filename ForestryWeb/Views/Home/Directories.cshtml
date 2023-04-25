@@ -1,12 +1,12 @@
 ﻿@{
-    var title = "Справочная информация";
-    ViewData["Title"] = "title";
+    ViewData["Title"] = "Справочная информация";
 }
 
-<h2>@title</h2>
-<a asp-action="GrowthRateDirectory">Таблица хода роста</a>
-<br />
-<a asp-action="ProductOutputDirectory">Товарная таблица</a>
-<br />
-<a asp-action="TreeSpeciesDirectory">Породы деревьев</a>
-<br />
+<div class="page-content-center page-content-display">
+    <h1>@ViewData["Title"]</h1>
+    <div class="forestry-items">
+        <a asp-action="GrowthRateDirectory">Таблица хода роста</a>
+        <a asp-action="ProductOutputDirectory">Товарная таблица</a>
+        <a asp-action="TreeSpeciesDirectory">Породы деревьев</a>
+    </div>
+</div>

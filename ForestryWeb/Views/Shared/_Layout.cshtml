@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var currentAction = ViewContext.RouteData.Values["action"].ToString();
+    string c ="sda";
+}
+
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
@@ -19,27 +24,27 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
+                        <li class="nav-item @(currentAction == "Index" ? "nav-item-current-view" : "")">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Главная страница</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Forestries">Лесничества</a>
+                        <li class="nav-item @(currentAction.ToLower().Contains("forest") || currentAction.ToLower().Contains("section") ? "nav-item-current-view" : "")">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Forestries">Список лесничеств.</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item @(currentAction.ToLower().Contains("director") ? "nav-item-current-view" : "")">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Directories">Справочная информация</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Информация</a>
+                        <li class="nav-item  @(currentAction == "Privacy" ? "nav-item-current-view" : "")">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Authorization" asp-action="Privacy">Информация</a>
                         </li>
                     </ul>
-                    <ul class="navbar-nav flex-grow-0">
-                        <li class="nav-item">
+                    <ul class="navbar-nav flex-grow-0 navbar-settings">
+                        <li class="nav-item  @(currentAction == "Users" ? "nav-item-current-view" : "")">
                             <a class="nav-link text-dark" hidden="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin")" asp-area="" asp-controller="Home" asp-action="Users">Список пользователей</a>
                         </li>
                         <li class="nav-item" hidden="@(Context.User.Identity?.IsAuthenticated == true)">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Authorization" asp-action="Login">Войти</a>
                         </li>
-                        <li class="nav-item" hidden="@(Context.User.Identity?.IsAuthenticated != true)">
+                        <li class="nav-item  @(currentAction == "EditUser" ? "nav-item-current-view" : "")" hidden="@(Context.User.Identity?.IsAuthenticated != true)">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="EditUser">@(Context.User.Identity?.Name)</a>
                         </li>
                         <li class="nav-item" hidden="@(Context.User.Identity?.IsAuthenticated != true)">
@@ -58,7 +63,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - ForestryWeb - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 - ForestryWeb - <a asp-area="" asp-controller="Authorization" asp-action="Privacy">Информация.</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

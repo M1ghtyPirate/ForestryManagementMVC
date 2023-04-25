@@ -1,35 +1,39 @@
 ﻿@{
-    ViewData["Title"] = "Лесничества";
+    ViewData["Title"] = "Список лесничеств";
 }
 @model IEnumerable<Tuple<ForestryWeb.Models.Database.Tables.Forestry, ForestryWeb.Models.Database.Tables.User>>
 
-<h2>Список лесничеств</h2>
-<p><a asp-action="addforestry">Добавить лесничество</a></p>
-<table class="table">
-    <tr>
-        <th>Название</th>
-        <th>Автор</th>
-        <th>Дата создания</th>
-        <th>Дата изменения</th>
-        <th>Общедоступно</th>
-        <th>Редактирование</th>
-    </tr>
-    @foreach (var item in Model)
-    {
+<div class="page-content-center page-content-display">
+    <h1>@ViewData["Title"]</h1>
+    <table class="table">
         <tr>
-            <td><a asp-action="forestry" asp-route-id=@item.Item1.ForestryID>@item.Item1.Name</a></td>
-            <td>@item.Item2.Login</td>
-            <td>@item.Item1.CreationDate</td>
-            <td>@item.Item1.EditDate</td>
-            <td>@(item.Item1.IsShared ? "Да" : "")</td>
-            <td>
-                <a asp-action="editforestry" asp-route-id=@item.Item1.ForestryID><input type="button" value="Изменить" /></a>
-                <br />
-                <a asp-action="removeforestry" onclick="ActionConfirmation('Удалить лесничество: @item.Item1.Name?')" asp-route-id=@item.Item1.ForestryID><input type="button" value="Удалить" /></a>
-            </td>
+            <th>Название</th>
+            <th>Автор</th>
+            <th>Дата создания</th>
+            <th>Дата изменения</th>
+            <th>Общедоступно</th>
+            <th>Редактирование</th>
         </tr>
-    }
-</table>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><a asp-action="forestry" asp-route-id=@item.Item1.ForestryID>@item.Item1.Name</a></td>
+                <td>@item.Item2.Login</td>
+                <td>@item.Item1.CreationDate</td>
+                <td>@item.Item1.EditDate</td>
+                <td>@(item.Item1.IsShared ? "Да" : "")</td>
+                <td>
+                    <a asp-action="editforestry" asp-route-id=@item.Item1.ForestryID><input type="button" value="Изменить" /></a>
+                    <br />
+                    <a asp-action="removeforestry" onclick="ActionConfirmation('Удалить лесничество: @item.Item1.Name?')" asp-route-id=@item.Item1.ForestryID><input type="button" value="Удалить" /></a>
+                </td>
+            </tr>
+        }
+    </table>
+    <div>
+        <a asp-action="addforestry"><input type="button" value="Добавить новое лесничество" /></a>
+    </div>
+</div>
 <script>
     function ActionConfirmation(text) {
         if (confirm(text) == false) {
