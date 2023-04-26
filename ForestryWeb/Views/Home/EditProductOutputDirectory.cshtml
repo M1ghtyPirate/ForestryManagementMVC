@@ -1,0 +1,66 @@
+﻿@{
+    var subTitle = "Редактирование товарной таблица";
+    ViewData["Title"] = subTitle;
+    var p0 = "N0";
+    var pp = "N1";
+
+    var groupCount = 0;
+    var step = "0.01";
+}
+@model Tuple<List<ProductOutput>, TreeSpecies>
+
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="Directories">Справочная информация</a> - @subTitle</h1>
+    <form asp-action="EditProductOutputDirectory" asp-controller="Home">
+        <table class="table">
+            <tr>
+                <th rowspan="2">Средний диаметр, см</th>
+                <th rowspan="2">Средняя высота, м</th>
+                <th colspan="3">Деловая древесина по категориям крупности, %</th>
+            </tr>
+            <tr>
+                <th>крупная</th>
+                <th>средняя 1</th>
+                <th>средняя 2</th>
+            </tr>
+            <tr>
+                <th colspan="5">@Model.Item2.Name</th>
+            </tr>
+            @for (var avgDiameter = 10; avgDiameter <= 50; avgDiameter += 2)
+            {
+                var avgHeightEntries = new Queue<ProductOutput>(Model.Item1.Where(e => e.AvgDiameter == avgDiameter)?.OrderBy(e => e.AvgHeight).ToList());
+                <tr>
+                    <td rowspan="5">@avgDiameter</td>
+                </tr>
+                @for (var i = 0; i < 4; i++)
+                {
+                    var avgHeightEntry = avgHeightEntries?.Count > 0 ? avgHeightEntries.Dequeue() : null;
+                    <tr>
+                        <td>
+                            <input type="text" name="ProductOutput[@groupCount].TreeSpeciesID" value="@Model.Item2.TreeSpeciesID" hidden="True" />
+                            <input type="number" name="ProductOutput[@groupCount].AvgDiameter" value="@avgDiameter" hidden="True" />
+                            <input type="text" name="__Invariant" value="ProductOutput[@groupCount].AvgDiameter" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
+                            <input type="number" name="ProductOutput[@groupCount].AvgHeight" value="@Formatting.toDefaultCulture(avgHeightEntry?.AvgHeight)" step="@step" min="0" />
+                            <input type="text" name="__Invariant" value="ProductOutput[@groupCount].AvgHeight" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
+                        </td>
+                        <td>
+                            <input type="number" name="ProductOutput[@groupCount].LargePercent" value="@Formatting.toDefaultCulture(avgHeightEntry?.LargePercent)" step="@step" min="0" />
+                            <input type="text" name="__Invariant" value="ProductOutput[@groupCount].LargePercent" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
+                        </td>
+                        <td>
+                            <input type="number" name="ProductOutput[@groupCount].MediumPercent1" value="@Formatting.toDefaultCulture(avgHeightEntry?.MediumPercent1)" step="@step" min="0" />
+                            <input type="text" name="__Invariant" value="ProductOutput[@groupCount].MediumPercent1" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
+                        </td>
+                        <td>
+                            <input type="number" name="ProductOutput[@groupCount].MediumPercent2" value="@Formatting.toDefaultCulture(avgHeightEntry?.MediumPercent2)" step="@step" min="0" />
+                            <input type="text" name="__Invariant" value="ProductOutput[@(groupCount++)].MediumPercent2" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+        <div>
+            <input type="submit" value="Внести изменения" />
+        </div>
+    </form>
+</div>

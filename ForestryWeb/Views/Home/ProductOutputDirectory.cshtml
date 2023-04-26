@@ -3,11 +3,20 @@
     ViewData["Title"] = subTitle;
     var p0 = "N0";
     var pp = "N1";
+
+    var sectionSuffix = "-section";
 }
 @model Tuple<List<ProductOutput>, List<TreeSpecies>>
 
 <div class="page-content-center page-content-display">
-    <h2><a asp-action="Directories">Справочная информация</a> - @subTitle</h2>
+    <h1><a asp-action="Directories">Справочная информация</a> - @subTitle</h1>
+    <select id="treeSpeciesSelect" onchange="showSpecies(this.value)">
+        <option disabled selected>--Выберете породу--</option>
+        @foreach (var treeSpecies in Model.Item2.OrderBy(t => t.Name))
+        {
+            <option value="@treeSpecies.TreeSpeciesID">@treeSpecies.Name</option>
+        }
+    </select>
     <table class="table">
         <tr>
             <th rowspan="2">Средний диаметр, см</th>
@@ -22,26 +31,59 @@
         </tr>
         @foreach (var speciesGroup in Model.Item1.DistinctBy(p => p.TreeSpeciesID).OrderBy(p => Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == p.TreeSpeciesID)?.Name))
         {
-            <tr>
-                <th colspan="6">@Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == speciesGroup.TreeSpeciesID)?.Name</th>
-            </tr>
-            @foreach (var avgDiameterGroup in Model.Item1.Where(p => p.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(p => p.AvgDiameter).OrderBy(g => g.AvgDiameter))
-            {
-                var avgHeightEntries = Model.Item1.Where(p => p.TreeSpeciesID == speciesGroup.TreeSpeciesID && p.AvgDiameter == avgDiameterGroup.AvgDiameter).OrderBy(g => g.AvgHeight);
+            <tbody id="@(speciesGroup.TreeSpeciesID + sectionSuffix)" hidden="True">
                 <tr>
-                    <td rowspan="@(avgHeightEntries.Count() + 1)">@avgDiameterGroup.AvgDiameter</td>
+                    <th colspan="6">@Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == speciesGroup.TreeSpeciesID)?.Name</th>
                 </tr>
-                @foreach (var avgHeightEntry in avgHeightEntries)
+                @foreach (var avgDiameterGroup in Model.Item1.Where(p => p.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(p => p.AvgDiameter).OrderBy(g => g.AvgDiameter))
                 {
+                    var avgHeightEntries = Model.Item1.Where(p => p.TreeSpeciesID == speciesGroup.TreeSpeciesID && p.AvgDiameter == avgDiameterGroup.AvgDiameter).OrderBy(g => g.AvgHeight);
                     <tr>
-                        <td>@Formatting.toFixed(avgHeightEntry.AvgHeight, p0)</td>
-                        <td>@Formatting.toFixed(avgHeightEntry.LargePercent, p0)</td>
-                        <td>@Formatting.toFixed(avgHeightEntry.MediumPercent1, p0)</td>
-                        <td>@Formatting.toFixed(avgHeightEntry.MediumPercent2, p0)</td>
-                        <td>@Formatting.toFixed(avgHeightEntry.MediumPercentTotal, p0)</td>
+                        <td rowspan="@(avgHeightEntries.Count() + 1)">@avgDiameterGroup.AvgDiameter</td>
                     </tr>
+                    @foreach (var avgHeightEntry in avgHeightEntries)
+                    {
+                        <tr>
+                            <td>@Formatting.toFixed(avgHeightEntry.AvgHeight, p0)</td>
+                            <td>@Formatting.toFixed(avgHeightEntry.LargePercent, p0)</td>
+                            <td>@Formatting.toFixed(avgHeightEntry.MediumPercent1, p0)</td>
+                            <td>@Formatting.toFixed(avgHeightEntry.MediumPercent2, p0)</td>
+                            <td>@Formatting.toFixed(avgHeightEntry.MediumPercent1 + avgHeightEntry.MediumPercent2, p0)</td>
+                        </tr>
+                    }
                 }
-            }
+            </tbody>
         }
     </table>
+    <div hidden="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin")">
+        <a id="editLink" asp-action="EditProductOutputDirectory" hidden="true"><input type="button" value="Изменить" /></a>
+    </div>
 </div>
+<script>
+    let displayedSpeciesID = null;
+    let sectionSuffix = "@sectionSuffix";
+    let editHref = null;
+
+    function showSpecies(speciesID) {
+        if (displayedSpeciesID) {
+            let displayedSection = document.getElementById(displayedSpeciesID + sectionSuffix);
+            if (displayedSection)
+            {
+                displayedSection.hidden = true;
+            }
+        }
+        else
+        {
+            let editLinkTag = document.getElementById("editLink");
+            editLinkTag.hidden = false;
+            editHref = editLinkTag.href + "/";
+        }
+        let requestedSection = document.getElementById(speciesID + sectionSuffix);
+        if (requestedSection)
+        {
+            requestedSection.hidden = false;
+        }
+        displayedSpeciesID = speciesID;
+        document.getElementById("editLink").href = editHref + displayedSpeciesID;
+    }
+</script>

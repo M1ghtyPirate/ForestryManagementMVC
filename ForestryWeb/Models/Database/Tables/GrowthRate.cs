@@ -13,7 +13,6 @@ namespace ForestryWeb.Models.Database.Tables
         public double AvgDiameter { get; set; }
         public double VolumePerHectare { get; set; }
         public double AvgGrowth { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public double? CurrentGrowth { get; set; }
     }
 }

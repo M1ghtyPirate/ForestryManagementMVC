@@ -4,11 +4,20 @@
     var p0 = "N0";
     var p1 = "N1";
     var pp = "N1";
+
+    var sectionSuffix = "-section";
 }
 @model Tuple<List<GrowthRate>, List<TreeSpecies>,  List<QualityClass>>
 
 <div class="page-content-center page-content-display">
     <h1><a asp-action="Directories">Справочная информация</a> - @subTitle</h1>
+    <select id="treeSpeciesSelect" onchange="showSpecies(this.value)">
+        <option disabled selected>--Выберете породу--</option>
+        @foreach(var treeSpecies in Model.Item2.OrderBy(t => t.Name))
+        {
+            <option value="@treeSpecies.TreeSpeciesID">@treeSpecies.Name</option>
+        }
+    </select>
     <table class="table">
         <tr>
             <th rowspan="3">Возраст, лет</th>
@@ -26,6 +35,7 @@
         </tr>
         @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == g.TreeSpeciesID)?.Name))
         {
+            <tbody id="@(speciesGroup.TreeSpeciesID + sectionSuffix)" hidden="True">
             <tr>
                 <th colspan="6">@Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == speciesGroup.TreeSpeciesID)?.Name</th>
             </tr>
@@ -47,6 +57,35 @@
                     </tr>
                 }
             }
+            </tbody>
         }
     </table>
+    <div hidden="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin")">
+        <a id="editLink" asp-action="EditGrowthRateDirectory" hidden="true"><input type="button" value="Изменить" /></a>
+    </div>
 </div>
+<script>
+    let displayedSpeciesID = null;
+    let sectionSuffix = "@sectionSuffix";
+    let editHref = null;
+
+    function showSpecies(speciesID) {
+        if (displayedSpeciesID) {
+            let displayedSection = document.getElementById(displayedSpeciesID + sectionSuffix);
+            if (displayedSection) {
+                displayedSection.hidden = true;
+            }
+        }
+        else {
+            let editLinkTag = document.getElementById("editLink");
+            editLinkTag.hidden = false;
+            editHref = editLinkTag.href + "/";
+        }
+        let requestedSection = document.getElementById(speciesID + sectionSuffix);
+        if (requestedSection) {
+            requestedSection.hidden = false;
+        }
+        displayedSpeciesID = speciesID;
+        document.getElementById("editLink").href = editHref + displayedSpeciesID;
+    }
+</script>

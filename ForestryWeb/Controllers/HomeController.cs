@@ -934,7 +934,7 @@ namespace ForestryWeb.Controllers
                 }
                 else if(treeSpeciesRowDuplicateDB == null)
                 {
-                    db.TreeSpecies.Add(treeSpeciesRow);
+                    treespeciesDB.Add(db.TreeSpecies.Add(treeSpeciesRow).Entity);
                 }
             }
 
@@ -956,7 +956,6 @@ namespace ForestryWeb.Controllers
                 return RedirectToAction("AccessDenied", "Authorization");
             }
 
-            //Реализовать каскадное удаление?
             var treeSpeciesDB = db.TreeSpecies.FirstOrDefault(t => t.TreeSpeciesID == ID);
             try
             {
@@ -983,6 +982,69 @@ namespace ForestryWeb.Controllers
         }
 
         /// <summary>
+        /// Страница редактирования товарной таблицы.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> EditProductOutputDirectory(Guid ID)
+        {
+            if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin" || ID == Guid.Empty)
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+            var productOutput = await db.ProductOutput.Where(g => g.TreeSpeciesID == ID)?.ToListAsync();
+            var treeSpecies = await db.TreeSpecies.FirstOrDefaultAsync(t => t.TreeSpeciesID == ID);
+            return View(new Tuple<List<ProductOutput>, TreeSpecies>(productOutput, treeSpecies));
+        }
+
+
+        /// <summary>
+        /// Редактирования товарной таблицы.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost, DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = Int32.MaxValue, ValueLengthLimit = Int32.MaxValue, ValueCountLimit = Int32.MaxValue)]
+        public async Task<IActionResult> EditProductOutputDirectory([Bind(Prefix = "ProductOutput")] List<ProductOutput> productOutputs)
+        {
+            var treeSpeciesID = productOutputs.FirstOrDefault()?.TreeSpeciesID;
+            if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin" || productOutputs == null || treeSpeciesID == Guid.Empty)
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+
+            var productOutputsDB = await db.ProductOutput.Where(g => g.TreeSpeciesID == treeSpeciesID).ToListAsync();
+
+            productOutputs.RemoveAll(g => g.AvgHeight == 0 || g.AvgDiameter == 0 || (g.LargePercent == 0 && g.MediumPercent1 == 0 && g.MediumPercent2 == 0));
+
+            var productOutputsForDeletion = productOutputsDB.Where(gDB => !productOutputs.Any(g => g.AvgDiameter == gDB.AvgDiameter && g.AvgHeight == gDB.AvgHeight));
+
+            foreach (var productOutput in productOutputs)
+            {
+                productOutput.LargePercent = productOutput.LargePercent ?? 0;
+                productOutput.MediumPercent1 = productOutput.MediumPercent1 ?? 0;
+                productOutput.MediumPercent2 = productOutput.MediumPercent2 ?? 0;
+                var productOutputDB = productOutputsDB.FirstOrDefault(g => g.AvgDiameter == productOutput.AvgDiameter && g.AvgHeight == productOutput.AvgHeight);
+                if (productOutputDB != null)
+                {
+                    productOutput.ProductOutputID = productOutputDB.ProductOutputID;
+                    db.Entry(productOutputDB).CurrentValues.SetValues(productOutput);
+                }
+                else
+                {
+                    productOutputsDB.Add(db.ProductOutput.Add(productOutput).Entity);
+                }
+            }
+
+            foreach (var productOutput in productOutputsForDeletion)
+            {
+                db.ProductOutput.Remove(productOutput);
+            }
+
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("ProductOutputDirectory");
+        }
+
+        /// <summary>
         /// Таблица хода роста.
         /// </summary>
         /// <returns></returns>
@@ -992,6 +1054,67 @@ namespace ForestryWeb.Controllers
             var treeSpecies = await db.TreeSpecies.ToListAsync();
             var qualityClasses = await db.QualityClasses.ToListAsync();
             return View(new Tuple<List<GrowthRate>, List<TreeSpecies>, List<QualityClass>>(growthRate, treeSpecies, qualityClasses));
+        }
+
+        /// <summary>
+        /// Страница редактирования таблицы хода роста.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> EditGrowthRateDirectory(Guid ID)
+        {
+            if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin" || ID == Guid.Empty)
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+            var growthRate = await db.GrowthRate.Where(g => g.TreeSpeciesID == ID)?.ToListAsync();
+            var treeSpecies = await db.TreeSpecies.FirstOrDefaultAsync(t => t.TreeSpeciesID == ID);
+            var qualityClasses = await db.QualityClasses.ToListAsync();
+            return View(new Tuple<List<GrowthRate>, TreeSpecies, List<QualityClass>>(growthRate, treeSpecies, qualityClasses));
+        }
+
+        /// <summary>
+        /// Редактирование таблицы хода роста
+        /// </summary>
+        /// <param name="growthRate"></param>
+        /// <returns></returns>
+        [HttpPost, DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = Int32.MaxValue, ValueLengthLimit = Int32.MaxValue, ValueCountLimit = Int32.MaxValue)]
+        public async Task<IActionResult> EditGrowthRateDirectory([Bind(Prefix="GrowthRate")]List<GrowthRate> growthRates)
+        {
+            var treeSpeciesID = growthRates.FirstOrDefault()?.TreeSpeciesID;
+            if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin" || growthRates == null || treeSpeciesID == Guid.Empty)
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+
+            var growthRatesDB = await db.GrowthRate.Where(g => g.TreeSpeciesID ==  treeSpeciesID).ToListAsync();
+
+            growthRates.RemoveAll(g => g.AvgHeight == 0 || g.AvgDiameter == 0 || (g.VolumePerHectare == 0 && g.AvgGrowth == 0 && g.CurrentGrowth == 0));
+
+            var growthRatesForDeletion = growthRatesDB.Where(gDB => !growthRates.Any(g => g.QualityClassID == gDB.QualityClassID && g.Age == gDB.Age));
+
+            foreach(var growthRate in growthRates)
+            {
+                growthRate.CurrentGrowth = growthRate.CurrentGrowth ?? 0;
+                var growthRateDB = growthRatesDB.FirstOrDefault(g => g.QualityClassID == growthRate.QualityClassID && g.Age == growthRate.Age);
+                if (growthRateDB != null)
+                {
+                    growthRate.GrowthRateID = growthRateDB.GrowthRateID;
+                    db.Entry(growthRateDB).CurrentValues.SetValues(growthRate);
+                }
+                else
+                {
+                    growthRatesDB.Add(db.GrowthRate.Add(growthRate).Entity);
+                }
+            }
+
+            foreach(var growthRate in growthRatesForDeletion)
+            {
+                db.GrowthRate.Remove(growthRate);
+            }
+
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("GrowthRateDirectory");
         }
 
         #endregion

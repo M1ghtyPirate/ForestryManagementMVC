@@ -1,0 +1,77 @@
+﻿@{
+    var subTitle = "Редактирование таблицы хода роста";
+    ViewData["Title"] = subTitle;
+    var p0 = "N0";
+    var p1 = "N1";
+    var pp = "N1";
+
+    var groupCount = 0;
+    var step = "0.01";
+}
+@model Tuple<List<GrowthRate>, TreeSpecies,  List<QualityClass>>
+
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="Directories">Справочная информация</a> - @subTitle</h1>
+    <form asp-action="EditGrowthRateDirectory" asp-controller="Home">
+        <table class="table">
+            <tr>
+                <th rowspan="3">Возраст, лет</th>
+                <th colspan="5">Древостой</th>
+            </tr>
+            <tr>
+                <th rowspan="2">средняя высота, м</th>
+                <th rowspan="2">средний диаметр, см</th>
+                <th rowspan="2">запас на 1 га, м3</th>
+                <th colspan="2">прирост, м3</th>
+            </tr>
+            <tr>
+                <th>средний</th>
+                <th>текущий</th>
+            </tr>
+            <tr>
+                <th colspan="6">@Model.Item2.Name</th>
+            </tr>
+            @foreach (var qualityGroup in Model.Item3.OrderBy(q => q.Number))
+            {
+                <tr>
+                    <td class="table-item-highlighted" colspan="6">@qualityGroup.Number-й класс бонитета</td>
+                </tr>
+                @for ( var age = 10; age <= 200; age += 10)
+                {
+                    var growthEntry = Model.Item1?.FirstOrDefault(g => g.QualityClassID == qualityGroup.QualityClassID && g.Age == age);
+                    <tr>
+                        <td>
+                            <input type="text" name="GrowthRate[@groupCount].TreeSpeciesID" value="@Model.Item2.TreeSpeciesID" hidden="True"/>
+                            <input type="text" name="GrowthRate[@groupCount].QualityClassID" value="@qualityGroup.QualityClassID" hidden="True"/>
+                            <input type="number" name="GrowthRate[@groupCount].Age" value="@age" hidden="True" />
+                            @Formatting.toFixed(age, p0)
+                        </td>
+                        <td>
+                            <input type="number" name="GrowthRate[@groupCount].AvgHeight" value="@Formatting.toDefaultCulture(growthEntry?.AvgHeight)" step="@step" min="0" />
+                            <input type="text" name="__Invariant" value="GrowthRate[@groupCount].AvgHeight" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
+                        </td>
+                        <td>
+                            <input type="number" name="GrowthRate[@groupCount].AvgDiameter" value="@Formatting.toDefaultCulture(growthEntry?.AvgDiameter)" step="@step" min="0" />
+                            <input type="text" name="__Invariant" value="GrowthRate[@groupCount].AvgDiameter" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
+                        </td>
+                        <td>
+                            <input type="number" name="GrowthRate[@groupCount].VolumePerHectare" value="@Formatting.toDefaultCulture(growthEntry?.VolumePerHectare)" step="@step" min="0" />
+                            <input type="text" name="__Invariant" value="GrowthRate[@groupCount].VolumePerHectare" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
+                        </td>
+                        <td>
+                            <input type="number" name="GrowthRate[@groupCount].AvgGrowth" value="@Formatting.toDefaultCulture(growthEntry?.AvgGrowth)" step="@step" min="0" />
+                            <input type="text" name="__Invariant" value="GrowthRate[@groupCount].AvgGrowth" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
+                        </td>
+                        <td>
+                            <input type="number" name="GrowthRate[@groupCount].CurrentGrowth" value="@Formatting.toDefaultCulture(growthEntry?.CurrentGrowth)" step="@step" min="0" />
+                            <input type="text" name="__Invariant" value="GrowthRate[@(groupCount++)].CurrentGrowth" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+        <div>
+            <input type="submit" value="Внести изменения" />
+        </div>
+    </form>
+</div>
