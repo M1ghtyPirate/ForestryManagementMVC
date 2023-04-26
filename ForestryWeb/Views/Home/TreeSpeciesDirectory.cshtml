@@ -14,6 +14,7 @@
             <th >Тип породы</th>
             <th >Эксплуатационный класс возраста</th>
             <th >Рекомендуемый возраст рубки низкобонитетных насаждений</th>
+            <th hidden="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin")"> Редактирование</th>
         </tr>
         @foreach (var treeSpecies in Model.OrderBy(s => s.Name))
         {
@@ -22,7 +23,20 @@
                 <td>@(treeSpecies.IsDeciduous ? "Мягколиственная" : "Хвойная")</td>
                 <td>@Formatting.toFixed(treeSpecies.OperationalAgeClass, p0)</td>
                 <td>@Formatting.toFixed(treeSpecies.OptimalFellingAge, p0)</td>
+                <td hidden="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin")">
+                    <a asp-action="RemoveTreeSpecies" onclick="ActionConfirmation('Удалить породу: @treeSpecies.Name?')" asp-route-id=@treeSpecies.TreeSpeciesID><input type="button" value="Удалить" /></a>
+                </td>
             </tr>
         }
     </table>
+    <div hidden ="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin")">
+        <a asp-action="EditTreeSpeciesDirectory"><input type="button" value="Изменить" /></a>
+    </div>
 </div>
+<script>
+    function ActionConfirmation(text) {
+        if (confirm(text) == false) {
+            event.preventDefault();
+        }
+    }
+</script>

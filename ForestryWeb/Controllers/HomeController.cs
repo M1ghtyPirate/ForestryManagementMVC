@@ -897,6 +897,81 @@ namespace ForestryWeb.Controllers
         }
 
         /// <summary>
+        /// Страница редактирования списка пород.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> EditTreeSpeciesDirectory()
+        {
+            if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin")
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+            var treeSpecies = await db.TreeSpecies.ToListAsync();
+            return View(treeSpecies);
+        }
+
+        /// <summary>
+        /// Редактирование списка пород.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost, DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = Int32.MaxValue, ValueLengthLimit = Int32.MaxValue, ValueCountLimit = Int32.MaxValue)]
+        public async Task<IActionResult> EditTreeSpeciesDirectory([Bind(Prefix = "TreeSpecies")] List<TreeSpecies> treeSpecies)
+        {
+            if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin")
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+            treeSpecies?.RemoveAll(t => string.IsNullOrEmpty(t.Name = t.Name?.Trim()) || t.OperationalAgeClass == 0 || t.OptimalFellingAge == 0);
+            var treespeciesDB = await db.TreeSpecies.ToListAsync();
+
+            foreach(var treeSpeciesRow in treeSpecies)
+            {
+                var treeSpeciesRowDB = treespeciesDB.FirstOrDefault(t => t.TreeSpeciesID == treeSpeciesRow.TreeSpeciesID);
+                var treeSpeciesRowDuplicateDB = treespeciesDB.FirstOrDefault(t => t.Name.ToLower() == treeSpeciesRow.Name.ToLower() && t.TreeSpeciesID != treeSpeciesRow.TreeSpeciesID);
+                if (treeSpeciesRowDB != null && treeSpeciesRowDuplicateDB == null)
+                {
+                    db.Entry(treeSpeciesRowDB).CurrentValues.SetValues(treeSpeciesRow);
+                }
+                else if(treeSpeciesRowDuplicateDB == null)
+                {
+                    db.TreeSpecies.Add(treeSpeciesRow);
+                }
+            }
+
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("TreeSpeciesDirectory");
+        }
+
+
+        /// <summary>
+        /// Удаление породы из справочника.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> RemoveTreeSpecies(Guid ID)
+        {
+            if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin")
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+
+            //Реализовать каскадное удаление?
+            var treeSpeciesDB = db.TreeSpecies.FirstOrDefault(t => t.TreeSpeciesID == ID);
+            try
+            {
+                db.TreeSpecies.Remove(treeSpeciesDB);
+                await db.SaveChangesAsync();
+            }
+            catch
+            {
+                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = $"{treeSpeciesDB.Name} используется в представлениях, каскадное удаление пород запрещено"});
+            }
+               
+            return RedirectToAction("TreeSpeciesDirectory");
+        }
+
+        /// <summary>
         /// Товарная таблица.
         /// </summary>
         /// <returns></returns>

@@ -1,0 +1,110 @@
+﻿@{
+    var subTitle = "Редактирование пород деревьев";
+    ViewData["Title"] = subTitle;
+    var p0 = "N0";
+    var p1 = "N1";
+
+    var speciesCount = 0;
+
+    async Task generateSpeciesRows(TreeSpecies treeSpecies)
+    {
+
+        <tr>
+            <td>
+                <input type="text" name="TreeSpecies[@(speciesCount)].TreeSpeciesID" value="@treeSpecies?.TreeSpeciesID" hidden="True" />
+                <input type="text" name="TreeSpecies[@(speciesCount)].Name" value="@treeSpecies?.Name" placeholder="Название породы."/>
+            </td>
+            <td>
+                <select name="TreeSpecies[@(speciesCount)].IsDeciduous">
+                    <option disabled selected="@(treeSpecies == null)">--Выберете тип породы--</option>
+                    <option value="true" selected="@(treeSpecies?.IsDeciduous == true)">Мягколиственная</option>
+                    <option value="false" selected="@(treeSpecies?.IsDeciduous == false)">Хвойная</option>
+                </select>
+            </td>
+            <td>
+                <select name="TreeSpecies[@(speciesCount)].OperationalAgeClass">
+                    <option disabled selected="@(treeSpecies == null)">--Выберете класс--</option>
+                    @for(var i = 1; i <= 8; i++)
+                    {
+                        <option value="@i" selected="@(treeSpecies?.OperationalAgeClass == i)">@Formatting.toFixed(i, p0)</option>
+                    }
+                </select>
+            <td><input type="number" name="TreeSpecies[@(speciesCount++)].OptimalFellingAge" step="1" min="0" value="@Formatting.toFixed(treeSpecies?.OptimalFellingAge, p0)" /></td>
+        </tr>
+    }
+}
+@model List<TreeSpecies>
+
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="Directories">Справочная информация</a> - @subTitle</h1>
+    <form onsubmit="return isFormValid()" asp-action="EditTreeSpeciesDirectory" asp-controller="home">
+        <table class="table">
+            <tr>
+                <th >Название породы</th>
+                <th >Тип породы</th>
+                <th >Эксплуатационный класс возраста</th>
+                <th >Рекомендуемый возраст рубки низкобонитетных насаждений</th>
+            </tr>
+            @foreach (var treeSpecies in Model.OrderBy(s => s.Name))
+            {
+                generateSpeciesRows(treeSpecies);
+            }
+            <tbody id="newSpeciesBlock" hidden="true">@{@generateSpeciesRows(null);}</tbody>
+            <tr><td colspan="4"><input type="button" onclick="addSpecies_Click()" value="Добавить породу" /></td></tr>
+        </table>
+        <div>
+            <input type="submit" value="Внести изменения" />
+        </div>
+    </form>
+</div>
+<script>
+    //Проверка уникальности выбора пород.
+    function isFormValid() {
+        let treeInputRegex = new RegExp("TreeSpecies\[[0-9]*\]\.Name");
+        let inputTags = document.getElementsByTagName("input");
+        let treeSpeciesDuplicates = [];
+        let treeSpeciesCount = new Object();
+        let currentSpeciesName;
+        for (let i = 0; i < inputTags.length; i++) {
+            if (treeInputRegex.test(inputTags[i].name) && inputTags[i].value != null && inputTags[i].value.trim() != "") {
+                inputTags[i].value = inputTags[i].value.trim();
+                currentSpeciesName = inputTags[i].value.toLowerCase();
+                treeSpeciesCount[currentSpeciesName] = treeSpeciesCount[currentSpeciesName] == null ? 1 : treeSpeciesCount[currentSpeciesName] + 1;
+                if (treeSpeciesCount[currentSpeciesName] > 1) {
+                    treeSpeciesDuplicates.push(inputTags[i]);
+                }
+            }
+        }
+        if (treeSpeciesDuplicates.length > 0) {
+            treeSpeciesDuplicates.forEach(t => t.className = "input-error")
+            alert("Добавлены повторяющиеся породы!");
+            return false;
+        }
+        return true;
+    }
+
+    //Добавление породы в таблицу.
+    function addSpecies_Click() {
+        let newSpeciesBlock = document.getElementById("newSpeciesBlock");
+        let newSpeciesBlockClone = newSpeciesBlock.cloneNode(true);
+        incrementTagName(newSpeciesBlockClone, 1);
+        newSpeciesBlock.after(newSpeciesBlockClone);
+        newSpeciesBlock.id = null;
+        newSpeciesBlock.hidden = false;
+        //alert("test");
+    }
+
+    function incrementTagName(tag, inc) {
+        let tagNameRegex = new RegExp("\\[[0-9]*\\]");
+        let matches = tag.name?.match(tagNameRegex);
+        if (matches) {
+            matches.forEach(match => {
+                let number = Number(match.substring(1, match.length - 1));
+                number += inc;
+                tag.name = tag.name.replace(match, `[${number}]`);
+            }
+            )
+        }
+        tag.childNodes?.forEach(n => incrementTagName(n, inc));
+    }
+</script>
