@@ -18,7 +18,7 @@
         {
             <tr>
                 <td><a asp-action="forestry" asp-route-id=@item.Item1.ForestryID>@item.Item1.Name</a></td>
-                <td>@item.Item2.Login</td>
+                <td class="@(Context.User.FindFirstValue(ClaimTypes.NameIdentifier) == item.Item1.AuthorID + "" ? "table-item-highlighted" : "")">@item.Item2.Login</td>
                 <td>@item.Item1.CreationDate</td>
                 <td>@item.Item1.EditDate</td>
                 <td>@(item.Item1.IsShared ? "Да" : "")</td>

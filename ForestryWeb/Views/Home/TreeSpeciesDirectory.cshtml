@@ -6,21 +6,23 @@
 }
 @model List<TreeSpecies>
 
-<h2><a asp-action="Directories">Справочная информация</a> - @subTitle</h2>
-<table class="table">
-    <tr>
-        <th >Название породы</th>
-        <th >Тип породы</th>
-        <th >Эксплуатационный класс возраста</th>
-        <th >Рекомендуемый возраст рубки низкобонитетных насаждений</th>
-    </tr>
-    @foreach (var treeSpecies in Model.OrderBy(s => s.Name))
-    {
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="Directories">Справочная информация</a> - @subTitle</h1>
+    <table class="table">
         <tr>
-            <td>@treeSpecies.Name</td>
-            <td>@(treeSpecies.IsDeciduous ? "Мягколиственная" : "Хвойная")</td>
-            <td>@Formatting.toFixed(treeSpecies.OperationalAgeClass, p0)</td>
-            <td>@Formatting.toFixed(treeSpecies.OptimalFellingAge, p0)</td>
+            <th >Название породы</th>
+            <th >Тип породы</th>
+            <th >Эксплуатационный класс возраста</th>
+            <th >Рекомендуемый возраст рубки низкобонитетных насаждений</th>
         </tr>
-    }
-</table>
+        @foreach (var treeSpecies in Model.OrderBy(s => s.Name))
+        {
+            <tr>
+                <td>@treeSpecies.Name</td>
+                <td>@(treeSpecies.IsDeciduous ? "Мягколиственная" : "Хвойная")</td>
+                <td>@Formatting.toFixed(treeSpecies.OperationalAgeClass, p0)</td>
+                <td>@Formatting.toFixed(treeSpecies.OptimalFellingAge, p0)</td>
+            </tr>
+        }
+    </table>
+</div>

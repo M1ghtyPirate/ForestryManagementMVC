@@ -10,56 +10,58 @@
 }
 @model Tuple<List<SectionTotal>, List<AvgSectionGrowthCalc>>
 
-<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
-@foreach (var forestrySection in Model.Item1.OrderBy(g => g.SectionName))
-{
-    var qualityClass = Math.Round((double)forestrySection.AvgQuality);
-    var calcClasses = Model.Item2.Where(g => g.TreeSpeciesID == forestrySection.TreeSpeciesID).DistinctBy(g => g.QualityClass).Select(g => g.QualityClass);
-    var minDiff = calcClasses.Min(c => (int)Math.Abs(c - qualityClass));
-    var closestClass = calcClasses.FirstOrDefault(c => (int)Math.Abs(c - qualityClass) == minDiff);
-    <h5>@forestrySection.SectionName</h5>
-    <h6>Порода: @forestrySection.TreeSpeciesName средний бонитет: @Formatting.toFixed(forestrySection.AvgQuality, p1)</h6>
-    <table class="table">
-        <tr>
-            <th rowspan="2">Возраст</th>
-            <th colspan="2">Средние</th>
-            <th colspan="2">Прирост, м3</th>
-            <th rowspan="2">Запас на га, м3</th>
-            <th colspan="3">Крупной деловой древесины</th>
-            <th colspan="3">Средней деловой древесины</th>
-            <th rowspan="2">Средний прирост крупной и средней древесины, м3</th>
-        </tr>
-        <tr>
-            <th>H</th>
-            <th>D</th>
-            <th>средний</th>
-            <th>текущий</th>
-            <th>% выхода</th>
-            <th>масса, м3</th>
-            <th>средний прирост, м3</th>
-            <th>% выхода</th>
-            <th>масса, м3</th>
-            <th>средний прирост, м3</th>
-        </tr>
-        @foreach (var avgGrowthCalc in Model.Item2.Where(g => g.TreeSpeciesID == forestrySection.TreeSpeciesID && g.QualityClass == closestClass).OrderBy(g => g.Age))
-        {
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h1>
+    @foreach (var forestrySection in Model.Item1.OrderBy(g => g.SectionName))
+    {
+        var qualityClass = Math.Round((double)forestrySection.AvgQuality);
+        var calcClasses = Model.Item2.Where(g => g.TreeSpeciesID == forestrySection.TreeSpeciesID).DistinctBy(g => g.QualityClass).Select(g => g.QualityClass);
+        var minDiff = calcClasses.Min(c => (int)Math.Abs(c - qualityClass));
+        var closestClass = calcClasses.FirstOrDefault(c => (int)Math.Abs(c - qualityClass) == minDiff);
+        <h5>@forestrySection.SectionName</h5>
+        <h6>Порода: @forestrySection.TreeSpeciesName средний бонитет: @Formatting.toFixed(forestrySection.AvgQuality, p1)</h6>
+        <table class="table">
             <tr>
-                <td>@Formatting.toFixed(avgGrowthCalc.Age, p0)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.AvgHeight, p1)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.AvgDiameter, p1)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.AvgGrowth, p1)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.CurrentGrowth, p1)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.VolumePerHectare, p1)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.LargeOutputPercent, p0)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.LargeVolume, p2)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.LargeAvgGrowth, p4)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.MediumOutputPercent, p0)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.MediumVolume, p2)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.MediumAvgGrowth, p4)</td>
-                <td>@Formatting.toFixed(avgGrowthCalc.AvgProductGrowth, p4)</td>
+                <th rowspan="2">Возраст</th>
+                <th colspan="2">Средние</th>
+                <th colspan="2">Прирост, м3</th>
+                <th rowspan="2">Запас на га, м3</th>
+                <th colspan="3">Крупной деловой древесины</th>
+                <th colspan="3">Средней деловой древесины</th>
+                <th rowspan="2">Средний прирост крупной и средней древесины, м3</th>
             </tr>
-        }
-    </table>
-    <div>Техническая спелость: @forestrySection.TechnicalAge</div>
-    <div>Количественная спелость: @forestrySection.RipeAge</div>
-}
+            <tr>
+                <th>H</th>
+                <th>D</th>
+                <th>средний</th>
+                <th>текущий</th>
+                <th>% выхода</th>
+                <th>масса, м3</th>
+                <th>средний прирост, м3</th>
+                <th>% выхода</th>
+                <th>масса, м3</th>
+                <th>средний прирост, м3</th>
+            </tr>
+            @foreach (var avgGrowthCalc in Model.Item2.Where(g => g.TreeSpeciesID == forestrySection.TreeSpeciesID && g.QualityClass == closestClass).OrderBy(g => g.Age))
+            {
+                <tr>
+                    <td class="@(avgGrowthCalc.Age == forestrySection.TechnicalAge || avgGrowthCalc.Age == forestrySection.RipeAge ? "table-item-highlighted" : "")">@Formatting.toFixed(avgGrowthCalc.Age, p0)</td>
+                    <td>@Formatting.toFixed(avgGrowthCalc.AvgHeight, p1)</td>
+                    <td>@Formatting.toFixed(avgGrowthCalc.AvgDiameter, p1)</td>
+                    <td class="@(avgGrowthCalc.Age == forestrySection.RipeAge ? "table-item-highlighted" : "")">@Formatting.toFixed(avgGrowthCalc.AvgGrowth, p1)</td>
+                    <td class="@(avgGrowthCalc.Age == forestrySection.RipeAge ? "table-item-highlighted" : "")">@Formatting.toFixed(avgGrowthCalc.CurrentGrowth, p1)</td>
+                    <td>@Formatting.toFixed(avgGrowthCalc.VolumePerHectare, p1)</td>
+                    <td>@Formatting.toFixed(avgGrowthCalc.LargeOutputPercent, p0)</td>
+                    <td>@Formatting.toFixed(avgGrowthCalc.LargeVolume, p2)</td>
+                    <td>@Formatting.toFixed(avgGrowthCalc.LargeAvgGrowth, p4)</td>
+                    <td>@Formatting.toFixed(avgGrowthCalc.MediumOutputPercent, p0)</td>
+                    <td>@Formatting.toFixed(avgGrowthCalc.MediumVolume, p2)</td>
+                    <td>@Formatting.toFixed(avgGrowthCalc.MediumAvgGrowth, p4)</td>
+                    <td class="@(avgGrowthCalc.Age == forestrySection.TechnicalAge ? "table-item-highlighted" : "")">@Formatting.toFixed(avgGrowthCalc.AvgProductGrowth, p4)</td>
+                </tr>
+            }
+        </table>
+        <div>Техническая спелость: @forestrySection.TechnicalAge</div>
+        <div>Количественная спелость: @forestrySection.RipeAge</div>
+    }
+</div>

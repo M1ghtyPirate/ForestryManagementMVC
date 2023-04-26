@@ -11,50 +11,52 @@
                 List<SectionFelling10YAGResultArea>,
                 List<SectionFelling10YTotalArea>>
 
-<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
-<table class="table">
-    <tr>
-        <th rowspan="2">Хозсекция</th>
-        <th rowspan="2">Возраст рубки, лет</th>
-        <th rowspan="2">Рассчетная лесосекция по площади, га</th>
-        <th rowspan="2">По состоянию</th>
-        <th colspan="8">Классы возраста</th>
-        <th rowspan="2">Всего</th>
-    </tr>
-    <tr>
-        <th>Ⅰ</th>
-        <th>Ⅱ</th>
-        <th>Ⅲ</th>
-        <th>Ⅳ</th>
-        <th>Ⅴ</th>
-        <th>Ⅵ</th>
-        <th>Ⅶ</th>
-        <th>Ⅷ</th>
-    </tr>
-    @foreach (var sectionFellingTotal in Model.Item3.OrderBy(g => g.SectionName))
-    {
-        var sectionFelling10YAGStartAreas = Model.Item1.Where(g => g.SectionID == sectionFellingTotal.SectionID);
-        var sectionFelling10YAGResultAreas = Model.Item2.Where(g => g.SectionID == sectionFellingTotal.SectionID);
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h1>
+    <table class="table">
         <tr>
-            <td rowspan="2">@sectionFellingTotal.SectionName</td>
-            <td rowspan="2">@Formatting.toFixed(sectionFellingTotal.MainFellingAge, p0)<br/>@Formatting.toFixed(sectionFellingTotal.MainFellingAgeClass, p0)</td>
-            <td rowspan="2">@Formatting.toFixed(sectionFellingTotal.FellingOperationalArea, p1)</td>
-            <td>Начало ревизионного периода</td>
-            @for(var i = 1; i <= 8; i++)
-            {
-            var sectionFelling10YAGStartArea = sectionFelling10YAGStartAreas.FirstOrDefault(g => g.AgeClass == i);
-            <td>@Formatting.toFixed(sectionFelling10YAGStartArea?.Area, p1)</td>
-            }
-            <td>@Formatting.toFixed(sectionFellingTotal.StartArea, p1)<br />Δ = @Formatting.toFixed(sectionFellingTotal.StartAreaDelta, p1)</td>
+            <th rowspan="2">Хозсекция</th>
+            <th rowspan="2">Возраст рубки, лет</th>
+            <th rowspan="2">Рассчетная лесосекция по площади, га</th>
+            <th rowspan="2">По состоянию</th>
+            <th colspan="8">Классы возраста</th>
+            <th rowspan="2">Всего</th>
         </tr>
         <tr>
-            <td>Конец ревизионного периода</td>
-            @for (var i = 1; i <= 8; i++)
-            {
-                var sectionFelling10YAGResultArea = sectionFelling10YAGResultAreas.FirstOrDefault(g => g.AgeClass == i);
-                <td>@Formatting.toFixed(sectionFelling10YAGResultArea?.Area, p1)</td>
-            }
-            <td>@Formatting.toFixed(sectionFellingTotal.ResultArea, p1)<br />Δ = @Formatting.toFixed(sectionFellingTotal.ResultAreaDelta, p1)</td>
+            <th>Ⅰ</th>
+            <th>Ⅱ</th>
+            <th>Ⅲ</th>
+            <th>Ⅳ</th>
+            <th>Ⅴ</th>
+            <th>Ⅵ</th>
+            <th>Ⅶ</th>
+            <th>Ⅷ</th>
         </tr>
-    }
-</table>
+        @foreach (var sectionFellingTotal in Model.Item3.OrderBy(g => g.SectionName))
+        {
+            var sectionFelling10YAGStartAreas = Model.Item1.Where(g => g.SectionID == sectionFellingTotal.SectionID);
+            var sectionFelling10YAGResultAreas = Model.Item2.Where(g => g.SectionID == sectionFellingTotal.SectionID);
+            <tr>
+                <td rowspan="2">@sectionFellingTotal.SectionName</td>
+                <td rowspan="2">@Formatting.toFixed(sectionFellingTotal.MainFellingAge, p0)<br/>@Formatting.toFixed(sectionFellingTotal.MainFellingAgeClass, p0)</td>
+                <td rowspan="2">@Formatting.toFixed(sectionFellingTotal.FellingOperationalArea, p1)</td>
+                <td>Начало ревизионного периода</td>
+                @for(var i = 1; i <= 8; i++)
+                {
+                var sectionFelling10YAGStartArea = sectionFelling10YAGStartAreas.FirstOrDefault(g => g.AgeClass == i);
+                <td>@Formatting.toFixed(sectionFelling10YAGStartArea?.Area, p1)</td>
+                }
+                <td>@Formatting.toFixed(sectionFellingTotal.StartArea, p1)<br />Δ = @Formatting.toFixed(sectionFellingTotal.StartAreaDelta, p1)</td>
+            </tr>
+            <tr>
+                <td>Конец ревизионного периода</td>
+                @for (var i = 1; i <= 8; i++)
+                {
+                    var sectionFelling10YAGResultArea = sectionFelling10YAGResultAreas.FirstOrDefault(g => g.AgeClass == i);
+                    <td>@Formatting.toFixed(sectionFelling10YAGResultArea?.Area, p1)</td>
+                }
+                <td>@Formatting.toFixed(sectionFellingTotal.ResultArea, p1)<br />Δ = @Formatting.toFixed(sectionFellingTotal.ResultAreaDelta, p1)</td>
+            </tr>
+        }
+    </table>
+</div>

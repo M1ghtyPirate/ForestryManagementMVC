@@ -8,7 +8,8 @@
 }
 @model Tuple<List<SectionsFellingVariant>, List<SectionFellingAgeGroup>>
 
-<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
+<div class="page-content-center page-content-display">
+<h1><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h1>
     @foreach (var forestrySection in Model.Item1.OrderBy(g => g.SectionName))
     {
         var sectionFellingAgeGroups = Model.Item2.Where(g => g.SectionID == forestrySection.SectionID);
@@ -69,46 +70,46 @@
         </table>
         <table class="table">
             <tr>
-                <td rowspan="8">Расчет лесосек</td>
-                <td >Лесосеки</td>
-                <td >по площади, га</td>
-                <td >по массе, м3</td>
+                <th rowspan="8">Расчет лесосек</th>
+                <th >Лесосеки</th>
+                <th >по площади, га</th>
+                <th >по массе, м3</th>
             </tr>
-            <tr>
+            <tr class="@(forestrySection.FellingRipeArea == forestrySection.FellingOperationalArea ? "table-item-highlighted" : "")">
                 <td >По спелости</td>
                 <td >@Formatting.toFixed(forestrySection.FellingRipeArea, p1)</td>
                 <td >@Formatting.toFixed(forestrySection.FellingRipeVolume, p1)</td>
             </tr>
-            <tr>
+            <tr class="@(forestrySection.FellingAgeFirstArea == forestrySection.FellingOperationalArea ? "table-item-highlighted" : "")">
                 <td >По возрасту 1-я</td>
                 <td >@Formatting.toFixed(forestrySection.FellingAgeFirstArea, p1)</td>
                 <td >@Formatting.toFixed(forestrySection.FellingAgeFirstVolume, p1)</td>
             </tr>
-            <tr>
+            <tr class="@(forestrySection.FellingAgeSecondArea == forestrySection.FellingOperationalArea ? "table-item-highlighted" : "")">
                 <td >По возрасту 2-я</td>
                 <td >@Formatting.toFixed(forestrySection.FellingAgeSecondArea, p1)</td>
                 <td >@Formatting.toFixed(forestrySection.FellingAgeSecondVolume, p1)</td>
             </tr>
-            <tr>
+            <tr class="@(forestrySection.FellingAvgGrowthArea == forestrySection.FellingOperationalArea ? "table-item-highlighted" : "")">
                 <td >По среднему приросту</td>
                 <td >@Formatting.toFixed(forestrySection.FellingAvgGrowthArea, p1)</td>
                 <td >@Formatting.toFixed(forestrySection.FellingAvgGrowthVolume, p1)</td>
             </tr>
-            <tr>
+            <tr class="@(forestrySection.FellingStateArea == forestrySection.FellingOperationalArea ? "table-item-highlighted" : "")">
                 <td >По состоянию</td>
                 <td >@Formatting.toFixed(forestrySection.FellingStateArea, p1)</td>
                 <td >@Formatting.toFixed(forestrySection.FellingStateVolume, p1)</td>
             </tr>
-            <tr>
+            <tr class="@(forestrySection.FellingCycleArea == forestrySection.FellingOperationalArea ? "table-item-highlighted" : "")">
                 <td >По обороту рубки</td>
                 <td >@Formatting.toFixed(forestrySection.FellingCycleArea, p1)</td>
                 <td >@Formatting.toFixed(forestrySection.FellingCycleVolume, p1)</td>
             </tr>
-            <tr>
+            <tr class="table-item-highlighted">
                 <td >Расчетная</td>
                 <td >@Formatting.toFixed(forestrySection.FellingOperationalArea, p1)</td>
                 <td >@Formatting.toFixed(forestrySection.FellingOperationalVolume, p1)</td>
             </tr>
         </table>
-        <br/>
     }
+</div>

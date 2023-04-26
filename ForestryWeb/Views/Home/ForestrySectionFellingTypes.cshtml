@@ -9,33 +9,35 @@
 }
 @model Tuple<ForestryFellingType, List<SectionFellingType>>
 
-<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
-<table class="table">
-    <tr>
-        <th>Хозяйственные секции</th>
-        <th>Расчетная лесосека, м3</th>
-        <th>Площадь хозсекции, га</th>
-        <th>Размер пользования на 1 га, м3</th>
-        <th>Общий средний прирост, м3</th>
-        <th>Средний прирост на 1 га, м3</th>
-    </tr>
-    @foreach (var forestrySection in Model.Item2.OrderBy(g => g.SectionName))
-    {
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h1>
+    <table class="table">
         <tr>
-            <td>@forestrySection.SectionName - @forestrySection.FellingType</td>
-            <td>@Formatting.toFixed(forestrySection.FellingOperationalVolume, p1)</td>
-            <td>@Formatting.toFixed(forestrySection.Area, p1)</td>
-            <td>@Formatting.toFixed(forestrySection.OperationalVolumePerHectare, p2)</td>
-            <td>@Formatting.toFixed(forestrySection.AvgGrowth, p1)</td>
-            <td>@Formatting.toFixed(forestrySection.AvgGrowthPerHectare, p2)</td>
+            <th>Хозяйственные секции</th>
+            <th>Расчетная лесосека, м3</th>
+            <th>Площадь хозсекции, га</th>
+            <th>Размер пользования на 1 га, м3</th>
+            <th>Общий средний прирост, м3</th>
+            <th>Средний прирост на 1 га, м3</th>
         </tr>
-    }
-    <tr>
-        <td>Итого по лесхозу - @Model.Item1.FellingType</td>
-        <td>@Formatting.toFixed(Model.Item1.FellingOperationalVolume, p1)</td>
-        <td>@Formatting.toFixed(Model.Item1.Area, p1)</td>
-        <td>@Formatting.toFixed(Model.Item1.OperationalVolumePerHectare, p2)</td>
-        <td>@Formatting.toFixed(Model.Item1.AvgGrowth, p1)</td>
-        <td>@Formatting.toFixed(Model.Item1.AvgGrowthPerHectare, p2)</td>
-    </tr>
-</table>
+        @foreach (var forestrySection in Model.Item2.OrderBy(g => g.SectionName))
+        {
+            <tr>
+                <td>@forestrySection.SectionName - @forestrySection.FellingType</td>
+                <td>@Formatting.toFixed(forestrySection.FellingOperationalVolume, p1)</td>
+                <td>@Formatting.toFixed(forestrySection.Area, p1)</td>
+                <td>@Formatting.toFixed(forestrySection.OperationalVolumePerHectare, p2)</td>
+                <td>@Formatting.toFixed(forestrySection.AvgGrowth, p1)</td>
+                <td>@Formatting.toFixed(forestrySection.AvgGrowthPerHectare, p2)</td>
+            </tr>
+        }
+        <tr class="table-item-highlighted">
+            <td>Итого по лесхозу - @Model.Item1.FellingType</td>
+            <td>@Formatting.toFixed(Model.Item1.FellingOperationalVolume, p1)</td>
+            <td>@Formatting.toFixed(Model.Item1.Area, p1)</td>
+            <td>@Formatting.toFixed(Model.Item1.OperationalVolumePerHectare, p2)</td>
+            <td>@Formatting.toFixed(Model.Item1.AvgGrowth, p1)</td>
+            <td>@Formatting.toFixed(Model.Item1.AvgGrowthPerHectare, p2)</td>
+        </tr>
+    </table>
+</div>

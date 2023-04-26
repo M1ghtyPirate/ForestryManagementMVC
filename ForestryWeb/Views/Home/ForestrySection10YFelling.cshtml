@@ -14,7 +14,8 @@
                 List<SectionFelling10YAGResultArea>,
                 List<SectionFelling10YTotalArea>>
 
-<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h1>
     @foreach (var sectionFellingTotal in Model.Item6.OrderBy(g => g.SectionName))
     {
         var sectionFelling10YAGStartAreas = Model.Item1.Where(g => g.SectionID == sectionFellingTotal.SectionID);
@@ -139,5 +140,5 @@
                 <td></td>
             </tr>
         </table>
-        <br/>
     }
+</div>

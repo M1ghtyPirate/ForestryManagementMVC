@@ -7,44 +7,46 @@
 }
 @model Tuple<List<GrowthRate>, List<TreeSpecies>,  List<QualityClass>>
 
-<h2><a asp-action="Directories">Справочная информация</a> - @subTitle</h2>
-<table class="table">
-    <tr>
-        <th rowspan="3">Возраст, лет</th>
-        <th colspan="5">Древостой</th>
-    </tr>
-    <tr>
-        <th rowspan="2">средняя высота, м</th>
-        <th rowspan="2">средний диаметр, см</th>
-        <th rowspan="2">запас на 1 га, м3</th>
-        <th colspan="2">прирост, м3</th>
-    </tr>
-    <tr>
-        <th>средний</th>
-        <th>текущий</th>
-    </tr>
-    @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == g.TreeSpeciesID)?.Name))
-    {
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="Directories">Справочная информация</a> - @subTitle</h1>
+    <table class="table">
         <tr>
-            <th colspan="6">@Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == speciesGroup.TreeSpeciesID)?.Name</th>
+            <th rowspan="3">Возраст, лет</th>
+            <th colspan="5">Древостой</th>
         </tr>
-        @foreach (var qualityGroup in Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => Model.Item3.FirstOrDefault(q => q.QualityClassID == g.QualityClassID)?.Number))
+        <tr>
+            <th rowspan="2">средняя высота, м</th>
+            <th rowspan="2">средний диаметр, см</th>
+            <th rowspan="2">запас на 1 га, м3</th>
+            <th colspan="2">прирост, м3</th>
+        </tr>
+        <tr>
+            <th>средний</th>
+            <th>текущий</th>
+        </tr>
+        @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == g.TreeSpeciesID)?.Name))
         {
-            var avgHeightEntries = Model.Item1.Where(p => p.TreeSpeciesID == speciesGroup.TreeSpeciesID && p.AvgDiameter == qualityGroup.AvgDiameter).OrderBy(g => g.AvgHeight);
             <tr>
-                <th colspan="6">@Model.Item3.FirstOrDefault(q => q.QualityClassID == qualityGroup.QualityClassID)?.Number-й класс бонитета</th>
+                <th colspan="6">@Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == speciesGroup.TreeSpeciesID)?.Name</th>
             </tr>
-            @foreach (var growthEntry in Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID).OrderBy(g => g.Age))
+            @foreach (var qualityGroup in Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => Model.Item3.FirstOrDefault(q => q.QualityClassID == g.QualityClassID)?.Number))
             {
+                var avgHeightEntries = Model.Item1.Where(p => p.TreeSpeciesID == speciesGroup.TreeSpeciesID && p.AvgDiameter == qualityGroup.AvgDiameter).OrderBy(g => g.AvgHeight);
                 <tr>
-                    <td>@Formatting.toFixed(growthEntry.Age, p0)</td>
-                    <td>@Formatting.toFixed(growthEntry.AvgHeight, p1)</td>
-                    <td>@Formatting.toFixed(growthEntry.AvgDiameter, p1)</td>
-                    <td>@Formatting.toFixed(growthEntry.VolumePerHectare, p0)</td>
-                    <td>@Formatting.toFixed(growthEntry.AvgGrowth, p1)</td>
-                    <td>@Formatting.toFixed(growthEntry.CurrentGrowth, p1)</td>
+                    <td class="table-item-highlighted" colspan="6">@Model.Item3.FirstOrDefault(q => q.QualityClassID == qualityGroup.QualityClassID)?.Number-й класс бонитета</td>
                 </tr>
+                @foreach (var growthEntry in Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID && g.QualityClassID == qualityGroup.QualityClassID).OrderBy(g => g.Age))
+                {
+                    <tr>
+                        <td>@Formatting.toFixed(growthEntry.Age, p0)</td>
+                        <td>@Formatting.toFixed(growthEntry.AvgHeight, p1)</td>
+                        <td>@Formatting.toFixed(growthEntry.AvgDiameter, p1)</td>
+                        <td>@Formatting.toFixed(growthEntry.VolumePerHectare, p0)</td>
+                        <td>@Formatting.toFixed(growthEntry.AvgGrowth, p1)</td>
+                        <td>@Formatting.toFixed(growthEntry.CurrentGrowth, p1)</td>
+                    </tr>
+                }
             }
         }
-    }
-</table>
+    </table>
+</div>

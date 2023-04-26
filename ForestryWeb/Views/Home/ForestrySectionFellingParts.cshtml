@@ -9,34 +9,36 @@
 }
 @model Tuple<ForestryFellingPeriod, List<SectionFellingPart>>
 
-<h2><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h2>
-<table class="table">
-    <tr>
-        <th rowspan="2">Хозяйственные секции</th>
-        <th colspan="2">Расчетная лесосека</th>
-        <th colspan="2">Удельный вес, %</th>
-    </tr>
-    <tr>
-        <th>по площади, га</th>
-        <th>по запасу, м3</th>
-        <th>по площади</th>
-        <th>по запасу</th>
-    </tr>
-    @foreach (var forestrySection in Model.Item2.OrderBy(g => g.SectionName))
-    {
+<div class="page-content-center page-content-display">
+    <h1><a asp-action="forestry" asp-route-id=@forestryID>@forestryName</a> - @subTitle</h1>
+    <table class="table">
         <tr>
-            <td>@forestrySection.SectionName</td>
-            <td>@Formatting.toFixed(forestrySection.FellingOperationalArea, p1)</td>
-            <td>@Formatting.toFixed(forestrySection.FellingOperationalVolume, p1)</td>
-            <td>@Formatting.toFixed(forestrySection.AreaPercent, p1)</td>
-            <td>@Formatting.toFixed(forestrySection.VolumePercent, p1)</td>
+            <th rowspan="2">Хозяйственные секции</th>
+            <th colspan="2">Расчетная лесосека</th>
+            <th colspan="2">Удельный вес, %</th>
         </tr>
-    }
-    <tr>
-        <td>Итого по лесхозу</td>
-        <td>@Formatting.toFixed(Model.Item1.FellingOperationalArea, p1)</td>
-        <td>@Formatting.toFixed(Model.Item1.FellingOperationalVolume, p1)</td>
-        <td>@Formatting.toFixed(100, p1)</td>
-        <td>@Formatting.toFixed(100, p1)</td>
-    </tr>
-</table>
+        <tr>
+            <th>по площади, га</th>
+            <th>по запасу, м3</th>
+            <th>по площади</th>
+            <th>по запасу</th>
+        </tr>
+        @foreach (var forestrySection in Model.Item2.OrderBy(g => g.SectionName))
+        {
+            <tr>
+                <td>@forestrySection.SectionName</td>
+                <td>@Formatting.toFixed(forestrySection.FellingOperationalArea, p1)</td>
+                <td>@Formatting.toFixed(forestrySection.FellingOperationalVolume, p1)</td>
+                <td>@Formatting.toFixed(forestrySection.AreaPercent, p1)</td>
+                <td>@Formatting.toFixed(forestrySection.VolumePercent, p1)</td>
+            </tr>
+        }
+        <tr class="table-item-highlighted">
+            <td>Итого по лесхозу</td>
+            <td>@Formatting.toFixed(Model.Item1.FellingOperationalArea, p1)</td>
+            <td>@Formatting.toFixed(Model.Item1.FellingOperationalVolume, p1)</td>
+            <td>@Formatting.toFixed(100, p1)</td>
+            <td>@Formatting.toFixed(100, p1)</td>
+        </tr>
+    </table>
+</div>

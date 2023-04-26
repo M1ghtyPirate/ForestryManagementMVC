@@ -6,17 +6,20 @@
 <div class="page-content-center page-content-display">
     <h1>@Model.Item1.Name</h1>
     <div class="forestry-items">
-        <a asp-action="forestryareas" asp-route-id=@Model.Item1.ForestryID>Распределение общей площади по категориям земель</a>
+        <h4>Внесение исходных данных</h4>
+        <a asp-action ="forestryareas" asp-route-id=@Model.Item1.ForestryID>Распределение общей площади по категориям земель</a>
         <a asp-action="forestrytreegroups" asp-route-id=@Model.Item1.ForestryID>Распределение лесной площади и запасов по бонитетам и классам возраста</a>
         @*//Внесна информация о насаждениях*@
         @if (Model.Item3)
         {
+            <h4>Распределение по секциям</h4>
             <a asp-action="forestrytreespecies" asp-route-id=@Model.Item1.ForestryID>Основные показатели по лесному фонду</a>
             <a asp-action="forestrytreegroupsallocation" asp-route-id=@Model.Item1.ForestryID>Распределение групп бонитета по секциям</a>
         }
         @*//Выделены секции*@
         @if (Model.Item4)
         {
+            <h4>Расчет возрастов главных рубок секций</h4>
             <a asp-action="forestrysectiongroups" asp-route-id=@Model.Item1.ForestryID>Распределение площадей насаждений хозсекций по классам возраста</a>
             <a asp-action="forestrysections" asp-route-id=@Model.Item1.ForestryID>Схема организации лесного хозяйства</a>
             <a asp-action="avgsectiongrowthcalc" asp-route-id=@Model.Item1.ForestryID>Расчет среднего прироста сортиментов для определения технической спелости</a>
@@ -24,6 +27,7 @@
             @*//Есть насаждения, подходящие для рубок*@
             if (Model.Item5)
             {
+                <h4>Выбор лесосеки, результаты на конец 10 летнего периода</h4>
                 <a asp-action="forestryfellingsections" asp-route-id=@Model.Item1.ForestryID>Распределение площадей и запасов по классам возраста</a>
                 <a asp-action="forestryfellingperiods" asp-route-id=@Model.Item1.ForestryID>Срок использования эксплуатационного фонда</a>
                 <a asp-action="forestrysectionfellingtypes" asp-route-id=@Model.Item1.ForestryID>Сравнение размера главного пользования лесом с его средним приростом на 1 га</a>

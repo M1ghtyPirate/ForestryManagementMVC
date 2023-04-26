@@ -6,40 +6,42 @@
 }
 @model Tuple<List<ProductOutput>, List<TreeSpecies>>
 
-<h2><a asp-action="Directories">Справочная информация</a> - @subTitle</h2>
-<table class="table">
-    <tr>
-        <th rowspan="2">Средний диаметр, см</th>
-        <th rowspan="2">Средняя высота, м</th>
-        <th colspan="4">Деловая древесина по категориям крупности, %</th>
-    </tr>
-    <tr>
-        <th>крупная</th>
-        <th>средняя 1</th>
-        <th>средняя 2</th>
-        <th>средняя итого</th>
-    </tr>
-    @foreach (var speciesGroup in Model.Item1.DistinctBy(p => p.TreeSpeciesID).OrderBy(p => Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == p.TreeSpeciesID)?.Name))
-    {
+<div class="page-content-center page-content-display">
+    <h2><a asp-action="Directories">Справочная информация</a> - @subTitle</h2>
+    <table class="table">
         <tr>
-            <th colspan="6">@Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == speciesGroup.TreeSpeciesID)?.Name</th>
+            <th rowspan="2">Средний диаметр, см</th>
+            <th rowspan="2">Средняя высота, м</th>
+            <th colspan="4">Деловая древесина по категориям крупности, %</th>
         </tr>
-        @foreach (var avgDiameterGroup in Model.Item1.Where(p => p.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(p => p.AvgDiameter).OrderBy(g => g.AvgDiameter))
+        <tr>
+            <th>крупная</th>
+            <th>средняя 1</th>
+            <th>средняя 2</th>
+            <th>средняя итого</th>
+        </tr>
+        @foreach (var speciesGroup in Model.Item1.DistinctBy(p => p.TreeSpeciesID).OrderBy(p => Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == p.TreeSpeciesID)?.Name))
         {
-            var avgHeightEntries = Model.Item1.Where(p => p.TreeSpeciesID == speciesGroup.TreeSpeciesID && p.AvgDiameter == avgDiameterGroup.AvgDiameter).OrderBy(g => g.AvgHeight);
             <tr>
-                <td rowspan="@(avgHeightEntries.Count() + 1)">@avgDiameterGroup.AvgDiameter</td>
+                <th colspan="6">@Model.Item2.FirstOrDefault(s => s.TreeSpeciesID == speciesGroup.TreeSpeciesID)?.Name</th>
             </tr>
-            @foreach (var avgHeightEntry in avgHeightEntries)
+            @foreach (var avgDiameterGroup in Model.Item1.Where(p => p.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(p => p.AvgDiameter).OrderBy(g => g.AvgDiameter))
             {
+                var avgHeightEntries = Model.Item1.Where(p => p.TreeSpeciesID == speciesGroup.TreeSpeciesID && p.AvgDiameter == avgDiameterGroup.AvgDiameter).OrderBy(g => g.AvgHeight);
                 <tr>
-                    <td>@Formatting.toFixed(avgHeightEntry.AvgHeight, p0)</td>
-                    <td>@Formatting.toFixed(avgHeightEntry.LargePercent, p0)</td>
-                    <td>@Formatting.toFixed(avgHeightEntry.MediumPercent1, p0)</td>
-                    <td>@Formatting.toFixed(avgHeightEntry.MediumPercent2, p0)</td>
-                    <td>@Formatting.toFixed(avgHeightEntry.MediumPercentTotal, p0)</td>
+                    <td rowspan="@(avgHeightEntries.Count() + 1)">@avgDiameterGroup.AvgDiameter</td>
                 </tr>
+                @foreach (var avgHeightEntry in avgHeightEntries)
+                {
+                    <tr>
+                        <td>@Formatting.toFixed(avgHeightEntry.AvgHeight, p0)</td>
+                        <td>@Formatting.toFixed(avgHeightEntry.LargePercent, p0)</td>
+                        <td>@Formatting.toFixed(avgHeightEntry.MediumPercent1, p0)</td>
+                        <td>@Formatting.toFixed(avgHeightEntry.MediumPercent2, p0)</td>
+                        <td>@Formatting.toFixed(avgHeightEntry.MediumPercentTotal, p0)</td>
+                    </tr>
+                }
             }
         }
-    }
-</table>
+    </table>
+</div>

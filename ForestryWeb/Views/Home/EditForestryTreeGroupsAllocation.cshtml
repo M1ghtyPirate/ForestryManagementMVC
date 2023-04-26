@@ -57,55 +57,55 @@
                 }
             }
         </table>
+
+        <h5 id="forestArea" data-area="@Model.Item2.Area">Лесопокрытая площадь лесничества: @Formatting.toFixed(Model.Item2.Area, p0)</h5>
+        @{
+            var minSectionArea = Model.Item2.Area * 0.1;
+        }
+        <h5>Минимальная рекомендуемая площадь хозсекции: @Formatting.toFixed(Model.Item2.Area, p0) * 0,1 = @Formatting.toFixed(minSectionArea, p2)</h5>
+        <table class="table">
+            <tr>
+                <th>Название секции</th>
+                <th>Тип по породам</th>
+                <th>Тип по бонитетам</th>
+                <th>Площадь</th>
+            </tr>
+            <tbody id="sectionsBlock">
+            </tbody>
+            <tr id="newSectionRow" hidden="true">
+                <td id="sectionName"></td>
+                <td id="treeSpeciesType"></td>
+                <td id="qualityTier"></td>
+                <td id="sectionArea"></td>
+            </tr>
+        </table>
+
+        <datalist id="sectionsDataList" hidden="True">
+            <div id="sectionNames">
+            </div>
+            <div id="defaultSectionNames">
+                @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
+                {
+                    var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
+
+                    var highQualityGroup = qualityGroups.FirstOrDefault(g => g.QualityClass < 4);
+                    var lowQualityGroup = qualityGroups.FirstOrDefault(g => g.QualityClass > 3);
+
+                    if (highQualityGroup != null)
+                    {
+                        <option>@(getDefaultSectionName(highQualityGroup))</option>
+                    }
+                    if (lowQualityGroup != null)
+                    {
+                        <option>@(getDefaultSectionName(lowQualityGroup))</option>
+                    }
+                }
+            </div>
+        </datalist>
         <div>
             <input type="submit" value="Назначить секции" />
         </div>
     </form>
-
-    <h5 id="forestArea" data-area="@Model.Item2.Area">Лесопокрытая площадь лесничества: @Formatting.toFixed(Model.Item2.Area, p0)</h5>
-    @{
-        var minSectionArea = Model.Item2.Area * 0.1;
-    }
-    <h5>Минимальная рекомендуемая площадь хозсекции: @Formatting.toFixed(Model.Item2.Area, p0) * 0,1 = @Formatting.toFixed(minSectionArea, p2)</h5>
-    <table class="table">
-        <tr>
-            <th>Название секции</th>
-            <th>Тип по породам</th>
-            <th>Тип по бонитетам</th>
-            <th>Площадь</th>
-        </tr>
-        <tbody id="sectionsBlock">
-        </tbody>
-        <tr id="newSectionRow" hidden="true">
-            <td id="sectionName"></td>
-            <td id="treeSpeciesType"></td>
-            <td id="qualityTier"></td>
-            <td id="sectionArea"></td>
-        </tr>
-    </table>
-
-    <datalist id="sectionsDataList" hidden="True">
-        <div id="sectionNames">
-        </div>
-        <div id="defaultSectionNames">
-            @foreach (var speciesGroup in Model.Item1.DistinctBy(g => g.TreeSpeciesID).OrderBy(g => g.TreeSpeciesName))
-            {
-                var qualityGroups = Model.Item1.Where(g => g.TreeSpeciesID == speciesGroup.TreeSpeciesID).DistinctBy(g => g.QualityClassID).OrderBy(g => g.QualityClass);
-
-                var highQualityGroup = qualityGroups.FirstOrDefault(g => g.QualityClass < 4);
-                var lowQualityGroup = qualityGroups.FirstOrDefault(g => g.QualityClass > 3);
-
-                if (highQualityGroup != null)
-                {
-                    <option>@(getDefaultSectionName(highQualityGroup))</option>
-                }
-                if (lowQualityGroup != null)
-                {
-                    <option>@(getDefaultSectionName(lowQualityGroup))</option>
-                }
-            }
-        </div>
-    </datalist>
 </div>
 
 <script>
@@ -124,7 +124,7 @@
             if (sectionInputRegex.test(inputTags[i].name) && inputTags[i].value) {
                 let currentSection = new Object();
                 currentSection["Name"] = inputTags[i].value.trim();
-                currentSection["Area"] = Number(inputTags[i].dataset.area);
+                currentSection["Area"] = Number.parseFloat(inputTags[i].dataset.area);
                 currentSection["TreeSpeciesType"] = inputTags[i].dataset.treespeciestype;
                 currentSection["QualityClasses"] = [];
                 let currentQualityClass = Number(inputTags[i].dataset.qualityclass);

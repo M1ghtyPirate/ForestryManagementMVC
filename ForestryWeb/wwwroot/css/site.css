@@ -28,6 +28,7 @@
 
 
     main {
+        padding-top: 80px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -41,6 +42,10 @@
         font-size: large;
         overflow-wrap: break-word;
         max-width: 100%;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        margin: 5px 0px 5px 0px;
     }
 
     /* Отключение стрелок Chromium*/
@@ -69,21 +74,33 @@
         background-color: rgb(220, 255, 220) !important;
     }
 
-    .navbar-brand {
+    .navbar-brand-my, .navbar-brand-my:visited {
         background-color: rgb(0, 102, 51);
         color: white !important;
         font-weight: bold;
         padding: 15px;
         margin: 0;
+        display: flex;
+        align-items: center;
+        font-size: larger;
+        transition: text-shadow 2s;
+    }
+
+    .navbar-brand-my:hover {
+        text-shadow: 0 0 15px white;
+        font-size: larger;
     }
 
     #navbar-layout {
         /*background-color: rgb(149, 193, 31) !important;*/
+        position: fixed;
+        width: 100%;
     }
 
     .navbar, .container-fluid {
         padding: 0;
         align-items: stretch !important;
+        text-align: center;
     }
 
     .navbar-collapse {
@@ -96,7 +113,14 @@
         align-items: center;
         border-top: 5px rgba(0, 0, 0, 0) solid;
         border-bottom: 5px rgba(0, 0, 0, 0) solid;
+        transition: border-bottom 0.5s;
+        
     }
+
+    .nav-item:hover {
+        border-bottom: 5px rgb(0, 102, 51) solid;
+    }
+
 
     .nav-item-current-view {
         border-top: 5px rgba(0, 0, 0, 0) solid;
@@ -117,11 +141,17 @@
     }
 
     /*Ссылки*/
-    a, a:hover, a:visited {
+    a, a:visited {
         color: rgb(149, 193, 31);
         text-decoration-line: none;
         font-size: inherit;
+        transition: color 0.5s;
     }
+
+        a:hover {
+            color: rgb(0, 102, 51);
+            
+        }
 
     input[type=submit], input[type=button] {
         color: white;
@@ -129,6 +159,7 @@
         border-radius: 5px;
         box-shadow: 0px 0px 5px lightgray;
         margin: 1px;
+        transition: background-color 0.5s;
     }
 
     input[type=submit]:hover, input[type=button]:hover {
@@ -222,9 +253,11 @@
 
     .forestry-items a {
         color: black;
-        background-color: rgb(241, 255, 241);
+        border-radius: 3px;
+        background-color: rgb(240, 255, 240);
         padding: 10px;
         border: 1px rgb(0, 102, 51) solid;
+        transition: background-color 0.5s;
     }
 
     .forestry-items a:hover {
@@ -241,4 +274,8 @@
 
     .table-item-error {
         background-color: rgb(255, 155, 155) !important;
+    }
+
+    .table-item-outlined {
+        outline: 4px rgb(0, 195, 100) solid;
     }
