@@ -44,15 +44,15 @@
                             <input type="text" name="__Invariant" value="ProductOutput[@groupCount].AvgHeight" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
                         </td>
                         <td>
-                            <input type="number" name="ProductOutput[@groupCount].LargePercent" value="@Formatting.toDefaultCulture(avgHeightEntry?.LargePercent)" step="@step" min="0" />
+                            <input type="number" name="ProductOutput[@groupCount].LargePercent" value="@Formatting.toDefaultCulture(avgHeightEntry?.LargePercent)" step="@step" min="0" max="100"/>
                             <input type="text" name="__Invariant" value="ProductOutput[@groupCount].LargePercent" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
                         </td>
                         <td>
-                            <input type="number" name="ProductOutput[@groupCount].MediumPercent1" value="@Formatting.toDefaultCulture(avgHeightEntry?.MediumPercent1)" step="@step" min="0" />
+                            <input type="number" name="ProductOutput[@groupCount].MediumPercent1" value="@Formatting.toDefaultCulture(avgHeightEntry?.MediumPercent1)" step="@step" min="0" max="100" />
                             <input type="text" name="__Invariant" value="ProductOutput[@groupCount].MediumPercent1" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
                         </td>
                         <td>
-                            <input type="number" name="ProductOutput[@groupCount].MediumPercent2" value="@Formatting.toDefaultCulture(avgHeightEntry?.MediumPercent2)" step="@step" min="0" />
+                            <input type="number" name="ProductOutput[@groupCount].MediumPercent2" value="@Formatting.toDefaultCulture(avgHeightEntry?.MediumPercent2)" step="@step" min="0" max="100" />
                             <input type="text" name="__Invariant" value="ProductOutput[@(groupCount++)].MediumPercent2" hidden="True" /> @*Без этого не парсятся числа с плавающей точкой.*@
                         </td>
                     </tr>

@@ -25,7 +25,7 @@
                 <td>
                     <a asp-action="editforestry" asp-route-id=@item.Item1.ForestryID><input type="button" value="Изменить" /></a>
                     <br />
-                    <a asp-action="removeforestry" onclick="ActionConfirmation('Удалить лесничество: @item.Item1.Name?')" asp-route-id=@item.Item1.ForestryID><input type="button" value="Удалить" /></a>
+                    <a asp-action="removeforestry" onclick="ActionConfirmation('Удалить лесничество: @item.Item1.Name?')" asp-route-id=@item.Item1.ForestryID><input type="button" class="input-delete" value="Удалить" /></a>
                 </td>
             </tr>
         }
@@ -34,10 +34,3 @@
         <a asp-action="addforestry"><input type="button" value="Добавить новое лесничество" /></a>
     </div>
 </div>
-<script>
-    function ActionConfirmation(text) {
-        if (confirm(text) == false) {
-            event.preventDefault();
-        }
-    }
-</script>

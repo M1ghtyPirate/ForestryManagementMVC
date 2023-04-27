@@ -170,6 +170,18 @@
         background-color: rgb(0, 77, 38);
     }
 
+    input.input-delete  {
+        background-color: rgb(200, 40, 0);
+    }
+
+    input.input-delete:hover {
+        background-color: rgb(230, 40, 0);
+    }
+
+    input.input-delete:active {
+        background-color: rgb(170, 40, 0);
+    }
+
     .page-content-center {
         display: flex;
         flex-direction: column;

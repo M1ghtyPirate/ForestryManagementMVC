@@ -219,10 +219,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> Forestry(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
             var user = await db.Users.FirstOrDefaultAsync(u => u.UserID == forestry.AuthorID);
@@ -239,17 +239,28 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestryAreas(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var forestryAreas = await db.view_ForestryAreas.FirstOrDefaultAsync(f => f.ForestryID == ID);
-            if (forestryAreas == null)
+
+            //if (forestryAreas == null)
+            //{
+            //    //var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
+            //    //return View("AddForestryAreas", new Tuple<Forestry, ForestryAreas>(forestry, null));
+            //    return RedirectToAction("EditForestryAreas", new { ID = ID });
+            //}
+
+            if(forestryAreas == null)
             {
-                //var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
-                //return View("AddForestryAreas", new Tuple<Forestry, ForestryAreas>(forestry, null));
-                return RedirectToAction("EditForestryAreas", new { ID = ID });
+                var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
+                if (forestry == null)
+                {
+                    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = $"лесничество {ID} не найдено" });
+                }
+                forestryAreas = new ForestryAreas() { ForestryID = ID, ForestryName = forestry.Name };
             }
             var forestryAreasPercentage = await db.view_ForestryAreasPercentage.FirstOrDefaultAsync(f => f.ForestryID == ID);
             return View(new Tuple<ForestryAreas, ForestryAreasPercentage>(forestryAreas, forestryAreasPercentage));
@@ -337,18 +348,29 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestryTreeGroups(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
-            var treeGroups = await db.view_TreeGroups.Where(g => g.ForestryID == ID).ToListAsync();
+            List<TreeGroup> treeGroups = await db.view_TreeGroups.Where(g => g.ForestryID == ID).ToListAsync();
 
-            if (treeGroups.Count() == 0)
+            //if (treeGroups.Count() == 0)
+            //{
+            //    //var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
+            //    //return View("AddForestryTreeGroups", new Tuple<Forestry, List<TreeGroup>>(forestry, null));
+            //    return RedirectToAction("EditForestryTreeGroups", new { ID = ID });
+            //}
+
+            if (treeGroups.Count == 0)
             {
-                //var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
-                //return View("AddForestryTreeGroups", new Tuple<Forestry, List<TreeGroup>>(forestry, null));
-                return RedirectToAction("EditForestryTreeGroups", new { ID = ID });
+                var forestry = await db.Forestries.FirstOrDefaultAsync(f => f.ForestryID == ID);
+                if (forestry == null)
+                {
+                    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = $"лесничество {ID} не найдено" });
+                }
+                treeGroups = new List<TreeGroup>();
+                treeGroups.Add(new TreeGroup() { ForestryID = ID, ForestryName = forestry.Name });
             }
 
             var treeAgeGroupsTotal = await db.view_TreeAgeGroupsTotal.Where(g => g.ForestryID == ID).ToListAsync();
@@ -522,10 +544,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestryTreeGroupsAllocation(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var treeGroups = await db.view_TreeGroups.Where(g => g.ForestryID == ID).ToListAsync();
             var treeForestryGroupsTotal = await db.view_TreeForestryGroupsTotal.FirstOrDefaultAsync(g => g.ForestryID == ID);
@@ -625,10 +647,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestryTreeSpecies(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var forestryTreeSpecies = await db.view_ForestryTreeSpecies.Where(g => g.ForestryID == ID).ToListAsync();
             var forestryTreeSpeciesTotal = await db.view_ForestryTreeSpeciesTotal.FirstOrDefaultAsync(g => g.ForestryID == ID);
@@ -642,10 +664,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestrySectionGroups(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var sectionAgeGroups = await db.view_SectionAgeGroups.Where(g => g.ForestryID == ID).ToListAsync();
             var sectionsTotal = await db.view_SectionsTotal.Where(g => g.ForestryID == ID).ToListAsync();
@@ -659,10 +681,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestrySections(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var sectionsTotal = await db.view_SectionsTotal.Where(g => g.ForestryID == ID).ToListAsync();
             return View(new List<SectionTotal>(sectionsTotal));
@@ -675,10 +697,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> AvgSectionGrowthCalc(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var sectionsTotal = await db.view_SectionsTotal.Where(g => g.ForestryID == ID && (bool)g.IsHigh).ToListAsync();
             var avgSectionGrowthCalc = await db.view_AvgSectionGrowthCalc.ToListAsync();
@@ -692,10 +714,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestrySectionsMainFelling(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var sectionsMainFelingAgeCalc = await db.view_SectionsMainFellingAgeCalc.Where(g => g.ForestryID == ID).ToListAsync();
             var sectionAgeGroups = await db.view_SectionAgeGroups.Where(g => g.ForestryID == ID).ToListAsync();
@@ -709,10 +731,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestryFellingSections(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var sectionFellingAgeGroups = await db.view_SectionFellingAgeGroups.Where(g => g.ForestryID == ID).ToListAsync();
             var sectionsFellingVariants = await db.view_SectionsFellingVariants.Where(g => g.ForestryID == ID).ToListAsync();
@@ -726,10 +748,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestryFellingPeriods(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var forestryFellingPeriod = await db.view_ForestryFellingPeriods.FirstOrDefaultAsync(g => g.ForestryID == ID);
             var sectionFellingPeriods = await db.view_SectionsFellingPeriods.Where(g => g.ForestryID == ID).ToListAsync();
@@ -743,10 +765,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestrySectionFellingTypes(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var forestryFellingType = await db.view_ForestryFellingTypes.FirstOrDefaultAsync(g => g.ForestryID == ID);
             var sectionFellingTypes = await db.view_SectionFellingTypes.Where(g => g.ForestryID == ID).ToListAsync();
@@ -760,10 +782,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestrySectionFellingParts(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var forestryFellingPeriod = await db.view_ForestryFellingPeriods.FirstOrDefaultAsync(g => g.ForestryID == ID);
             var SectionFellingParts = await db.view_SectionFellingParts.Where(g => g.ForestryID == ID).ToListAsync();
@@ -777,10 +799,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestrySection10YFelling(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var sectionFelling10YAGStartAreas = await db.view_SectionFelling10YAGStartAreas.Where(g => g.ForestryID == ID).ToListAsync();
             var sectionFelling10YAGFellingAreas = await db.view_SectionFelling10YAGFellingAreas.Where(g => g.ForestryID == ID).ToListAsync();
@@ -809,10 +831,10 @@ namespace ForestryWeb.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ForestrySection10YFellingResult(Guid ID)
         {
-            if (!isUserAuthorized(ID, out string forestryName))
-            {
-                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
-            }
+            //if (!isUserAuthorized(ID, out string forestryName))
+            //{
+            //    return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            //}
 
             var sectionFelling10YAGStartAreas = await db.view_SectionFelling10YAGStartAreas.Where(g => g.ForestryID == ID).ToListAsync();
             var sectionFelling10YAGResultAreas = await db.view_SectionFelling10YAGResultAreas.Where(g => g.ForestryID == ID).ToListAsync();
@@ -824,6 +846,8 @@ namespace ForestryWeb.Controllers
                 sectionFelling10YAGResultAreas,
                 sectionFelling10YTotalAreas));
         }
+
+        #region UserSettings
 
         /// <summary>
         /// Обновление информации пользователя.
@@ -874,6 +898,8 @@ namespace ForestryWeb.Controllers
             db.SaveChanges();
             return View();
         }
+
+        #endregion
 
         #region DirectoryViews
 
@@ -1045,6 +1071,25 @@ namespace ForestryWeb.Controllers
         }
 
         /// <summary>
+        /// Удаление товарной таблицы породы.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> RemoveProductOutputDirectory(Guid ID)
+        {
+            if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin" || ID == Guid.Empty)
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+            var productOutput = await db.ProductOutput.Where(g => g.TreeSpeciesID == ID)?.ToListAsync();
+            if (productOutput?.Count > 0)
+            {
+                db.RemoveRange(productOutput);
+                await db.SaveChangesAsync();
+            }
+            return RedirectToAction("ProductOutputDirectory");
+        }
+
+        /// <summary>
         /// Таблица хода роста.
         /// </summary>
         /// <returns></returns>
@@ -1114,6 +1159,25 @@ namespace ForestryWeb.Controllers
 
             await db.SaveChangesAsync();
 
+            return RedirectToAction("GrowthRateDirectory");
+        }
+
+        /// <summary>
+        /// Удаление таблицы хода роста породы.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> RemoveGrowthRateDirectory(Guid ID)
+        {
+            if (HttpContext.User.FindFirstValue(ClaimTypes.Role) != "Admin" || ID == Guid.Empty)
+            {
+                return RedirectToAction("AccessDenied", "Authorization");
+            }
+            var growthRate = await db.GrowthRate.Where(g => g.TreeSpeciesID == ID)?.ToListAsync();
+            if (growthRate?.Count > 0)
+            {
+                db.RemoveRange(growthRate);
+                await db.SaveChangesAsync();
+            }
             return RedirectToAction("GrowthRateDirectory");
         }
 

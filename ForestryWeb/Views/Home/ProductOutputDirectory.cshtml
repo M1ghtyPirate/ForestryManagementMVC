@@ -57,15 +57,19 @@
     </table>
     <div hidden="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin")">
         <a id="editLink" asp-action="EditProductOutputDirectory" hidden="true"><input type="button" value="Изменить" /></a>
+        <a id="removeLink" asp-action="RemoveProductOutputDirectory" onclick="ActionConfirmation(`Удалить таблицу для породы: ${displayedSpeciesName}?`)" hidden="true"><input type="button" class="input-delete" value="Удалить" /></a>
     </div>
 </div>
 <script>
     let displayedSpeciesID = null;
+    let displayedSpeciesName = null;
     let sectionSuffix = "@sectionSuffix";
     let editHref = null;
+    let removeHref = null;
 
     function showSpecies(speciesID) {
-        if (displayedSpeciesID) {
+        if (displayedSpeciesID) 
+        {
             let displayedSection = document.getElementById(displayedSpeciesID + sectionSuffix);
             if (displayedSection)
             {
@@ -77,6 +81,10 @@
             let editLinkTag = document.getElementById("editLink");
             editLinkTag.hidden = false;
             editHref = editLinkTag.href + "/";
+
+            let removeLinkTag = document.getElementById("removeLink");
+            removeLinkTag.hidden = false;
+            removeHref = removeLinkTag.href + "/";
         }
         let requestedSection = document.getElementById(speciesID + sectionSuffix);
         if (requestedSection)
@@ -84,6 +92,10 @@
             requestedSection.hidden = false;
         }
         displayedSpeciesID = speciesID;
+        let speciesSelectTag = document.getElementById("treeSpeciesSelect");
+        displayedSpeciesName = speciesSelectTag[speciesSelectTag.selectedIndex].text;
+
         document.getElementById("editLink").href = editHref + displayedSpeciesID;
+        document.getElementById("removeLink").href = removeHref + displayedSpeciesID;
     }
 </script>

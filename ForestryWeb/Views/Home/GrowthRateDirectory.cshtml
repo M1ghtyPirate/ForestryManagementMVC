@@ -8,7 +8,6 @@
     var sectionSuffix = "-section";
 }
 @model Tuple<List<GrowthRate>, List<TreeSpecies>,  List<QualityClass>>
-
 <div class="page-content-center page-content-display">
     <h1><a asp-action="Directories">Справочная информация</a> - @subTitle</h1>
     <select id="treeSpeciesSelect" onchange="showSpecies(this.value)">
@@ -62,30 +61,45 @@
     </table>
     <div hidden="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin")">
         <a id="editLink" asp-action="EditGrowthRateDirectory" hidden="true"><input type="button" value="Изменить" /></a>
+        <a id="removeLink" asp-action="RemoveGrowthRateDirectory" onclick="ActionConfirmation(`Удалить таблицу для породы: ${displayedSpeciesName}?`)" hidden="true"><input type="button" class="input-delete" value="Удалить" /></a>
     </div>
 </div>
 <script>
     let displayedSpeciesID = null;
+    let displayedSpeciesName = null;
     let sectionSuffix = "@sectionSuffix";
     let editHref = null;
+    let removeHref = null;
 
     function showSpecies(speciesID) {
-        if (displayedSpeciesID) {
+        if (displayedSpeciesID) 
+        {
             let displayedSection = document.getElementById(displayedSpeciesID + sectionSuffix);
-            if (displayedSection) {
+            if (displayedSection) 
+            {
                 displayedSection.hidden = true;
             }
         }
-        else {
+        else 
+        {
             let editLinkTag = document.getElementById("editLink");
             editLinkTag.hidden = false;
             editHref = editLinkTag.href + "/";
+
+            let removeLinkTag = document.getElementById("removeLink");
+            removeLinkTag.hidden = false;
+            removeHref = removeLinkTag.href + "/";
         }
         let requestedSection = document.getElementById(speciesID + sectionSuffix);
-        if (requestedSection) {
+        if (requestedSection) 
+        {
             requestedSection.hidden = false;
         }
         displayedSpeciesID = speciesID;
+        let speciesSelectTag = document.getElementById("treeSpeciesSelect");
+        displayedSpeciesName = speciesSelectTag[speciesSelectTag.selectedIndex].text;
+
         document.getElementById("editLink").href = editHref + displayedSpeciesID;
+        document.getElementById("removeLink").href = removeHref + displayedSpeciesID;
     }
 </script>
