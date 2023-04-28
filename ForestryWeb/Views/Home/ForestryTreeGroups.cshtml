@@ -116,5 +116,6 @@
     }
     <div>
         <a asp-action="editforestrytreegroups" asp-route-id=@forestryID><input type="button" value="Изменить" /></a>
+        <a asp-action="removeforestrytreegroups" onclick="ActionConfirmation('Удалить группы насаждений для лесничества: @forestryName?')" asp-route-id=@forestryID><input type="button" class="input-delete" value="Удалить" /></a>
     </div>
 </div>

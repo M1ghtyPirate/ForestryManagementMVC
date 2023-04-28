@@ -165,7 +165,6 @@ namespace ForestryWeb.Controllers
                 return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
             }
 
-            //Реализовать каскадное удаление?
             var forestryDB = db.Forestries.FirstOrDefault(f => f.ForestryID == ID);
             if (forestryDB != null)
             {
@@ -339,6 +338,39 @@ namespace ForestryWeb.Controllers
             updateForestryEditDate(forestryAreas.ForestryID);
 
             return RedirectToAction("ForestryAreas", new { ID = forestryAreas.ForestryID });
+        }
+
+        /// <summary>
+        /// Удаление распределения площадей.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> RemoveForestryAreas(Guid ID)
+        {
+            if (!isUserAuthorized(ID, out string forestryName))
+            {
+                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            }
+
+            var forestAreasDB = await db.ForestAreas.FirstOrDefaultAsync(f => f.ForestryID == ID);
+            var nonForestAreasDB = await db.NonForestAreas.FirstOrDefaultAsync(f => f.ForestryID == ID);
+
+            if (forestAreasDB != null)
+            {
+                db.ForestAreas.Remove(forestAreasDB);
+            }
+
+            if(nonForestAreasDB != null)
+            {
+                db.NonForestAreas.Remove(nonForestAreasDB);
+            }
+
+            if (forestAreasDB!= null || nonForestAreasDB != null)
+            {
+                updateForestryEditDate(ID);
+            }
+
+            return RedirectToAction("ForestryAreas", new { ID = ID});
         }
 
         /// <summary>
@@ -538,6 +570,32 @@ namespace ForestryWeb.Controllers
         }
 
         /// <summary>
+        /// Удаление групп насаждений.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> RemoveForestryTreeGroups(Guid ID)
+        {
+            if (!isUserAuthorized(ID, out string forestryName))
+            {
+                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            }
+
+            var treeQualityGroupsDB = await db.TreeQualityGroups.Where(q => q.ForestryID == ID).ToListAsync();
+            var treeQualityGroupsIDs = treeQualityGroupsDB?.Select(g => g.TreeQualityGroupID).ToList() ?? new List<Guid?>();
+            var treeAgeGroupsDB = await db.TreeAgeGroups.Where(g => treeQualityGroupsIDs.Contains(g.TreeQualityGroupID)).ToListAsync();
+
+            if (treeAgeGroupsDB.Count > 0)
+            {
+                db.TreeAgeGroups.RemoveRange(treeAgeGroupsDB);
+                db.TreeQualityGroups.RemoveRange(treeQualityGroupsDB);
+                updateForestryEditDate(ID);
+            }
+
+            return RedirectToAction("ForestryTreeGroups", new { ID = ID });
+        }
+
+        /// <summary>
         /// Отображение распределения групп бонитета по секциям.
         /// </summary>
         /// <param name="ID"></param>
@@ -638,6 +696,33 @@ namespace ForestryWeb.Controllers
             updateForestryEditDate(forestryID);
 
             return RedirectToAction("ForestryTreeGroupsAllocation", new { ID = forestryID });
+        }
+
+        /// <summary>
+        /// Удаление распределения по секциям.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> RemoveForestryTreeGroupsAllocation(Guid ID)
+        {
+            if (!isUserAuthorized(ID, out string forestryName))
+            {
+                return RedirectToAction("AccessDenied", "Authorization", new { resourceName = forestryName });
+            }
+
+            var treeQualityGroupsDB = await db.TreeQualityGroups.Where(q => q.ForestryID == ID).ToListAsync();
+
+            foreach (var treeQualityGroupDB in treeQualityGroupsDB)
+            {
+                treeQualityGroupDB.SectionID = null;
+            }
+
+            if (treeQualityGroupsDB.Count > 0)
+            {
+                updateForestryEditDate(ID);
+            }
+
+            return RedirectToAction("ForestryTreeGroupsAllocation", new { ID = ID });
         }
 
         /// <summary>

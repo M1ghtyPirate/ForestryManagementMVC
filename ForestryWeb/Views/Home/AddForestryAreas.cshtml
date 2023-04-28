@@ -54,6 +54,7 @@
         </table>
         <div>
             <input type="submit" value="@(Model.Item2 == null ? "Добавить" : "Внести изменения")" />
+            <input type="button" value="Отмена" onclick="history.back()" />
         </div>
     </form>
 </div>

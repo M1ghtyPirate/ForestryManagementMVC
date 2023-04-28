@@ -16,6 +16,7 @@
         </div>
         <div>
             <input type="submit" value="@(Model == null ? "Добавить" : "Внести изменения")" />
+            <input type="button" value="Отмена" onclick="history.back()" />
         </div>
     </form>
 </div>

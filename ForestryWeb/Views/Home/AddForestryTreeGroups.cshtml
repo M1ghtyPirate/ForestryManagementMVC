@@ -13,7 +13,7 @@
     {
         <tr>
             <td rowspan="@(6 * 2 + 1)">
-                <select name="Item2[@(groupCount)].TreeSpeciesID">
+                <select name="Item2[@(groupCount)].TreeSpeciesID" onchange="updateSpeciesInputs()">
                     <option value="@Guid.Empty">--Выберете породу--</option>
                     @foreach (var treeSpecies in Model.Item3.OrderBy(s => s.Name))
                     {
@@ -88,34 +88,58 @@
         </table>
         <div>
             <input type="submit" value="@(Model.Item2.Count() == 0 ? "Добавить" : "Внести изменения")" />
+            <input type="button" value="Отмена" onclick="history.back()" />
         </div>
+        <h5 class="warning">Записи для которых не выбраны породы будут удалены.</h5>
     </form>
 </div>
 <script>
-    //Проверка уникальности выбора пород.
-    function isFormValid() 
-    {
+    updateSpeciesInputs();
+
+    //Получение ID выбранных пород.
+    function getSelectedSpeciesIDs() {
         let treeInputRegex = new RegExp("Item2\[[0-9]*\]\.TreeSpeciesID");
         let selectTags = document.getElementsByTagName("select");
-        let treeSpeciesDuplicates = [];
-        let treeSpeciesCount = new Object();
-        let currentSpeciesID;
+        let treeSpeciesIDs = [];
         for (let i = 0; i < selectTags.length; i++)
         {
             if (treeInputRegex.test(selectTags[i].name) && selectTags[i].value != "00000000-0000-0000-0000-000000000000")
             {
-                currentSpeciesID = selectTags[i].value;
-                treeSpeciesCount[currentSpeciesID] = treeSpeciesCount[currentSpeciesID] == null ? 1 : treeSpeciesCount[currentSpeciesID] + 1;
-                if (treeSpeciesCount[currentSpeciesID] > 1) 
+                treeSpeciesIDs.push(selectTags[i].value);
+            }
+        }
+        return treeSpeciesIDs;
+    }
+
+    //Обновление отключенных опций выбора пород.
+    function updateSpeciesInputs() {
+        let selectedSpeciesIDs = getSelectedSpeciesIDs();
+        let treeInputRegex = new RegExp("Item2\[[0-9]*\]\.TreeSpeciesID");
+        let selectTags = document.getElementsByTagName("select");
+        for (let i = 0; i < selectTags.length; i++)
+        {
+            if (treeInputRegex.test(selectTags[i].name))
+            {
+                for (let j = 0; j < selectTags[i].options.length; j++) 
                 {
-                    treeSpeciesDuplicates.push(selectTags[i]);
+                    let option = selectTags[i].options[j];
+                    option.disabled = !option.selected && selectedSpeciesIDs.includes(option.value);
                 }
             }
         }
-        if (treeSpeciesDuplicates.length > 0) 
+    }
+
+    //Проверка уникальности выбора пород.
+    function isFormValid() 
+    {
+        let selectedSpeciesIDs = getSelectedSpeciesIDs();
+        for(var i = 0; i < selectedSpeciesIDs.length; i++)
         {
-            alert("Выбраны повторяющиеся породы!");
-            return false;
+            if (selectedSpeciesIDs.filter(s => s == selectedSpeciesIDs[i]).length > 1) 
+            {
+                alert("Выбраны повторяющиеся породы!");
+                return false;
+            }
         }
         return true;
     }

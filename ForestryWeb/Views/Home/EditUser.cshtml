@@ -8,7 +8,7 @@
     <h2>@title</h2>
     <form asp-action="edituser" asp-controller="home" onsubmit="return comparePasswords()">
         <div>
-            <label asp-for="CurrentPassword">Текущий пароль</label>
+            <label asp-for="CurrentPassword">Текущий пароль*</label>
             <input id="CurrentPassword" type="password" asp-for="CurrentPassword" required/>
             <div class="warning" hidden="@(!(Model != null && Model.CurrentPassword == null))">Неверный пароль.</div>
             <label asp-for="NewPassword">Новый пароль</label>
@@ -21,6 +21,7 @@
         </div>
         <div>
             <input type="submit" value="Обновить данные" />
+            <h5>* - обязательные поля</h5>
         </div>
     </form>
 </div>

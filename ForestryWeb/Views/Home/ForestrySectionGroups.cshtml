@@ -15,7 +15,6 @@
             <th rowspan="2">Хозсекция</th>
             <th colspan="8">Классы возраста</th>
             <th rowspan="2">Итого</th>
-            <th rowspan="2">Возраст рубки, лет</th>
         </tr>
         <tr>
             <th>Ⅰ</th>
@@ -37,7 +36,6 @@
                     <td>@Formatting.toFixed(ageGroup?.Area, p0)</td>
                 }
                 <td>@Formatting.toFixed(forestrySection.Area, p0)</td>
-                <td></td>
             </tr>
             <tr>
                 @for (var i = 1; i <= 8; i++)
@@ -46,7 +44,6 @@
                     <td>@Formatting.toFixed(ageGroup?.Volume, p0)</td>
                 }
                 <td>@Formatting.toFixed(forestrySection.Volume, p0)</td>
-                <td></td>
             </tr>
 
         }

@@ -100,5 +100,6 @@
     }
     <div>
         <a asp-action="editforestryareas" asp-route-id=@Model.Item1.ForestryID><input type="button" value="Изменить" /></a>
+        <a asp-action="removeforestryareas" onclick="ActionConfirmation('Удалить паспределение площадей для лесничества: @Model.Item1.ForestryName?')" asp-route-id=@Model.Item1.ForestryID><input type="button" class="input-delete" value="Удалить" /></a>
     </div>
 </div>

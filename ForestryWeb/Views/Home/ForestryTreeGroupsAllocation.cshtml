@@ -42,22 +42,30 @@
         var minSectionArea = Model.Item2.Area * 0.1;
     }
     <h5>Минимальная рекомендуемая площадь хозсекции: @Formatting.toFixed(Model.Item2.Area, p0) * 0,1 = @Formatting.toFixed(minSectionArea, p2)</h5>
-    <table class="table">
-        <tr>
-            <th>Название секции</th>
-            <th>Площадь</th>
-        </tr>
-        @foreach(var forestrySection in Model.Item3.OrderBy(s => s.Name))
-        {
-            var ageGroups = Model.Item1.Where(g => g.SectionID == forestrySection.SectionID);
-            var forestrySectionArea = ageGroups.Sum(g => g.Area);
+    @if(Model.Item3.Count > 0) 
+    {
+        <table class="table">
             <tr>
-                <td>@forestrySection.Name</td>
-                <td class="@(forestrySectionArea > minSectionArea ? "" : "table-item-warning")">@Formatting.toFixed(forestrySectionArea, p2)</td>
+                <th>Название секции</th>
+                <th>Площадь</th>
             </tr>
-        }
-    </table>
+            @foreach(var forestrySection in Model.Item3.OrderBy(s => s.Name))
+            {
+                var ageGroups = Model.Item1.Where(g => g.SectionID == forestrySection.SectionID);
+                var forestrySectionArea = ageGroups.Sum(g => g.Area);
+                <tr>
+                    <td>@forestrySection.Name</td>
+                    <td class="@(forestrySectionArea > minSectionArea ? "" : "table-item-warning")">@Formatting.toFixed(forestrySectionArea, p2)</td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <h5>Секции не выделены.</h5>
+    }
     <div>
         <a asp-action="editforestrytreegroupsallocation" asp-route-id=@forestryID><input type="button" value="Изменить" /></a>
+        <a asp-action="removeforestrytreegroupsallocation" onclick="ActionConfirmation('Удалить распределение по секциям для лесничества: @forestryName?')" asp-route-id=@forestryID><input type="button" class="input-delete" value="Удалить" /></a>
     </div>
 </div>

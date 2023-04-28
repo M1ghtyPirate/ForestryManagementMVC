@@ -7,12 +7,12 @@
     <h2>Введите данные для регистрации</h2>
     <form asp-action="register" asp-controller="authorization" onsubmit="return comparePasswords()">
         <div>
-            <label asp-for="Login">Логин</label>
+            <label asp-for="Login">Логин*</label>
             <input id="Login" type="text" asp-for="Login" required value="@Model?.Login" onblur="trimLogin()"/>
             <div class="warning" hidden="@(!(Model != null && Model.Login == null))">Логин занят.</div>
-            <label asp-for="Password">Пароль</label>
+            <label asp-for="Password">Пароль*</label>
             <input id="Password" type="password" asp-for="Password" required minlength="6" value="@Model?.Password" />
-            <label for="PasswordConfirmation">Повторите пароль</label>
+            <label for="PasswordConfirmation">Повторите пароль*</label>
             <input id="PasswordConfirmation" type="password" required minlength="6" value="@Model?.Password" />
             <div class="warning" id="PasswordWarning" hidden="true">Пароли не совпадают.</div>
             <label asp-for="Email">Email</label>
@@ -20,6 +20,7 @@
         </div>
         <div>
             <input type="submit" value="Зарегистрироваться" />
+            <h5>* - обязательные поля</h5>
         </div>
     </form>
 </div>

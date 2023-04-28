@@ -30,7 +30,6 @@
                 <th rowspan="2">Рассчетная лесосека на 10 лет, га</th>
                 <th rowspan="2">Показатели</th>
                 <th colspan="9">Площадь по классам возраста, га</th>
-                <th rowspan="2">Пояснения</th>
             </tr>
             <tr>
                 <th>Ⅰ</th>
@@ -49,11 +48,10 @@
                 <td>1. Площадь в начале периода</td>
                 @for(var i = 1; i <= 8; i++)
                 {
-                var SectionFelling10YAGStartArea = sectionFelling10YAGStartAreas.FirstOrDefault(g => g.AgeClass == i);
-                <td>@Formatting.toFixed(SectionFelling10YAGStartArea?.Area, p1)</td>
+                    var SectionFelling10YAGStartArea = sectionFelling10YAGStartAreas.FirstOrDefault(g => g.AgeClass == i);
+                    <td>@Formatting.toFixed(SectionFelling10YAGStartArea?.Area, p1)</td>
                 }
                 <td>@Formatting.toFixed(sectionFellingTotal.StartArea, p1)</td>
-                <td></td>
             </tr>
             <tr>
                 <td></td>
@@ -70,14 +68,12 @@
                     <td>@Formatting.toFixed(SectionFelling10YAGStartArea?.Area, p1)</td>
                 }
                 <td>@Formatting.toFixed(sectionFellingTotal.OperationalArea, p1)</td>
-                <td></td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
                 <td>3. Коэффициент, равный вырубаемой площади за 10 лет, деленной на эксплуатационную площадь</td>
                 <td colspan="9">K=@Formatting.toFixed(sectionFellingTotal._10YFellingArea, p1) / @Formatting.toFixed(sectionFellingTotal.OperationalArea, p1)=@Formatting.toFixed(sectionFellingTotal._10YFellingPart, p2)</td>
-                <td></td>
             </tr>
             <tr>
                 <td></td>
@@ -89,7 +85,6 @@
                     <td>@Formatting.toFixed(sectionFelling10YAGFellingArea?.Area, p1)</td>
                 }
                 <td>@Formatting.toFixed(sectionFellingTotal._10YFellingArea, p1)</td>
-                <td></td>
             </tr>
             <tr>
                 <td></td>
@@ -100,7 +95,6 @@
                     var sectionFelling10YAGRemainingArea = sectionFelling10YAGRemainingAreas.FirstOrDefault(g => g.AgeClass == i);
                     <td>@Formatting.toFixed(sectionFelling10YAGRemainingArea?.Area, p1)</td>
                 }
-                <td></td>
                 <td></td>
             </tr>
             <tr>
@@ -113,7 +107,6 @@
                     <td></td>
                 }
                 <td></td>
-                <td></td>
             </tr>
             <tr>
                 <td></td>
@@ -124,7 +117,6 @@
                     var sectionFelling10YAGMovementArea = sectionFelling10YAGMovementAreas.FirstOrDefault(g => g.AgeClass == i);
                     <td>@Formatting.toFixed(sectionFelling10YAGMovementArea?.Area, p1)</td>
                 }
-                <td></td>
                 <td></td>
             </tr>
             <tr>
@@ -137,7 +129,6 @@
                     <td>@Formatting.toFixed(sectionFelling10YAGResultArea?.Area, p1)</td>
                 }
                 <td>@Formatting.toFixed(sectionFellingTotal.ResultArea, p1)</td>
-                <td></td>
             </tr>
         </table>
     }
