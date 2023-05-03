@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Список лесничеств";
+    Func<Forestry, bool> isUserAuthorized = (f) => f.IsShared || Context.User.FindFirstValue(ClaimTypes.Role) == "Admin" || f.AuthorID + "" == Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 @model IEnumerable<Tuple<ForestryWeb.Models.Database.Tables.Forestry, ForestryWeb.Models.Database.Tables.User>>
 
@@ -23,9 +24,9 @@
                 <td>@item.Item1.EditDate</td>
                 <td>@(item.Item1.IsShared ? "Да" : "")</td>
                 <td>
-                    <a asp-action="editforestry" asp-route-id=@item.Item1.ForestryID><input type="button" value="Изменить" /></a>
+                    <a asp-action="editforestry" asp-route-id=@item.Item1.ForestryID><input disabled="@(!isUserAuthorized(item.Item1))" type="button" value="Изменить" /></a>
                     <br />
-                    <a asp-action="removeforestry" onclick="ActionConfirmation('Удалить лесничество: @item.Item1.Name?')" asp-route-id=@item.Item1.ForestryID><input type="button" class="input-delete" value="Удалить" /></a>
+                    <a asp-action="removeforestry" onclick="ActionConfirmation('Удалить лесничество: @item.Item1.Name?')" asp-route-id=@item.Item1.ForestryID><input disabled="@(!isUserAuthorized(item.Item1))" type="button" class="input-delete" value="Удалить" /></a>
                 </td>
             </tr>
         }
