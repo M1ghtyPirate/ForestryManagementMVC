@@ -16,6 +16,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Net;
 using System.Security.Claims;
+using System.Runtime.CompilerServices;
 
 namespace ForestryWeb.Controllers
 {
@@ -33,7 +34,7 @@ namespace ForestryWeb.Controllers
 
         #region UtilityMethods
 
-        static void SendEmail(EmailCreditentials emailCreditentials, string subject, string message, string address)
+        private void SendEmail(EmailCreditentials emailCreditentials, string subject, string message, string address)
         {
             //Адрес SMTP-сервера
             String smtpHost = emailCreditentials.SMTPHost;
@@ -64,18 +65,21 @@ namespace ForestryWeb.Controllers
             MailMessage mailMessage = new MailMessage(msgFrom, msgTo, msgSubject, msgBody);
             //Крепим к сообщению подготовленное заранее вложение
 
+            _logger.Log(Microsoft.Extensions.Logging.LogLevel.Information, $"Sending Email to: {mailMessage.To}; from: {mailMessage.From}; body: {mailMessage.Body};");
 
-            try
-            {
+            //try
+            //{
                 //Отсылаем сообщение
                 client.Send(mailMessage);
                 //Console.WriteLine("Success.");
-            }
-            catch (Exception ex)
-            {
+            //}
+            //catch (Exception ex)
+            //{
                 //В случае ошибки при отсылке сообщения можем увидеть, в чем проблема
                 //Console.WriteLine(ex.Message);
-            }
+                //_logger.Log(Microsoft.Extensions.Logging.LogLevel.Error, ex.StackTrace);
+            //}
+            _logger.Log(Microsoft.Extensions.Logging.LogLevel.Information, $"Email sent.");
             //Console.ReadKey();
         }
 
@@ -266,7 +270,8 @@ namespace ForestryWeb.Controllers
             var message = $"Код для восстановления пароля пользователя {userDB.Login}: {resetPassword}";
             var subject = $"Восстановления пароля пользователя ForestryMVC";
 
-            SendEmail(emailCreditentialsDB, subject, message, userDB.Email);
+            //SendEmail(emailCreditentialsDB, subject, message, userDB.Email);
+            Task.Run(() => SendEmail(emailCreditentialsDB, subject, message, userDB.Email));
 
             return View("ResetPassword", new ResetPasswordData { UserID = (Guid)userDB.UserID, ResetPassword = Guid.Empty + "", NewPassword = string.Empty });
         }
