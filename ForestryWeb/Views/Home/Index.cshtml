@@ -8,6 +8,7 @@
         <a asp-action="Forestries">Список лесничеств.</a>
         <a asp-action="Directories">Справочная информация.</a>
         <a asp-action="Privacy">Информация.</a>
+        <a hidden="@(Context.User.FindFirstValue(ClaimTypes.Role) != "Admin")" asp-action="Users">Список пользователей</a>
         <a asp-action="EditUser">Настройки пользователя.</a>
     </div>
 </div>
